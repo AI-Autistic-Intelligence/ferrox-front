@@ -1,4 +1,4 @@
-[package]
+﻿[package]
 description = "Zero-Trust RBAC route guards, Wasm memory anti-tampering token protection, and WebAuthn Passkeys integration."
 name = "ferrox-front-security"
 version = "0.1.0"
@@ -24,7 +24,6 @@ features = [
     "CredentialRequestOptions",
     "PublicKeyCredential",
     "PublicKeyCredentialRequestOptions",
-    "PublicKeyCredentialCreationOptions"
+    "PublicKeyCredentialCreationOptions",
+    "console"
 ]
-
-
