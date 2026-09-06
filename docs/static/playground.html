@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="ferrox-cyber">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ferrox Front Interactive Playground</title>
+    <style>
+        :root[data-theme="ferrox-cyber"] {
+            --bg-primary: #0a0a16;
+            --bg-glass: rgba(20, 18, 45, 0.7);
+            --border-glass: 1px solid rgba(147, 51, 234, 0.3);
+            --text-primary: #f3f4f6;
+            --accent-glow: #9333ea;
+            --accent-cyan: #06b6d4;
+            --btn-bg: linear-gradient(135deg, #7e22ce, #3b82f6);
+        }
+        :root[data-theme="ocean-breeze"] {
+            --bg-primary: #061523;
+            --bg-glass: rgba(10, 35, 60, 0.7);
+            --border-glass: 1px solid rgba(6, 182, 212, 0.3);
+            --text-primary: #e0f2fe;
+            --accent-glow: #0284c7;
+            --accent-cyan: #38bdf8;
+            --btn-bg: linear-gradient(135deg, #0284c7, #06b6d4);
+        }
+        :root[data-theme="midnight-forest"] {
+            --bg-primary: #061e14;
+            --bg-glass: rgba(12, 45, 30, 0.7);
+            --border-glass: 1px solid rgba(16, 185, 129, 0.3);
+            --text-primary: #ecfdf5;
+            --accent-glow: #059669;
+            --accent-cyan: #34d399;
+            --btn-bg: linear-gradient(135deg, #059669, #10b981);
+        }
+        :root[data-theme="sunset-gold"] {
+            --bg-primary: #1c0a00;
+            --bg-glass: rgba(45, 20, 5, 0.7);
+            --border-glass: 1px solid rgba(245, 158, 11, 0.3);
+            --text-primary: #fffbeb;
+            --accent-glow: #d97706;
+            --accent-cyan: #f59e0b;
+            --btn-bg: linear-gradient(135deg, #d97706, #b45309);
+        }
+        :root[data-theme="corporate-slate"] {
+            --bg-primary: #0f172a;
+            --bg-glass: rgba(30, 41, 59, 0.7);
+            --border-glass: 1px solid rgba(100, 116, 139, 0.3);
+            --text-primary: #f8fafc;
+            --accent-glow: #475569;
+            --accent-cyan: #94a3b8;
+            --btn-bg: linear-gradient(135deg, #475569, #334155);
+        }
+
+        body {
+            margin: 0;
+            padding: 1.5rem;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        .playground-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 1rem;
+            border-bottom: var(--border-glass);
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .theme-btn {
+            padding: 6px 14px;
+            border-radius: 6px;
+            border: var(--border-glass);
+            background: var(--bg-glass);
+            color: var(--text-primary);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .theme-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 1.25rem;
+        }
+
+        .col-12 { grid-column: span 12; }
+        .col-8 { grid-column: span 8; }
+        .col-6 { grid-column: span 6; }
+        .col-4 { grid-column: span 4; }
+
+        @media (max-width: 768px) {
+            .col-8, .col-6, .col-4 { grid-column: span 12; }
+        }
+
+        .glass-card {
+            background: var(--bg-glass);
+            backdrop-filter: blur(12px);
+            border: var(--border-glass);
+            border-radius: 12px;
+            padding: 1.25rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
+        }
+
+        .card-header {
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .btn-action {
+            background: var(--btn-bg);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .btn-action:hover { opacity: 0.9; }
+
+        .alert-box {
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            font-weight: 500;
+            border: var(--border-glass);
+        }
+
+        .alert-success { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+        .alert-danger { background: rgba(239, 68, 68, 0.2); color: #fca5a5; }
+        .alert-info { background: rgba(14, 165, 233, 0.2); color: #7dd3fc; }
+
+        /* Virtual DataGrid */
+        .table-viewport {
+            height: 240px;
+            overflow-y: auto;
+            border: var(--border-glass);
+            border-radius: 8px;
+            position: relative;
+            background: rgba(0,0,0,0.2);
+        }
+
+        .table-row {
+            display: flex;
+            align-items: center;
+            height: 40px;
+            padding: 0 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            font-size: 0.9rem;
+        }
+
+        .table-header {
+            display: flex;
+            align-items: center;
+            height: 40px;
+            padding: 0 12px;
+            background: rgba(0,0,0,0.4);
+            font-weight: 700;
+            border-bottom: var(--border-glass);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .cell { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+        /* Code Inspector */
+        pre {
+            background: #05050a;
+            border: var(--border-glass);
+            padding: 1rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            color: #38bdf8;
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="playground-header">
+        <div>
+            <h2 style="margin: 0; font-size: 1.4rem;">⚡ Ferrox Front Enterprise Playground</h2>
+            <small style="color: var(--accent-cyan);">Wasm Components, Virtual DataGrid & 0-Trust Security Simulator</small>
+        </div>
+        <div style="display: flex; gap: 8px;">
+            <button class="theme-btn" onclick="setTheme('ferrox-cyber')">🔮 Cyber</button>
+            <button class="theme-btn" onclick="setTheme('ocean-breeze')">🌊 Ocean</button>
+            <button class="theme-btn" onclick="setTheme('midnight-forest')">🌲 Forest</button>
+            <button class="theme-btn" onclick="setTheme('sunset-gold')">🌅 Sunset</button>
+            <button class="theme-btn" onclick="setTheme('corporate-slate')">🏢 Corporate</button>
+        </div>
+    </div>
+
+    <div class="grid-container">
+
+        <!-- 1. VIRTUAL DATAGRID 1,000,000 ROWS -->
+        <div class="glass-card col-8">
+            <div class="card-header">
+                <span>📊 Virtualized DataGrid (1,000,000 Records Preloaded)</span>
+                <span id="rendered-info" style="font-size: 0.8rem; color: var(--accent-cyan);">Rendering 15 / 1,000,000 rows</span>
+            </div>
+            
+            <div class="table-header">
+                <div class="cell">Transaction ID</div>
+                <div class="cell">Enterprise Client</div>
+                <div class="cell">Amount</div>
+                <div class="cell">Status</div>
+                <div class="cell">Timestamp (UTC)</div>
+            </div>
+
+            <div class="table-viewport" id="viewport" onscroll="handleScroll()">
+                <div id="spacer" style="height: 40000000px; position: relative;">
+                    <div id="content" style="position: absolute; top: 0; left: 0; right: 0;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. SECURITY & RBAC SIMULATOR -->
+        <div class="glass-card col-4">
+            <div class="card-header">
+                <span>🔒 0-Trust RBAC Simulator</span>
+            </div>
+
+            <div style="margin-bottom: 1rem;">
+                <label style="font-size: 0.85rem;">Select User Role:</label>
+                <select id="role-select" onchange="updateRole()" style="width: 100%; padding: 8px; margin-top: 4px; border-radius: 6px; background: var(--bg-primary); color: var(--text-primary); border: var(--border-glass);">
+                    <option value="Guest">Guest (No Permissions)</option>
+                    <option value="User" selected>User (Read Only)</option>
+                    <option value="Admin">Admin (Full Control)</option>
+                </select>
+            </div>
+
+            <div id="rbac-preview"></div>
+
+            <div class="alert-box alert-info" style="margin-top: 1rem; font-size: 0.8rem;">
+                <strong>Wasm Linear Memory Security:</strong><br>
+                <code>SealedToken: [0x8f3a...b19e] AES-GCM-256</code><br>
+                Tokens are sealed inside Wasm memory and unreachable via JS.
+            </div>
+        </div>
+
+        <!-- 3. VECTOR SVG CHARTS -->
+        <div class="glass-card col-6">
+            <div class="card-header">
+                <span>📈 Wasm Vector SVG Chart (MRR Trend)</span>
+                <span style="font-size: 0.85rem; color: #34d399;">+142.8% YoY</span>
+            </div>
+            
+            <svg width="100%" height="180" viewBox="0 0 500 180" style="overflow: visible;">
+                <defs>
+                    <linearGradient id="chartGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" stop-color="var(--accent-glow)" stop-opacity="0.8"/>
+                        <stop offset="100%" stop-color="var(--accent-cyan)" stop-opacity="0.9"/>
+                    </linearGradient>
+                </defs>
+                <path d="M 20 150 Q 100 120 180 80 T 340 40 T 480 20" fill="none" stroke="url(#chartGrad)" stroke-width="4"/>
+                <circle cx="180" cy="80" r="6" fill="var(--accent-cyan)"/>
+                <circle cx="340" cy="40" r="6" fill="var(--accent-cyan)"/>
+                <circle cx="480" cy="20" r="6" fill="var(--accent-cyan)"/>
+                <text x="440" y="15" fill="var(--text-primary)" font-size="12">$450,000</text>
+            </svg>
+        </div>
+
+        <!-- 4. RUST CODE INSPECTOR -->
+        <div class="glass-card col-6">
+            <div class="card-header">
+                <span>📜 Rust Source Code Inspector (rsx!)</span>
+            </div>
+            <pre><code>// Rust Component Playground Code
+#[component]
+pub fn EnterpriseDashboard() -> Element {
+    let (theme, set_theme) = create_signal("ferrox-cyber");
+    let state = DataGridState::new(40.0, 15);
+
+    rsx! {
+        Container { fluid: true,
+            Row {
+                Col { md: 8, virtual_data_grid(cols, rows, &state) }
+                Col { md: 4, 
+                    Secure { require: "admin:delete",
+                        button { class: "btn-danger", "Format Database" }
+                    }
+                }
+            }
+        }
+    }
+}</code></pre>
+        </div>
+
+    </div>
+
+    <script>
+        function setTheme(name) {
+            document.documentElement.setAttribute('data-theme', name);
+        }
+
+        // GENERATION OF ENTERPRISE MOCK 1,000,000 ROWS
+        const totalRows = 1000000;
+        const rowHeight = 40;
+        const visibleCount = 15;
+        const companies = ["Acme Corp", "Stark Industries", "Cyberdyne Systems", "Wayne Enterprises", "Umbrella Corp", "Initech", "Globex"];
+        const statuses = ["COMPLETED", "PROCESSING", "VERIFIED", "E2EE SEALED"];
+
+        function handleScroll() {
+            const viewport = document.getElementById('viewport');
+            const content = document.getElementById('content');
+            const scrollTop = viewport.scrollTop;
+
+            const startIndex = Math.floor(scrollTop / rowHeight);
+            const endIndex = Math.min(startIndex + visibleCount, totalRows);
+
+            content.style.transform = `translateY(${startIndex * rowHeight}px)`;
+
+            let html = '';
+            for (let i = startIndex; i < endIndex; i++) {
+                const company = companies[i % companies.length];
+                const amount = "$" + ((i * 137) % 95000 + 120).toLocaleString() + ".00";
+                const status = statuses[i % statuses.length];
+                const timestamp = new Date(1700000000000 + i * 60000).toISOString().replace('T', ' ').substring(0, 19);
+
+                html += `
+                    <div class="table-row">
+                        <div class="cell" style="color: var(--accent-cyan);">TX-${100000 + i}</div>
+                        <div class="cell">${company}</div>
+                        <div class="cell" style="font-weight: 600;">${amount}</div>
+                        <div class="cell" style="color: #34d399;">${status}</div>
+                        <div class="cell" style="font-size: 0.8rem; opacity: 0.7;">${timestamp}</div>
+                    </div>
+                `;
+            }
+            content.innerHTML = html;
+            document.getElementById('rendered-info').innerText = `Rendering ${startIndex + 1}-${endIndex} / ${totalRows.toLocaleString()} rows`;
+        }
+
+        function updateRole() {
+            const role = document.getElementById('role-select').value;
+            const container = document.getElementById('rbac-preview');
+
+            let html = '';
+            if (role === 'Guest') {
+                html = `
+                    <div class="alert-box alert-danger">
+                        🚫 Access Denied (Guest Role).<br>Sensitive UI nodes are completely stripped from Wasm DOM memory.
+                    </div>
+                `;
+            } else if (role === 'User') {
+                html = `
+                    <div class="alert-box alert-info">
+                        👁️ User Role (Read Only).
+                    </div>
+                    <button class="btn-action" style="width:100%; margin-bottom: 8px;">View Enterprise Reports</button>
+                    <div style="opacity: 0.4; pointer-events: none;">
+                        <button class="btn-action" style="background: red; width:100%;">[NODE UNMOUNTED] Format Database</button>
+                    </div>
+                `;
+            } else if (role === 'Admin') {
+                html = `
+                    <div class="alert-box alert-success">
+                        🛡️ Admin Role Confirmed.<br>All secure nodes are mounted in Wasm memory.
+                    </div>
+                    <button class="btn-action" style="width:100%; margin-bottom: 8px;">View Enterprise Reports</button>
+                    <button class="btn-action" style="background: red; width:100%;">Format Database (Admin Only)</button>
+                `;
+            }
+            container.innerHTML = html;
+        }
+
+        // INIT
+        handleScroll();
+        updateRole();
+    </script>
+</body>
+</html>

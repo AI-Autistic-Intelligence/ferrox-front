@@ -1,0 +1,8 @@
+[package]
+description = "12-column responsive Grid system, virtualized DataGrid (1M rows), and Bootstrap-style UI components in Rust Wasm."
+name = "ferrox-front-ui"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+ferrox-front-core = { path = "../ferrox-front-core" }

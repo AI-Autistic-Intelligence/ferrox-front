@@ -1,0 +1,75 @@
+---
+id: components
+title: Component Library & Interactive Playground
+sidebar_position: 6
+---
+
+# 🎨 Component Library & Interactive Enterprise Playground
+
+Explore and test the **Ferrox Front** component library live in your browser.
+
+Select glassmorphism themes, interact with the **Virtualized DataGrid preloaded with 1,000,000 enterprise records**, simulate **Zero-Trust RBAC security actions**, and inspect the underlying Rust component code.
+
+---
+
+## 🎮 Live Interactive Playground
+
+<iframe 
+    src="../playground.html" 
+    style={{width: '100%', height: '850px', border: '1px solid var(--border-glass, #333)', borderRadius: '12px', boxShadow: '0 8px 32px rgba(0,0,0,0.3)'}} 
+    title="Ferrox Front Interactive Component Playground"
+/>
+
+---
+
+## 📚 Component API Reference
+
+### 📐 1. 12-Column Responsive Grid (`layout`)
+
+```rust
+use ferrox_front_ui::layout::{container, row, col};
+
+container()
+    .child(
+        row()
+            .child(col("12 md-6 lg-4").child(/* Column content */))
+            .child(col("12 md-6 lg-8").child(/* Column content */))
+    )
+```
+
+### 🃏 2. Glassmorphism Card (`components`)
+
+```rust
+use ferrox_front_ui::components::{card, card_header, card_body};
+
+card()
+    .child(card_header("Dashboard Title"))
+    .child(card_body().text("Isolated card body content."))
+```
+
+### 🚨 3. Notification Alerts (`components`)
+
+```rust
+use ferrox_front_ui::components::alert;
+
+// Available variants: "success", "danger", "warning", "info"
+alert("Operation completed successfully!", "success")
+```
+
+### 📊 4. Virtualized DataGrid (`virtual_data_grid`)
+
+`virtual_data_grid` renders tables with 1,000,000+ rows by calculating viewport scroll offsets and mounting only visible rows into the DOM.
+
+```rust
+use ferrox_front_ui::{virtual_data_grid, DataGridState};
+
+let state = DataGridState::new(40.0, 15); // 40px row height, 15 visible rows
+
+let columns = vec!["Transaction ID", "Enterprise Client", "Amount", "Status"];
+let rows = vec![
+    vec!["TX-1001", "Acme Corp", "$12,450.00", "COMPLETED"],
+    vec!["TX-1002", "Stark Ind", "$98,100.00", "PROCESSING"],
+];
+
+let grid = virtual_data_grid(columns, rows, &state);
+```

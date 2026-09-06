@@ -1,0 +1,29 @@
+/* Tema Docusaurus basato su "Ferrox Cyber" */
+:root {
+  --ifm-color-primary: #0ff; /* Neon cyan */
+  --ifm-color-primary-dark: #00e6e6;
+  --ifm-color-primary-darker: #00d9d9;
+  --ifm-color-primary-darkest: #00b3b3;
+  --ifm-color-primary-light: #1affff;
+  --ifm-color-primary-lighter: #33ffff;
+  --ifm-color-primary-lightest: #80ffff;
+  --ifm-font-family-base: 'Inter', sans-serif;
+}
+
+[data-theme='dark'] {
+  --ifm-background-color: #0b0f19;
+  --ifm-background-surface-color: #111827;
+  --ifm-color-primary: #0ff;
+  --ifm-heading-color: #fff;
+  --ifm-text-color: #94a3b8;
+}
+
+.navbar {
+  background-color: rgba(11, 15, 25, 0.8) !important;
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.hero {
+  background: radial-gradient(circle at 50% -20%, rgba(0,255,255,0.15) 0%, transparent 70%);
+}

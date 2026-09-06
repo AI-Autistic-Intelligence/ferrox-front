@@ -1,0 +1,20 @@
+[package]
+description = "Full SaaS admin dashboard showcase application demonstrating Ferrox Front Wasm architecture."
+name = "admin-dashboard"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+wasm-bindgen = "0.2"
+ferrox-front-core = { path = "../../crates/ferrox-front-core" }
+ferrox-front-ws = { path = "../../crates/ferrox-front-ws" }
+ferrox-front-ui = { path = "../../crates/ferrox-front-ui" }
+ferrox-front-charts = { path = "../../crates/ferrox-front-charts" }
+ferrox-front-macro = { path = "../../crates/ferrox-front-macro" }
+ferrox-front-router = { path = "../../crates/ferrox-front-router" }
+ferrox-front-templates = { path = "../../crates/ferrox-front-templates" }
+ferrox-front-security = { path = "../../crates/ferrox-front-security" }
+web-sys = { version = "0.3", features = ["Window", "Document", "Element", "Node"] }
+
+[lib]
+crate-type = ["cdylib"]

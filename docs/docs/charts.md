@@ -1,0 +1,31 @@
+---
+id: charts
+title: Wasm Vector SVG Charts
+sidebar_position: 7
+---
+
+# 📈 Vector SVG Charting Engine (`ferrox-front-charts`)
+
+`ferrox-front-charts` provides a pure WebAssembly vector SVG charting engine rendering high-performance data visualisations directly via native SVG elements.
+
+---
+
+## 📊 Vector Line Chart
+
+```rust
+use ferrox_front_charts::{line_chart, Point};
+
+let data = vec![
+    Point { x: 10.0, y: 150.0 },
+    Point { x: 50.0, y: 80.0 },
+    Point { x: 90.0, y: 120.0 },
+    Point { x: 130.0, y: 30.0 },
+    Point { x: 170.0, y: 90.0 },
+];
+
+let chart = line_chart(data, 600, 200);
+```
+
+### Key Highlights:
+- 🎨 **Theme Synchronization**: Uses active Glassmorphism theme gradients and colors.
+- ⚡ **Scalable Vector SVG**: Crisp vector graphics on 4K Retina displays without resolution loss.

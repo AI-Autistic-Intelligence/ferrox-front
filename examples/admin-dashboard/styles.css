@@ -1,0 +1,276 @@
+/* 
+  FERROX-FRONT THEMING ENGINE
+  L'utente può fare override dichiarando variabili su :root
+*/
+
+/* 1. Ferrox Cyber (Default Dark) */
+:root, [data-theme="ferrox-cyber"] {
+  --bg-base: hsl(220, 20%, 8%);
+  --bg-surface: hsla(220, 20%, 14%, 0.6);
+  --bg-surface-hover: hsla(220, 20%, 18%, 0.8);
+  --accent-primary: hsl(250, 100%, 70%);
+  --accent-secondary: hsl(190, 100%, 50%);
+  --accent-glow: hsla(250, 100%, 70%, 0.2);
+  --text-primary: hsl(210, 20%, 95%);
+  --text-secondary: hsl(210, 10%, 65%);
+  --border-glass: 1px solid hsla(0, 0%, 100%, 0.05);
+  --shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+  --bg-gradient: radial-gradient(at 0% 0%, hsla(253,16%,7%,1) 0, transparent 50%), radial-gradient(at 50% 0%, hsla(225,39%,30%,0.2) 0, transparent 50%), radial-gradient(at 100% 0%, hsla(339,49%,30%,0.2) 0, transparent 50%);
+}
+
+/* 2. Ocean Breeze (Light) */
+[data-theme="ocean-breeze"] {
+  --bg-base: hsl(210, 20%, 98%);
+  --bg-surface: hsla(0, 0%, 100%, 0.6);
+  --bg-surface-hover: hsla(0, 0%, 95%, 0.8);
+  --accent-primary: hsl(190, 90%, 45%);
+  --accent-secondary: hsl(210, 90%, 60%);
+  --accent-glow: hsla(190, 90%, 45%, 0.2);
+  --text-primary: hsl(220, 30%, 15%);
+  --text-secondary: hsl(220, 20%, 40%);
+  --border-glass: 1px solid hsla(0, 0%, 0%, 0.05);
+  --shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.05);
+  --bg-gradient: radial-gradient(at 0% 0%, hsla(190,100%,95%,1) 0, transparent 50%), radial-gradient(at 100% 100%, hsla(210,100%,95%,1) 0, transparent 50%);
+}
+
+/* 3. Midnight Forest (Dark) */
+[data-theme="midnight-forest"] {
+  --bg-base: hsl(150, 20%, 8%);
+  --bg-surface: hsla(150, 20%, 14%, 0.6);
+  --bg-surface-hover: hsla(150, 20%, 18%, 0.8);
+  --accent-primary: hsl(140, 70%, 50%);
+  --accent-secondary: hsl(80, 80%, 50%);
+  --accent-glow: hsla(140, 70%, 50%, 0.2);
+  --text-primary: hsl(150, 20%, 95%);
+  --text-secondary: hsl(150, 10%, 65%);
+  --border-glass: 1px solid hsla(0, 0%, 100%, 0.05);
+  --shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+  --bg-gradient: radial-gradient(at 0% 0%, hsla(140,40%,10%,1) 0, transparent 50%), radial-gradient(at 100% 100%, hsla(150,40%,15%,0.3) 0, transparent 50%);
+}
+
+/* 4. Sunset Glow (Warm Dark) */
+[data-theme="sunset-glow"] {
+  --bg-base: hsl(10, 20%, 10%);
+  --bg-surface: hsla(10, 20%, 16%, 0.6);
+  --bg-surface-hover: hsla(10, 20%, 20%, 0.8);
+  --accent-primary: hsl(15, 90%, 60%);
+  --accent-secondary: hsl(40, 90%, 60%);
+  --accent-glow: hsla(15, 90%, 60%, 0.2);
+  --text-primary: hsl(10, 20%, 95%);
+  --text-secondary: hsl(10, 10%, 65%);
+  --border-glass: 1px solid hsla(0, 0%, 100%, 0.05);
+  --shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+  --bg-gradient: radial-gradient(at 0% 0%, hsla(15,40%,15%,1) 0, transparent 50%), radial-gradient(at 100% 0%, hsla(40,40%,15%,0.3) 0, transparent 50%);
+}
+
+/* 5. Corporate Minimal (Light) */
+[data-theme="corporate-minimal"] {
+  --bg-base: hsl(0, 0%, 98%);
+  --bg-surface: hsla(0, 0%, 100%, 0.9);
+  --bg-surface-hover: hsla(0, 0%, 96%, 0.9);
+  --accent-primary: hsl(210, 80%, 40%);
+  --accent-secondary: hsl(210, 60%, 50%);
+  --accent-glow: hsla(210, 80%, 40%, 0.1);
+  --text-primary: hsl(0, 0%, 15%);
+  --text-secondary: hsl(0, 0%, 40%);
+  --border-glass: 1px solid hsla(0, 0%, 85%, 1);
+  --shadow-glass: 0 2px 8px 0 rgba(0, 0, 0, 0.05);
+  --bg-gradient: none;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--bg-base);
+  color: var(--text-primary);
+  font-family: 'Outfit', 'Inter', system-ui, sans-serif;
+  background-image: var(--bg-gradient);
+  background-attachment: fixed;
+  min-height: 100vh;
+  transition: background-color 0.4s ease, color 0.4s ease;
+}
+
+/* Glassmorphism Container */
+.ferrox-glass-card {
+  background: var(--bg-surface);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: var(--border-glass);
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: var(--shadow-glass);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease, background 0.4s ease;
+}
+
+.ferrox-glass-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px 0 var(--accent-glow);
+}
+
+/* App Header */
+.app-header {
+  font-size: 2rem;
+  font-weight: 700;
+  background: linear-gradient(90deg, var(--text-primary), var(--accent-primary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 2rem;
+  animation: fadeSlideDown 0.6s ease-out;
+}
+
+h1, h2, h3 { font-family: 'Outfit', sans-serif; font-weight: 600; margin-top: 0; letter-spacing: -0.02em; }
+p { color: var(--text-secondary); line-height: 1.6; }
+
+/* Buttons */
+.ferrox-btn {
+  background: var(--accent-primary);
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 14px 0 var(--accent-glow);
+  transition: all 0.2s ease;
+}
+.ferrox-btn:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.1);
+  box-shadow: 0 6px 20px 0 var(--accent-glow);
+}
+
+/* Virtual Table */
+.ferrox-table-wrapper {
+  overflow: hidden;
+  border-radius: 12px;
+  border: var(--border-glass);
+  background: var(--bg-surface);
+}
+
+.ferrox-thead {
+  background: var(--bg-base);
+  backdrop-filter: blur(8px);
+  border-bottom: var(--border-glass);
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+}
+
+.ferrox-tr { transition: background 0.2s ease; color: var(--text-primary); }
+.ferrox-tr:hover { background: var(--bg-surface-hover); }
+
+/* Animations */
+@keyframes fadeSlideDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes fadeSlideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+.fade-in-up { animation: fadeSlideUp 0.6s ease-out forwards; }
+
+/* SVG Chart Engine */
+.ferrox-svg-chart { filter: drop-shadow(0px 8px 16px var(--accent-glow)); }
+.ferrox-svg-path {
+  stroke: url(#chartGradient);
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  animation: drawLine 2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+}
+@keyframes drawLine { to { stroke-dashoffset: 0; } }
+
+/* Theme Switcher Layout */
+.theme-switcher {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+/* 
+==================================================
+  FERROX GRID SYSTEM (12 Columns) 
+==================================================
+*/
+.fx-container {
+  width: 100%;
+  padding-right: 15px;
+  padding-left: 15px;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+/* Breakpoints */
+@media (min-width: 576px) { .fx-container { max-width: 540px; } }
+@media (min-width: 768px) { .fx-container { max-width: 720px; } }
+@media (min-width: 992px) { .fx-container { max-width: 960px; } }
+@media (min-width: 1200px) { .fx-container { max-width: 1140px; } }
+
+.fx-row {
+  display: flex;
+  flex-wrap: wrap;
+  margin-right: -15px;
+  margin-left: -15px;
+}
+
+/* Base Col (Auto width) */
+[class*="fx-col-"] {
+  position: relative;
+  width: 100%;
+  padding-right: 15px;
+  padding-left: 15px;
+}
+
+.fx-col {
+  flex-basis: 0;
+  flex-grow: 1;
+  max-width: 100%;
+  padding-right: 15px;
+  padding-left: 15px;
+}
+
+/* XS Columns (Default) */
+.fx-col-1 { flex: 0 0 8.333333%; max-width: 8.333333%; }
+.fx-col-2 { flex: 0 0 16.666667%; max-width: 16.666667%; }
+.fx-col-3 { flex: 0 0 25%; max-width: 25%; }
+.fx-col-4 { flex: 0 0 33.333333%; max-width: 33.333333%; }
+.fx-col-5 { flex: 0 0 41.666667%; max-width: 41.666667%; }
+.fx-col-6 { flex: 0 0 50%; max-width: 50%; }
+.fx-col-7 { flex: 0 0 58.333333%; max-width: 58.333333%; }
+.fx-col-8 { flex: 0 0 66.666667%; max-width: 66.666667%; }
+.fx-col-9 { flex: 0 0 75%; max-width: 75%; }
+.fx-col-10 { flex: 0 0 83.333333%; max-width: 83.333333%; }
+.fx-col-11 { flex: 0 0 91.666667%; max-width: 91.666667%; }
+.fx-col-12 { flex: 0 0 100%; max-width: 100%; }
+
+/* MD Breakpoint (>= 768px) */
+@media (min-width: 768px) {
+  .fx-col-md-1 { flex: 0 0 8.333333%; max-width: 8.333333%; }
+  .fx-col-md-2 { flex: 0 0 16.666667%; max-width: 16.666667%; }
+  .fx-col-md-3 { flex: 0 0 25%; max-width: 25%; }
+  .fx-col-md-4 { flex: 0 0 33.333333%; max-width: 33.333333%; }
+  .fx-col-md-5 { flex: 0 0 41.666667%; max-width: 41.666667%; }
+  .fx-col-md-6 { flex: 0 0 50%; max-width: 50%; }
+  .fx-col-md-7 { flex: 0 0 58.333333%; max-width: 58.333333%; }
+  .fx-col-md-8 { flex: 0 0 66.666667%; max-width: 66.666667%; }
+  .fx-col-md-9 { flex: 0 0 75%; max-width: 75%; }
+  .fx-col-md-10 { flex: 0 0 83.333333%; max-width: 83.333333%; }
+  .fx-col-md-11 { flex: 0 0 91.666667%; max-width: 91.666667%; }
+  .fx-col-md-12 { flex: 0 0 100%; max-width: 100%; }
+}
+
+/* LG Breakpoint (>= 992px) */
+@media (min-width: 992px) {
+  .fx-col-lg-1 { flex: 0 0 8.333333%; max-width: 8.333333%; }
+  .fx-col-lg-2 { flex: 0 0 16.666667%; max-width: 16.666667%; }
+  .fx-col-lg-3 { flex: 0 0 25%; max-width: 25%; }
+  .fx-col-lg-4 { flex: 0 0 33.333333%; max-width: 33.333333%; }
+  .fx-col-lg-5 { flex: 0 0 41.666667%; max-width: 41.666667%; }
+  .fx-col-lg-6 { flex: 0 0 50%; max-width: 50%; }
+  .fx-col-lg-7 { flex: 0 0 58.333333%; max-width: 58.333333%; }
+  .fx-col-lg-8 { flex: 0 0 66.666667%; max-width: 66.666667%; }
+  .fx-col-lg-9 { flex: 0 0 75%; max-width: 75%; }
+  .fx-col-lg-10 { flex: 0 0 83.333333%; max-width: 83.333333%; }
+  .fx-col-lg-11 { flex: 0 0 91.666667%; max-width: 91.666667%; }
+  .fx-col-lg-12 { flex: 0 0 100%; max-width: 100%; }
+}

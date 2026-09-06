@@ -1,0 +1,8 @@
+[package]
+description = "Pure WebAssembly and vector SVG charting engine for interactive data visualisations (Bar, Line, Pie)."
+name = "ferrox-front-charts"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+ferrox-front-core = { path = "../ferrox-front-core" }
