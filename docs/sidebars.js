@@ -8,12 +8,17 @@ module.exports = {
     {
       type: 'category',
       label: '🧠 Core Architecture & Reactivity',
-      items: ['architecture', 'reactivity', 'routing'],
+      items: ['architecture', 'core', 'macros', 'routing'],
     },
     {
       type: 'category',
-      label: '🎨 UI Components & Interactive Playground',
-      items: ['components', 'charts', 'templates'],
+      label: '🎨 UI & Interactive Components',
+      items: ['ui-components', 'components', 'charts', 'templates'],
+    },
+    {
+      type: 'category',
+      label: '🌐 Real-Time Streaming',
+      items: ['ws'],
     },
     {
       type: 'category',

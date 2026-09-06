@@ -1,3 +1,27 @@
+//! # DOM Builder Submodule (`ferrox-front-core::dom`)
+//!
+//! `dom` provides zero-copy WebAssembly DOM node construction and event listener bindings powered by `web_sys`.
+//!
+//! ## Core Primitives
+//! - `DomBuilder`: Builder pattern struct wrapping a `web_sys::Node`.
+//! - Element Helpers: `div()`, `h1()`, `h2()`, `h3()`, `p()`, `span()`, `button()`, `table()`.
+//! - Lifecycle: `mount(selector, builder)` attaches the Wasm DOM tree to a target CSS selector (e.g. `"#root"`).
+//!
+//! ## Example Usage
+//! ```rust,no_run
+//! use ferrox_front_core::dom::{div, button, mount};
+//!
+//! let app = div()
+//!     .attr("class", "app-wrapper")
+//!     .child(
+//!         button()
+//!             .text("Submit")
+//!             .on_click(|| web_sys::console::log_1(&"Clicked!".into()))
+//!     );
+//!
+//! mount("#root", app);
+//! ```
+
 use wasm_bindgen::prelude::*;
 use web_sys::{window, Document, Element, Node, Text};
 

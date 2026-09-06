@@ -1,3 +1,11 @@
+//! # WebAuthn & Passkeys Submodule (`ferrox-front-security::passkey`)
+//!
+//! `passkey` provides WebAssembly bindings to FIDO2 WebAuthn Passkeys for passwordless biometric authentication.
+//!
+//! ## Functions
+//! - `prompt_passkey_login()`: Triggers device biometric sensor (Touch ID, Face ID, Windows Hello).
+//! - `register_passkey()`: Registers a new Passkey credential.
+
 use wasm_bindgen::prelude::*;
 use web_sys::window;
 

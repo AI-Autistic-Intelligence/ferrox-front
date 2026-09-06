@@ -1,3 +1,22 @@
+//! # Reactive Signals Submodule (`ferrox-front-core::reactivity`)
+//!
+//! `reactivity` houses the `Signal<T>` primitive driving fine-grained reactive state updates across Ferrox Front.
+//!
+//! ## Key Methods
+//! - `create_signal(initial)`: Instantiates a `Signal<T>` pair.
+//! - `Signal::get(&self)`: Reads current state value.
+//! - `Signal::set(&self, val)`: Mutates state value.
+//! - `Signal::update(&self, closure)`: Mutates state value in-place using a closure.
+//!
+//! ## Example Usage
+//! ```rust
+//! use ferrox_front_core::reactivity::create_signal;
+//!
+//! let (count, set_count) = create_signal(0);
+//! set_count.update(|n| *n += 1);
+//! assert_eq!(count.get(), 1);
+//! ```
+
 use std::cell::RefCell;
 use std::rc::Rc;
 

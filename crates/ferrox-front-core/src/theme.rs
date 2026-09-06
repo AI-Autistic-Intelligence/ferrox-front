@@ -1,3 +1,11 @@
+//! # Glassmorphism Theme Submodule (`ferrox-front-core::theme`)
+//!
+//! `theme` manages runtime theme switching at 60fps by mutating the `data-theme` attribute on `document.documentElement`.
+//!
+//! ## Functions
+//! - `set_theme(name)`: Switches active theme (`"ferrox-cyber"`, `"ocean-breeze"`, `"midnight-forest"`, `"sunset-gold"`, `"corporate-slate"`).
+//! - `get_theme()`: Retrieves currently active theme string.
+
 use wasm_bindgen::prelude::*;
 use web_sys::window;
 

@@ -1,3 +1,11 @@
+//! # End-to-End Encryption & Sealed Token Submodule (`ferrox-front-security::e2ee`)
+//!
+//! `e2ee` provides payload signing and `SealedToken` memory anti-tampering protection for WebAssembly linear memory.
+//!
+//! ## Key Types
+//! - `SealedToken`: Encrypts session tokens in WebAssembly linear memory to prevent JavaScript XSS theft.
+//! - `sign_payload(payload)`: Signs payload strings using WebCrypto HMAC.
+
 use wasm_bindgen::prelude::*;
 use web_sys::window;
 

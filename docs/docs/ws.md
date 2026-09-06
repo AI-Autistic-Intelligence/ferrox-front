@@ -1,4 +1,10 @@
-# 🌐 Ferrox Front WS (`ferrox-front-ws`)
+---
+id: ws
+title: Real-Time WebSockets Engine (ferrox-front-ws)
+sidebar_position: 10
+---
+
+# 🌐 Real-Time WebSockets Engine (`ferrox-front-ws`)
 
 `ferrox-front-ws` provides an asynchronous WebAssembly WebSocket client engine built natively for Rust frontends. It bridges browser WebSocket APIs (`web_sys::WebSocket`) with Ferrox Front's reactive **Signals** graph (`Signal<T>`), enabling low-latency, real-time bi-directional streaming for dashboards, chat applications, financial tickers, and live notification systems.
 

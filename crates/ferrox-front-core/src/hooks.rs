@@ -1,3 +1,25 @@
+//! # CQRS Hooks Submodule (`ferrox-front-core::hooks`)
+//!
+//! `hooks` provides data fetching and mutation abstractions (`use_query`, `use_command`) connecting WebAssembly frontends
+//! to Ferrox backend CQRS (Command Query Responsibility Segregation) endpoints.
+//!
+//! ## Key Hooks
+//! - `use_query<T>(endpoint)`: Executes a read query, returning `QueryResult<T>` (`data`, `loading`, `error` signals).
+//! - `use_command<T>(endpoint)`: Encapsulates a write mutation, returning `CommandResult<T>` (`execute`, `loading`, `result`).
+//!
+//! ## Example Usage
+//! ```rust
+//! use ferrox_front_core::hooks::use_query;
+//!
+//! #[derive(Clone)]
+//! struct UserProfile { pub name: String }
+//!
+//! let query = use_query::<UserProfile>("/api/v1/user/me");
+//! if query.loading.get() {
+//!     println!("Loading user profile...");
+//! }
+//! ```
+
 use crate::reactivity::Signal;
 
 pub struct QueryResult<T> {

@@ -1,2 +1,7 @@
 /target
 **/*.rs.bk
+
+# Docs
+docs/node_modules
+docs/build
+docs/.docusaurus

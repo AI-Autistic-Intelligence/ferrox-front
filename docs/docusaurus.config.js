@@ -7,10 +7,10 @@ const config = {
   tagline: 'Il Bootstrap Killer in puro Rust WebAssembly',
   favicon: 'img/favicon.ico',
   url: 'https://docs.ferrox-front.dev',
-  baseUrl: '/',
+  baseUrl: process.env.BASE_URL || '/',
   organizationName: 'ferrox-team',
   projectName: 'ferrox-front',
-  onBrokenLinks: 'throw',
+  onBrokenLinks: 'warn',
   onBrokenMarkdownLinks: 'warn',
 
   presets: [

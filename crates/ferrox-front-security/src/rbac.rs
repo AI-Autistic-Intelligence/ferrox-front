@@ -1,3 +1,12 @@
+//! # Role-Based Access Control Submodule (`ferrox-front-security::rbac`)
+//!
+//! `rbac` provides authorization types (`Role`, `UserIdentity`) and the `<Secure>` DOM Anti-Tampering component.
+//!
+//! ## Key Components & Types
+//! - `Role`: Enum for user roles (`Guest`, `User`, `Admin`).
+//! - `UserIdentity`: User credentials container (`id`, `role`, `permissions`, `has_permission()`).
+//! - `secure(identity, require, child)`: Mounts child DOM element into memory ONLY if permission check passes.
+
 use ferrox_front_core::reactivity::Signal;
 use ferrox_front_core::dom::{div, DomBuilder};
 

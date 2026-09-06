@@ -1,3 +1,13 @@
+//! # Glassmorphism UI Components Submodule (`ferrox-front-ui::components`)
+//!
+//! `components` provides pre-styled UI controls including Cards and Alert notifications.
+//!
+//! ## Functions
+//! - `card()`: Glassmorphism card container.
+//! - `card_header(title)`: Card header with title.
+//! - `card_body()`: Card body content area.
+//! - `alert(message, variant)`: Notification alert banner (`"success"`, `"danger"`, `"warning"`, `"info"`).
+
 use ferrox_front_core::dom::{div, DomBuilder};
 
 pub fn card() -> DomBuilder {

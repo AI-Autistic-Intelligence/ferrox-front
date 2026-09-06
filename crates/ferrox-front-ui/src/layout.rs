@@ -1,3 +1,12 @@
+//! # Responsive Layout Submodule (`ferrox-front-ui::layout`)
+//!
+//! `layout` provides a 12-column responsive layout grid (`container`, `row`, `col`).
+//!
+//! ## Functions
+//! - `container()`: Centered container element (`.fx-container`).
+//! - `row()`: Flexbox row container (`.fx-row`).
+//! - `col(spans)`: Responsive column wrapper (`col("12 md-6 lg-4")`).
+
 use ferrox_front_core::dom::{div, DomBuilder};
 
 pub fn container() -> DomBuilder {

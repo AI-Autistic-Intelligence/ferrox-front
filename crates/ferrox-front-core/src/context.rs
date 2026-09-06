@@ -1,3 +1,28 @@
+//! # Context API Submodule (`ferrox-front-core::context`)
+//!
+//! `context` provides thread-local dependency injection for Ferrox Front applications, allowing deeply nested components
+//! to consume shared state (e.g. current user session, theme config, API clients) without prop drilling through intermediate nodes.
+//!
+//! ## Key Functions
+//! - `provide_context<T: 'static>(value: T)`: Stores a value of type `T` in the thread-local context registry.
+//! - `use_context<T: Clone + 'static>() -> Option<T>`: Retrieves a context value of type `T` from the current thread registry.
+//!
+//! ## Example Usage
+//! ```rust
+//! use ferrox_front_core::context::{provide_context, use_context};
+//!
+//! #[derive(Clone, Debug)]
+//! struct UserConfig { pub theme: String }
+//!
+//! // Provide context at root
+//! provide_context(UserConfig { theme: "ferrox-cyber".into() });
+//!
+//! // Consume context in child component
+//! if let Some(config) = use_context::<UserConfig>() {
+//!     println!("Current theme context: {}", config.theme);
+//! }
+//! ```
+
 use std::any::{Any, TypeId};
 use std::cell::RefCell;
 use std::collections::HashMap;

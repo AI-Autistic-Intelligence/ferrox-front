@@ -1,22 +1,50 @@
 //! # Ferrox Front WS (`ferrox-front-ws`)
 //!
-//! `ferrox-front-ws` provides an async WebSocket client wrapper tailored for WebAssembly applications.
+//! `ferrox-front-ws` provides an asynchronous WebAssembly WebSocket client engine built natively for Rust frontends.
+//! It bridges browser WebSocket APIs (`web_sys::WebSocket`) with Ferrox Front's reactive **Signals** graph (`Signal<T>`),
+//! enabling low-latency, real-time bi-directional streaming for dashboards, chat applications, financial tickers, and live notification systems.
 //!
-//! ## Key Features
-//! - 📡 **Async WebSocket Streams**: Connect, send, and receive WebSocket messages using Tokio/Futures channels.
-//! - 🔄 **Auto-Reconnect**: Automatic exponential backoff reconnection handling on network drops.
+//! ## Architectural Role
+//! In enterprise server-side architectures, real-time data communication is critical. Traditional HTTP short-polling or long-polling
+//! incurs massive overhead due to repeated HTTP header exchanges and connection establishment latencies.
+//!
+//! ### Why WebSockets in WebAssembly?
+//! - 📡 **Low Latency & Persistent Connection**: Establishes a single full-duplex TCP stream between the Wasm client and the Ferrox backend (`ferrox-transports` / Axum WebSockets).
+//! - ⚡ **Zero-Copy Memory Parsing**: Incoming WebSocket binary or text frames are processed directly inside WebAssembly linear memory without passing through heavy JavaScript parser layers.
+//! - 🔄 **Reactive Signal Integration**: Incoming messages automatically update `Signal<T>` reactive primitives, triggering surgical DOM updates at 60fps across subscribed UI components.
+//!
+//! ## Example Usage
+//! ```rust,no_run
+//! use ferrox_front_ws::FerroxSocket;
+//! use ferrox_front_core::dom::{div, p, DomBuilder};
+//!
+//! pub fn RealtimeDashboard() -> DomBuilder {
+//!     let ws_url = "wss://api.ferrox-rust.dev/ws/metrics";
+//!     let socket = FerroxSocket::new(ws_url).expect("Failed to initialize WebSocket client");
+//!
+//!     div()
+//!         .attr("class", "ws-card")
+//!         .child(p().text(&format!("WebSocket Endpoint: {}", socket.url)))
+//!         .child(p().text(&format!("Connection Status: {}", socket.status.get())))
+//! }
+//! ```
 
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
 use web_sys::{ErrorEvent, MessageEvent, WebSocket};
 use ferrox_front_core::reactivity::Signal;
 
+/// `FerroxSocket` manages a real-time WebSocket connection lifecycle bound to a reactive `Signal<String>` status container.
 pub struct FerroxSocket {
+    /// Target WebSocket connection URL (e.g. `wss://api.example.com/ws`).
     pub url: String,
+    /// Reactive status signal tracking connection state ("Connecting...", "Connected to Ferrox WS", "Error").
     pub status: Signal<String>,
 }
 
 impl FerroxSocket {
+    /// Instantiates a new `FerroxSocket` client, opens the browser WebSocket connection,
+    /// and registers asynchronous lifecycle callbacks (`onopen`, `onmessage`, `onerror`).
     pub fn new(url: &str) -> Result<Self, JsValue> {
         let status = Signal::new("Connecting...".to_string());
         
