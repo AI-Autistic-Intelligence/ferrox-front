@@ -9,5 +9,6 @@ homepage = "https://ferrox-front.dev"
 documentation = "https://docs.ferrox-front.dev"
 
 [dependencies]
-ferrox-front-core = { path = "../ferrox-front-core" }
+ferrox-front-core = { path = "../ferrox-front-core", version = "0.1.0" }
+
 

@@ -18,3 +18,4 @@ features = ["Window", "Document", "Element", "HtmlElement", "Node", "Text", "Eve
 [dev-dependencies]
 wasm-bindgen-test = "0.3"
 
+

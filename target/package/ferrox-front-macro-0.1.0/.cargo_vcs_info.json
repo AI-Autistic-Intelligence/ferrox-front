@@ -1,0 +1,6 @@
+{
+  "git": {
+    "sha1": "ee062f266f0036569d06fb4e6c37346f7130296c"
+  },
+  "path_in_vcs": "crates/ferrox-front-macro"
+}
