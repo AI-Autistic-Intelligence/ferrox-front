@@ -3,6 +3,10 @@ description = "Zero-Trust RBAC route guards, Wasm memory anti-tampering token pr
 name = "ferrox-front-security"
 version = "0.1.0"
 edition = "2021"
+license = "MIT"
+repository = "https://github.com/AI-Autistic-Intelligence/ferrox-front"
+homepage = "https://ferrox-front.dev"
+documentation = "https://docs.ferrox-front.dev"
 
 [dependencies]
 ferrox-front-core = { path = "../ferrox-front-core" }
@@ -22,3 +26,4 @@ features = [
     "PublicKeyCredentialRequestOptions",
     "PublicKeyCredentialCreationOptions"
 ]
+

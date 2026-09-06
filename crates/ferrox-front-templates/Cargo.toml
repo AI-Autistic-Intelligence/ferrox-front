@@ -3,9 +3,14 @@ description = "Production-ready enterprise SaaS page templates (Auth pages, Pric
 name = "ferrox-front-templates"
 version = "0.1.0"
 edition = "2021"
+license = "MIT"
+repository = "https://github.com/AI-Autistic-Intelligence/ferrox-front"
+homepage = "https://ferrox-front.dev"
+documentation = "https://docs.ferrox-front.dev"
 
 [dependencies]
 ferrox-front-core = { path = "../ferrox-front-core" }
 ferrox-front-ui = { path = "../ferrox-front-ui" }
 ferrox-front-macro = { path = "../ferrox-front-macro" }
 web-sys = { version = "0.3", features = ["console"] }
+

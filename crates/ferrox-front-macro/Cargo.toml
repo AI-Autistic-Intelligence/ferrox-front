@@ -3,6 +3,10 @@ description = "Procedural macro compiler (rsx!) for inline JSX-style HTML-in-Rus
 name = "ferrox-front-macro"
 version = "0.1.0"
 edition = "2021"
+license = "MIT"
+repository = "https://github.com/AI-Autistic-Intelligence/ferrox-front"
+homepage = "https://ferrox-front.dev"
+documentation = "https://docs.ferrox-front.dev"
 
 [lib]
 proc-macro = true
@@ -11,3 +15,4 @@ proc-macro = true
 syn = { version = "2.0", features = ["full", "extra-traits"] }
 quote = "1.0"
 proc-macro2 = "1.0"
+
