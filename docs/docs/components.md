@@ -14,8 +14,10 @@ You can edit JSON datasets live in real-time, adjust dynamic sliders (stroke wid
 
 ## 🎮 Nivo-Style Live Interactive Playground
 
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
 <iframe 
-    src="../playground.html" 
+    src={useBaseUrl('/playground.html')} 
     style={{width: '100%', height: '880px', border: '1px solid var(--border-glass, #333)', borderRadius: '12px', boxShadow: '0 8px 32px rgba(0,0,0,0.4)'}} 
     title="Ferrox Front Nivo-Style Interactive Component Playground"
 />
