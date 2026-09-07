@@ -65,14 +65,14 @@ checksum = "9330f8b2ff13f34540b44e946ef35111825727b38d33286ef986142615121801"
 
 [[package]]
 name = "ferrox-front-charts"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "ferrox-front-core",
 ]
 
 [[package]]
 name = "ferrox-front-core"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "wasm-bindgen",
  "wasm-bindgen-test",
@@ -81,7 +81,7 @@ dependencies = [
 
 [[package]]
 name = "ferrox-front-macro"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -90,7 +90,7 @@ dependencies = [
 
 [[package]]
 name = "ferrox-front-router"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "ferrox-front-core",
  "wasm-bindgen",
@@ -99,7 +99,7 @@ dependencies = [
 
 [[package]]
 name = "ferrox-front-security"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "ferrox-front-core",
  "js-sys",
@@ -109,7 +109,7 @@ dependencies = [
 
 [[package]]
 name = "ferrox-front-templates"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "ferrox-front-core",
  "ferrox-front-macro",
@@ -119,14 +119,14 @@ dependencies = [
 
 [[package]]
 name = "ferrox-front-ui"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "ferrox-front-core",
 ]
 
 [[package]]
 name = "ferrox-front-ws"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "ferrox-front-core",
  "js-sys",

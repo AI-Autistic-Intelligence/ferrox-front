@@ -8,7 +8,7 @@ const config = {
   favicon: 'img/favicon.ico',
   url: 'https://docs.ferrox-front.dev',
   baseUrl: process.env.BASE_URL || '/',
-  organizationName: 'ferrox-team',
+  organizationName: 'AI-Autistic-Intelligence',
   projectName: 'ferrox-front',
   onBrokenLinks: 'warn',
   onBrokenMarkdownLinks: 'warn',
@@ -20,7 +20,7 @@ const config = {
       ({
         docs: {
           sidebarPath: './sidebars.js',
-          editUrl: 'https://github.com/ferrox-team/ferrox-front/tree/main/docs/',
+          editUrl: 'https://github.com/AI-Autistic-Intelligence/ferrox-front/tree/main/docs/',
         },
         theme: {
           customCss: './src/css/custom.css',
@@ -51,7 +51,7 @@ const config = {
             label: 'Documentazione',
           },
           {
-            href: 'https://github.com/ferrox-team/ferrox-front',
+            href: 'https://github.com/AI-Autistic-Intelligence/ferrox-front',
             label: 'GitHub',
             position: 'right',
           },
