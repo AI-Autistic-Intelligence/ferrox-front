@@ -1,7 +1,7 @@
 [package]
 description = "Pure WebAssembly and vector SVG charting engine for interactive data visualisations (Bar, Line, Pie)."
 name = "ferrox-front-charts"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 license = "MIT"
 repository = "https://github.com/AI-Autistic-Intelligence/ferrox-front"
@@ -9,6 +9,6 @@ homepage = "https://ferrox-front.dev"
 documentation = "https://docs.ferrox-front.dev"
 
 [dependencies]
-ferrox-front-core = { path = "../ferrox-front-core", version = "0.1.0" }
+ferrox-front-core = { path = "../ferrox-front-core", version = "0.1.1" }
 
 

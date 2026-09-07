@@ -1,7 +1,7 @@
 [package]
 description = "Procedural macro compiler (rsx!) for inline JSX-style HTML-in-Rust component syntax in Ferrox Front."
 name = "ferrox-front-macro"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 license = "MIT"
 repository = "https://github.com/AI-Autistic-Intelligence/ferrox-front"
