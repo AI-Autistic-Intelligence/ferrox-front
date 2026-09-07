@@ -1,15 +1,12 @@
 //! # Ferrox Front UI (`ferrox-front-ui`)
 //!
-//! `ferrox-front-ui` provides a rich UI component library for WebAssembly, featuring a 12-column responsive layout grid
-//! (`Container`, `Row`, `Col`), virtualized DataGrid tables capable of rendering 1,000,000+ rows smoothly, and pre-styled UI controls.
-//!
-//! ## Key Features
-//! - 📐 **12-Column Responsive Grid**: Bootstrap-like layout system (`container`, `row`, `col-md-6`) wired directly to Rust Wasm.
-//! - 📊 **Row Virtualization**: Render huge datasets without DOM bloat by only mounting visible viewport rows.
-//! - 🎨 **Glassmorphism Components**: Buttons, Modals, Cards, Navbar, Inputs, Badges, and Toast notifications.
+//! `ferrox-front-ui` provides an enterprise-grade Glassmorphism Design System for WebAssembly:
+//! 12-column responsive layout grid (`Container`, `Row`, `Col`), Virtualized DataGrid (1,000,000+ rows),
+//! Design Tokens, and UI components (Buttons, Badges, Cards, Form Controls, Avatars, Progress Bars, Toasts, Spinners).
 
 pub mod layout;
 pub mod components;
+pub mod tokens;
 
 use ferrox_front_core::dom::{div, span, DomBuilder};
 use ferrox_front_core::reactivity::Signal;
@@ -52,14 +49,14 @@ pub fn virtual_data_grid(
     let mut content = div()
         .attr("style", &format!("position: absolute; top: {}px; left: 0; width: 100%;", start_idx as f64 * state.row_height));
 
-    let mut thead = div().attr("class", "ferrox-thead").attr("style", "display: flex;");
+    let mut thead = div().attr("class", "ferrox-thead").attr("style", "display: flex; background: rgba(0,0,0,0.4); font-weight: 700; border-bottom: var(--border-glass);");
     for col in columns {
         thead = thead.child(span().attr("style", "flex: 1; padding: 12px 16px;").text(col));
     }
     content = content.child(thead);
 
     for i in start_idx..end_idx {
-        let mut tr = div().attr("class", "ferrox-tr").attr("style", &format!("display: flex; height: {}px; align-items: center;", state.row_height));
+        let mut tr = div().attr("class", "ferrox-tr").attr("style", &format!("display: flex; height: {}px; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05);", state.row_height));
         for cell in &rows[i] {
             tr = tr.child(span().attr("style", "flex: 1; padding: 0 16px; font-size: 0.95rem;").text(cell));
         }

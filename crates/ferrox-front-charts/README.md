@@ -1,8 +1,67 @@
-# Ferrox Front Charts (`ferrox-front-charts`)
+# 📈 Ferrox Front Charts (`ferrox-front-charts`)
 
-`ferrox-front-charts` provides a pure WebAssembly vector SVG charting engine for rendering high-performance data visualisations.
+`ferrox-front-charts` provides a pure WebAssembly vector SVG charting engine inspired by Nivo. It renders high-performance, responsive, theme-aware data visualisations directly as native SVG elements without external JavaScript charting libraries.
 
-## Key Features
-- 📈 **Chart Types**: Line graphs, Bar charts, Pie charts, Area graphs, and Donut charts.
-- ⚡ **Direct SVG Render**: Renders vector graphics without heavy external JS chart dependencies.
-- 🎨 **Theme Aware**: Automatically syncs colors with `ferrox-front-core` active glassmorphism themes.
+---
+
+## 📊 Supported Nivo-Style Chart Types
+
+1. **Line Chart (`line_chart`)**: Smooth spline or linear vector line graphs with markers and hover tooltips.
+2. **Area Chart (`area_chart`)**: Gradient-filled area charts with customizable baseline and stop opacities.
+3. **Bar Chart (`bar_chart`)**: Grouped/stacked vertical bar charts with rounded corners and value labels.
+4. **Donut Chart (`donut_chart`)**: Ring donut charts with inner radius cutouts and center metrics.
+5. **Radar Chart (`radar_chart`)**: Spider-web polygonal radar charts for multi-attribute evaluation.
+6. **Scatter Plot (`scatter_chart`)**: Multi-series scatter plot charts with variable radii and color mapping.
+
+---
+
+## 🚀 Usage Examples
+
+### 1. Vector Line Chart (`line_chart`)
+```rust
+use ferrox_front_charts::{line_chart, Point};
+
+let data = vec![
+    Point { x: 10.0, y: 150.0 },
+    Point { x: 80.0, y: 110.0 },
+    Point { x: 160.0, y: 40.0 },
+];
+let chart = line_chart(data, 600, 200);
+```
+
+### 2. Rounded Bar Chart (`bar_chart`)
+```rust
+use ferrox_front_charts::{bar_chart, BarDatum};
+
+let data = vec![
+    BarDatum { label: "Q1".into(), value: 120.0, color: "#9333ea".into() },
+    BarDatum { label: "Q2".into(), value: 240.0, color: "#06b6d4".into() },
+    BarDatum { label: "Q3".into(), value: 380.0, color: "#10b981".into() },
+];
+let chart = bar_chart(data, 500, 220);
+```
+
+### 3. Donut Ring Chart (`donut_chart`)
+```rust
+use ferrox_front_charts::{donut_chart, PieDatum};
+
+let slices = vec![
+    PieDatum { label: "Direct".into(), value: 45.0, color: "#9333ea".into() },
+    PieDatum { label: "Organic".into(), value: 35.0, color: "#06b6d4".into() },
+    PieDatum { label: "Referral".into(), value: 20.0, color: "#10b981".into() },
+];
+let chart = donut_chart(slices, 100.0, 65.0, "Total Users", "12,450");
+```
+
+### 4. Spider Radar Chart (`radar_chart`)
+```rust
+use ferrox_front_charts::{radar_chart, RadarDatum};
+
+let metrics = vec![
+    RadarDatum { attribute: "Speed".into(), value: 95.0 },
+    RadarDatum { attribute: "Security".into(), value: 100.0 },
+    RadarDatum { attribute: "UX".into(), value: 88.0 },
+    RadarDatum { attribute: "Reliability".into(), value: 98.0 },
+];
+let chart = radar_chart(metrics, 120.0);
+```

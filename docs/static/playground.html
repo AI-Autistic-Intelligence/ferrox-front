@@ -3,203 +3,314 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ferrox Front Interactive Playground</title>
+    <title>Ferrox Front Interactive Nivo-Style Playground</title>
     <style>
         :root[data-theme="ferrox-cyber"] {
             --bg-primary: #0a0a16;
-            --bg-glass: rgba(20, 18, 45, 0.7);
-            --border-glass: 1px solid rgba(147, 51, 234, 0.3);
+            --bg-glass: rgba(20, 18, 45, 0.75);
+            --bg-panel: rgba(13, 12, 32, 0.85);
+            --border-glass: 1px solid rgba(147, 51, 234, 0.35);
             --text-primary: #f3f4f6;
             --accent-glow: #9333ea;
             --accent-cyan: #06b6d4;
+            --accent-green: #10b981;
             --btn-bg: linear-gradient(135deg, #7e22ce, #3b82f6);
         }
         :root[data-theme="ocean-breeze"] {
             --bg-primary: #061523;
-            --bg-glass: rgba(10, 35, 60, 0.7);
-            --border-glass: 1px solid rgba(6, 182, 212, 0.3);
+            --bg-glass: rgba(10, 35, 60, 0.75);
+            --bg-panel: rgba(5, 22, 40, 0.85);
+            --border-glass: 1px solid rgba(6, 182, 212, 0.35);
             --text-primary: #e0f2fe;
             --accent-glow: #0284c7;
             --accent-cyan: #38bdf8;
+            --accent-green: #34d399;
             --btn-bg: linear-gradient(135deg, #0284c7, #06b6d4);
         }
         :root[data-theme="midnight-forest"] {
             --bg-primary: #061e14;
-            --bg-glass: rgba(12, 45, 30, 0.7);
-            --border-glass: 1px solid rgba(16, 185, 129, 0.3);
+            --bg-glass: rgba(12, 45, 30, 0.75);
+            --bg-panel: rgba(6, 30, 20, 0.85);
+            --border-glass: 1px solid rgba(16, 185, 129, 0.35);
             --text-primary: #ecfdf5;
             --accent-glow: #059669;
             --accent-cyan: #34d399;
+            --accent-green: #6ee7b7;
             --btn-bg: linear-gradient(135deg, #059669, #10b981);
         }
         :root[data-theme="sunset-gold"] {
             --bg-primary: #1c0a00;
-            --bg-glass: rgba(45, 20, 5, 0.7);
-            --border-glass: 1px solid rgba(245, 158, 11, 0.3);
+            --bg-glass: rgba(45, 20, 5, 0.75);
+            --bg-panel: rgba(28, 12, 2, 0.85);
+            --border-glass: 1px solid rgba(245, 158, 11, 0.35);
             --text-primary: #fffbeb;
             --accent-glow: #d97706;
             --accent-cyan: #f59e0b;
+            --accent-green: #fbbf24;
             --btn-bg: linear-gradient(135deg, #d97706, #b45309);
         }
         :root[data-theme="corporate-slate"] {
             --bg-primary: #0f172a;
-            --bg-glass: rgba(30, 41, 59, 0.7);
-            --border-glass: 1px solid rgba(100, 116, 139, 0.3);
+            --bg-glass: rgba(30, 41, 59, 0.75);
+            --bg-panel: rgba(15, 23, 42, 0.85);
+            --border-glass: 1px solid rgba(100, 116, 139, 0.35);
             --text-primary: #f8fafc;
             --accent-glow: #475569;
             --accent-cyan: #94a3b8;
+            --accent-green: #38bdf8;
             --btn-bg: linear-gradient(135deg, #475569, #334155);
         }
 
+        * { box-sizing: border-box; }
+
         body {
             margin: 0;
-            padding: 1.5rem;
+            padding: 1rem;
             background: var(--bg-primary);
             color: var(--text-primary);
             font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            transition: background 0.3s ease, color 0.3s ease;
+            min-height: 100vh;
         }
 
-        .playground-header {
+        .nivo-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding-bottom: 1rem;
-            border-bottom: var(--border-glass);
-            margin-bottom: 1.5rem;
+            padding: 0.75rem 1.25rem;
+            background: var(--bg-glass);
+            backdrop-filter: blur(12px);
+            border: var(--border-glass);
+            border-radius: 12px;
+            margin-bottom: 1rem;
             flex-wrap: wrap;
             gap: 1rem;
         }
 
-        .theme-btn {
-            padding: 6px 14px;
+        .preset-btn, .theme-btn, .chart-type-btn {
+            padding: 6px 12px;
             border-radius: 6px;
             border: var(--border-glass);
-            background: var(--bg-glass);
+            background: rgba(255,255,255,0.05);
             color: var(--text-primary);
             cursor: pointer;
+            font-size: 0.82rem;
             font-weight: 600;
-            font-size: 0.85rem;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            transition: all 0.2s ease;
         }
 
-        .theme-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+        .preset-btn:hover, .theme-btn:hover, .chart-type-btn:hover {
+            background: var(--accent-glow);
+            color: #fff;
+            transform: translateY(-1px);
         }
 
-        .grid-container {
+        .preset-btn.active, .chart-type-btn.active {
+            background: var(--btn-bg);
+            box-shadow: 0 0 12px var(--accent-glow);
+        }
+
+        .nivo-workspace {
             display: grid;
-            grid-template-columns: repeat(12, 1fr);
+            grid-template-columns: 1fr 340px;
             gap: 1.25rem;
         }
 
-        .col-12 { grid-column: span 12; }
-        .col-8 { grid-column: span 8; }
-        .col-6 { grid-column: span 6; }
-        .col-4 { grid-column: span 4; }
-
-        @media (max-width: 768px) {
-            .col-8, .col-6, .col-4 { grid-column: span 12; }
+        @media (max-width: 1024px) {
+            .nivo-workspace { grid-template-columns: 1fr; }
         }
 
-        .glass-card {
+        .nivo-canvas-card {
             background: var(--bg-glass);
             backdrop-filter: blur(12px);
             border: var(--border-glass);
             border-radius: 12px;
             padding: 1.25rem;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+            min-height: 680px;
         }
 
-        .card-header {
+        .nivo-controls-panel {
+            background: var(--bg-panel);
+            backdrop-filter: blur(16px);
+            border: var(--border-glass);
+            border-radius: 12px;
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+            max-height: 780px;
+            overflow-y: auto;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            border-bottom: 1px solid rgba(255,255,255,0.07);
+            padding-bottom: 1rem;
+        }
+
+        .control-group label {
+            font-size: 0.82rem;
             font-weight: 700;
-            font-size: 1.1rem;
-            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--accent-cyan);
             display: flex;
             justify-content: space-between;
-            align-items: center;
         }
 
-        .btn-action {
-            background: var(--btn-bg);
-            color: white;
-            border: none;
-            padding: 8px 16px;
+        .control-group input[type="range"] {
+            width: 100%;
+            accent-color: var(--accent-cyan);
+        }
+
+        .control-group select, .control-group input[type="text"] {
+            width: 100%;
+            padding: 8px 12px;
             border-radius: 6px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: opacity 0.2s;
-        }
-
-        .btn-action:hover { opacity: 0.9; }
-
-        .alert-box {
-            padding: 0.75rem 1rem;
-            border-radius: 8px;
-            margin-bottom: 1rem;
-            font-weight: 500;
+            background: var(--bg-primary);
+            color: var(--text-primary);
             border: var(--border-glass);
+            font-size: 0.85rem;
         }
 
-        .alert-success { background: rgba(16, 185, 129, 0.2); color: #34d399; }
-        .alert-danger { background: rgba(239, 68, 68, 0.2); color: #fca5a5; }
-        .alert-info { background: rgba(14, 165, 233, 0.2); color: #7dd3fc; }
+        .json-editor {
+            width: 100%;
+            height: 180px;
+            background: #05050e;
+            color: #38bdf8;
+            border: var(--border-glass);
+            border-radius: 8px;
+            padding: 10px;
+            font-family: 'Fira Code', 'Courier New', monospace;
+            font-size: 0.8rem;
+            resize: vertical;
+            line-height: 1.4;
+        }
 
-        /* Virtual DataGrid */
+        .chart-wrapper {
+            position: relative;
+            width: 100%;
+            flex: 1;
+            min-height: 320px;
+            background: rgba(0,0,0,0.25);
+            border-radius: 10px;
+            padding: 1rem;
+            border: 1px solid rgba(255,255,255,0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .chart-tooltip {
+            position: absolute;
+            background: var(--bg-panel);
+            border: var(--border-glass);
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            pointer-events: none;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.6);
+            display: none;
+            z-index: 100;
+            color: var(--accent-cyan);
+        }
+
         .table-viewport {
-            height: 240px;
+            height: 220px;
             overflow-y: auto;
             border: var(--border-glass);
             border-radius: 8px;
             position: relative;
-            background: rgba(0,0,0,0.2);
+            background: rgba(0,0,0,0.3);
+            margin-top: 0.75rem;
         }
 
         .table-row {
             display: flex;
             align-items: center;
-            height: 40px;
+            height: 38px;
             padding: 0 12px;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            font-size: 0.9rem;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+            font-size: 0.85rem;
         }
 
-        .table-header {
+        .table-header-row {
             display: flex;
             align-items: center;
-            height: 40px;
+            height: 38px;
             padding: 0 12px;
-            background: rgba(0,0,0,0.4);
+            background: rgba(0,0,0,0.5);
             font-weight: 700;
             border-bottom: var(--border-glass);
             position: sticky;
             top: 0;
             z-index: 10;
+            font-size: 0.85rem;
         }
 
         .cell { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-        /* Code Inspector */
+        .tab-bar {
+            display: flex;
+            gap: 8px;
+            border-bottom: var(--border-glass);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .tab-item {
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.88rem;
+            background: rgba(255,255,255,0.03);
+            color: var(--text-primary);
+            transition: all 0.2s;
+        }
+
+        .tab-item.active {
+            background: var(--btn-bg);
+            box-shadow: 0 0 10px var(--accent-glow);
+        }
+
         pre {
-            background: #05050a;
+            background: #04040a;
             border: var(--border-glass);
-            padding: 1rem;
+            padding: 0.85rem;
             border-radius: 8px;
             overflow-x: auto;
             color: #38bdf8;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
+            margin: 0;
         }
     </style>
 </head>
 <body>
 
-    <div class="playground-header">
-        <div>
-            <h2 style="margin: 0; font-size: 1.4rem;">⚡ Ferrox Front Enterprise Playground</h2>
-            <small style="color: var(--accent-cyan);">Wasm Components, Virtual DataGrid & 0-Trust Security Simulator</small>
+    <!-- TOP HEADER -->
+    <div class="nivo-header">
+        <div style="display: flex; align-items: center; gap: 12px;">
+            <span style="font-size: 1.4rem;">⚡</span>
+            <div>
+                <h3 style="margin:0; font-size: 1.15rem;">Ferrox Front Interactive Nivo-Style Playground</h3>
+                <small style="color: var(--accent-cyan);">7 Vector SVG Chart Types • Live Data Editing • 1,000,000 DataGrid • 0-Trust Security</small>
+            </div>
         </div>
-        <div style="display: flex; gap: 8px;">
+
+        <div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
+            <span style="font-size: 0.8rem; opacity: 0.7; margin-right: 4px;">Presets:</span>
+            <button class="preset-btn active" id="p-mrr" onclick="loadPreset('mrr')">📈 MRR Revenue</button>
+            <button class="preset-btn" id="p-latency" onclick="loadPreset('latency')">⚡ API Latency</button>
+            <button class="preset-btn" id="p-crypto" onclick="loadPreset('crypto')">🪙 Crypto Ticker</button>
+
+            <span style="font-size: 0.8rem; opacity: 0.7; margin-left: 8px; margin-right: 4px;">Themes:</span>
             <button class="theme-btn" onclick="setTheme('ferrox-cyber')">🔮 Cyber</button>
             <button class="theme-btn" onclick="setTheme('ocean-breeze')">🌊 Ocean</button>
             <button class="theme-btn" onclick="setTheme('midnight-forest')">🌲 Forest</button>
@@ -208,183 +319,551 @@
         </div>
     </div>
 
-    <div class="grid-container">
+    <!-- MAIN WORKSPACE -->
+    <div class="nivo-workspace">
 
-        <!-- 1. VIRTUAL DATAGRID 1,000,000 ROWS -->
-        <div class="glass-card col-8">
-            <div class="card-header">
-                <span>📊 Virtualized DataGrid (1,000,000 Records Preloaded)</span>
-                <span id="rendered-info" style="font-size: 0.8rem; color: var(--accent-cyan);">Rendering 15 / 1,000,000 rows</span>
-            </div>
+        <!-- LEFT: CANVAS CARD -->
+        <div class="nivo-canvas-card">
             
-            <div class="table-header">
-                <div class="cell">Transaction ID</div>
-                <div class="cell">Enterprise Client</div>
-                <div class="cell">Amount</div>
-                <div class="cell">Status</div>
-                <div class="cell">Timestamp (UTC)</div>
+            <div class="tab-bar">
+                <div class="tab-item active" id="tab-chart" onclick="switchTab('chart')">📈 Nivo Vector SVG Charts</div>
+                <div class="tab-item" id="tab-datagrid" onclick="switchTab('datagrid')">📊 Virtual DataGrid (1M Rows)</div>
+                <div class="tab-item" id="tab-security" onclick="switchTab('security')">🔒 0-Trust Security Simulator</div>
+                <div class="tab-item" id="tab-design" onclick="switchTab('design')">🎨 Design System Gallery</div>
             </div>
 
-            <div class="table-viewport" id="viewport" onscroll="handleScroll()">
-                <div id="spacer" style="height: 40000000px; position: relative;">
-                    <div id="content" style="position: absolute; top: 0; left: 0; right: 0;"></div>
+            <!-- CHART TYPE SELECTION BAR -->
+            <div id="chart-type-bar" style="display: flex; gap: 6px; margin-bottom: 0.75rem; flex-wrap: wrap;">
+                <button class="chart-type-btn active" id="ctype-line" onclick="setChartType('line')">📈 Line Chart</button>
+                <button class="chart-type-btn" id="ctype-area" onclick="setChartType('area')">🌊 Area Chart</button>
+                <button class="chart-type-btn" id="ctype-bar" onclick="setChartType('bar')">📊 Bar Chart</button>
+                <button class="chart-type-btn" id="ctype-donut" onclick="setChartType('donut')">🍩 Donut Chart</button>
+                <button class="chart-type-btn" id="ctype-radar" onclick="setChartType('radar')">🕸️ Radar Chart</button>
+                <button class="chart-type-btn" id="ctype-scatter" onclick="setChartType('scatter')">🔴 Scatter Plot</button>
+            </div>
+
+            <!-- VIEW 1: CHART CANVAS -->
+            <div id="view-chart" style="display: flex; flex-direction: column; flex: 1;">
+                <div class="chart-wrapper" id="chart-container">
+                    <div class="chart-tooltip" id="tooltip"></div>
+                    <svg id="svg-chart" width="100%" height="320" viewBox="0 0 700 320" style="overflow: visible;"></svg>
                 </div>
             </div>
-        </div>
 
-        <!-- 2. SECURITY & RBAC SIMULATOR -->
-        <div class="glass-card col-4">
-            <div class="card-header">
-                <span>🔒 0-Trust RBAC Simulator</span>
+            <!-- VIEW 2: DATAGRID -->
+            <div id="view-datagrid" style="display: none; flex-direction: column; flex: 1;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h4 style="margin: 0;">📊 Virtualized DataGrid Viewport</h4>
+                    <span id="grid-status" style="font-size: 0.82rem; color: var(--accent-cyan);">Rendering 15 of 1,000,000 rows</span>
+                </div>
+
+                <div class="table-header-row" style="margin-top: 0.75rem;">
+                    <div class="cell">Transaction ID</div>
+                    <div class="cell">Enterprise Customer</div>
+                    <div class="cell">Amount ($)</div>
+                    <div class="cell">Status</div>
+                    <div class="cell">Timestamp (UTC)</div>
+                </div>
+
+                <div class="table-viewport" id="grid-viewport" onscroll="renderVirtualGrid()">
+                    <div id="grid-spacer" style="height: 40000000px; position: relative;">
+                        <div id="grid-content" style="position: absolute; top: 0; left: 0; right: 0;"></div>
+                    </div>
+                </div>
             </div>
 
-            <div style="margin-bottom: 1rem;">
-                <label style="font-size: 0.85rem;">Select User Role:</label>
-                <select id="role-select" onchange="updateRole()" style="width: 100%; padding: 8px; margin-top: 4px; border-radius: 6px; background: var(--bg-primary); color: var(--text-primary); border: var(--border-glass);">
+            
+            <!-- VIEW 4: GLASSMORPHISM DESIGN SYSTEM GALLERY -->
+            <div id="view-design" style="display: none; flex-direction: column; flex: 1; gap: 1.25rem;">
+                <h4>🎨 Glassmorphism Design System UI Gallery</h4>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <!-- BUTTON VARIANTS -->
+                    <div style="background: rgba(0,0,0,0.2); padding: 1rem; border-radius: 8px; border: var(--border-glass);">
+                        <h5 style="margin-top:0; color: var(--accent-cyan);">Buttons & Variants</h5>
+                        <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                            <button class="btn-action">Primary Button</button>
+                            <button class="preset-btn">Secondary</button>
+                            <button class="preset-btn" style="border: 1px solid var(--accent-cyan); color: var(--accent-cyan); background: transparent;">Outline</button>
+                            <button class="btn-action" style="background: linear-gradient(135deg, #dc2626, #991b1b);">Danger</button>
+                        </div>
+                    </div>
+
+                    <!-- BADGES & TAGS -->
+                    <div style="background: rgba(0,0,0,0.2); padding: 1rem; border-radius: 8px; border: var(--border-glass);">
+                        <h5 style="margin-top:0; color: var(--accent-cyan);">Status Badges</h5>
+                        <div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center;">
+                            <span style="background: rgba(16, 185, 129, 0.2); color: #34d399; padding: 4px 10px; border-radius: 9999px; font-size: 0.78rem; font-weight: 700; border: var(--border-glass);">ACTIVE</span>
+                            <span style="background: rgba(245, 158, 11, 0.2); color: #fde047; padding: 4px 10px; border-radius: 9999px; font-size: 0.78rem; font-weight: 700; border: var(--border-glass);">PENDING</span>
+                            <span style="background: rgba(239, 68, 68, 0.2); color: #fca5a5; padding: 4px 10px; border-radius: 9999px; font-size: 0.78rem; font-weight: 700; border: var(--border-glass);">FAILED</span>
+                            <span style="background: rgba(147, 51, 234, 0.2); color: #c084fc; padding: 4px 10px; border-radius: 9999px; font-size: 0.78rem; font-weight: 700; border: var(--border-glass);">0-TRUST SEALED</span>
+                        </div>
+                    </div>
+
+                    <!-- USER PILL & AVATAR -->
+                    <div style="background: rgba(0,0,0,0.2); padding: 1rem; border-radius: 8px; border: var(--border-glass);">
+                        <h5 style="margin-top:0; color: var(--accent-cyan);">User Pill & Avatar</h5>
+                        <div style="display: flex; align-items: center; gap: 10px; padding: 4px 12px 4px 4px; background: var(--bg-glass); border: var(--border-glass); border-radius: 9999px; width: fit-content;">
+                            <div style="width: 36px; height: 36px; border-radius: 50%; background: var(--btn-bg); color: #fff; font-weight: 700; display: flex; align-items: center; justify-content: center;">SW</div>
+                            <div style="display: flex; flex-direction: column;">
+                                <span style="font-weight: 600; font-size: 0.85rem;">Sarah Connor</span>
+                                <span style="font-size: 0.72rem; opacity: 0.7; color: var(--accent-cyan);">Security Administrator</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    
+                    <!-- FORM INPUT CONTROLS SHOWCASE -->
+                    <div style="background: rgba(0,0,0,0.2); padding: 1rem; border-radius: 8px; border: var(--border-glass); grid-column: span 2;">
+                        <h5 style="margin-top:0; color: var(--accent-cyan);">📝 Form Inputs & Controls Suite</h5>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; align-items: start;">
+                            <div>
+                                <label style="font-size: 0.8rem; opacity: 0.8; display: block; margin-bottom: 4px;">Search Input (search_input):</label>
+                                <div style="position: relative;">
+                                    <input type="search" placeholder="Search enterprise logs..." style="width: 100%; padding: 8px 12px 8px 32px; border-radius: 6px; background: var(--bg-primary); color: var(--text-primary); border: var(--border-glass); font-size: 0.85rem;" />
+                                    <span style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); opacity: 0.6; font-size: 0.85rem;">🔍</span>
+                                </div>
+                            </div>
+                            <div>
+                                <label style="font-size: 0.8rem; opacity: 0.8; display: block; margin-bottom: 4px;">Select Dropdown (select):</label>
+                                <select style="width: 100%; padding: 8px 12px; border-radius: 6px; background: var(--bg-primary); color: var(--text-primary); border: var(--border-glass); font-size: 0.85rem;">
+                                    <option>Option 1: Enterprise Production</option>
+                                    <option>Option 2: Staging Sandbox</option>
+                                    <option>Option 3: Local Dev Wasm</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label style="font-size: 0.8rem; opacity: 0.8; display: block; margin-bottom: 4px;">Toggle Switch (toggle_switch):</label>
+                                <div style="display: flex; align-items: center; gap: 10px; margin-top: 4px;">
+                                    <div style="width: 38px; height: 20px; border-radius: 9999px; background: var(--accent-cyan); position: relative; padding: 2px; cursor: pointer;">
+                                        <div style="width: 16px; height: 16px; border-radius: 50%; background: #fff; transform: translateX(18px);"></div>
+                                    </div>
+                                    <span style="font-size: 0.85rem;">Enable 2FA Protection</span>
+                                </div>
+                            </div>
+                            <div style="grid-column: span 3; display: flex; gap: 1.5rem; align-items: center; margin-top: 6px;">
+                                <label style="display: flex; align-items: center; gap: 8px; font-size: 0.85rem; cursor: pointer;">
+                                    <input type="checkbox" checked style="accent-color: var(--accent-cyan); width: 16px; height: 16px;" />
+                                    <span>Remember Machine</span>
+                                </label>
+                                <label style="display: flex; align-items: center; gap: 8px; font-size: 0.85rem; cursor: pointer;">
+                                    <input type="radio" name="plan" checked style="accent-color: var(--accent-cyan); width: 16px; height: 16px;" />
+                                    <span>Enterprise Plan</span>
+                                </label>
+                                <label style="display: flex; align-items: center; gap: 8px; font-size: 0.85rem; cursor: pointer;">
+                                    <input type="radio" name="plan" style="accent-color: var(--accent-cyan); width: 16px; height: 16px;" />
+                                    <span>Starter Plan</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- PROGRESS BAR & SPINNER -->
+                    <div style="background: rgba(0,0,0,0.2); padding: 1rem; border-radius: 8px; border: var(--border-glass);">
+                        <h5 style="margin-top:0; color: var(--accent-cyan);">Progress Bar (78.5%)</h5>
+                        <div style="width: 100%; height: 8px; background: rgba(255,255,255,0.1); border-radius: 9999px; overflow: hidden; margin-top: 10px;">
+                            <div style="width: 78.5%; height: 100%; background: var(--btn-bg);"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW 3: SECURITY SIMULATOR -->
+            <div id="view-security" style="display: none; flex-direction: column; flex: 1;">
+                <h4>🔒 Wasm Linear Memory Anti-Tampering Simulator</h4>
+                <p style="font-size: 0.9rem; opacity: 0.85;">
+                    Select user permissions to simulate Wasm bytecode DOM mounting. Unauthorized elements are completely unmounted from Wasm heap memory.
+                </p>
+                <div id="security-output" style="margin-top: 1rem;"></div>
+            </div>
+
+            <!-- CODE INSPECTOR -->
+            <div style="margin-top: 1.25rem;">
+                <div style="font-size: 0.82rem; font-weight: 700; color: var(--accent-cyan); margin-bottom: 6px;">
+                    ⚡ Auto-Generated Rust Component Code (rsx!):
+                </div>
+                <pre><code id="rust-code-output">// Live Generated Code...</code></pre>
+            </div>
+
+        </div>
+
+        <!-- RIGHT: CONTROL PANEL -->
+        <div class="nivo-controls-panel">
+
+            <div style="font-weight: 700; font-size: 1rem; border-bottom: var(--border-glass); padding-bottom: 0.5rem;">
+                🎛️ Live Nivo Control Panel
+            </div>
+
+            <!-- EDITABLE JSON DATA -->
+            <div class="control-group">
+                <label>
+                    <span>📝 Editable JSON Dataset</span>
+                    <span id="json-status" style="color: #34d399; font-weight: normal;">Valid</span>
+                </label>
+                <textarea class="json-editor" id="json-input" oninput="handleJsonEdit()"></textarea>
+                <button class="preset-btn" onclick="applyJsonData()" style="width: 100%; margin-top: 4px; background: var(--btn-bg);">Apply Live JSON Data</button>
+            </div>
+
+            <!-- CURVE STYLE -->
+            <div class="control-group">
+                <label>Curve Style</label>
+                <select id="ctrl-curve" onchange="renderChart()">
+                    <option value="smooth" selected>Smooth Spline Curve (Bezier)</option>
+                    <option value="linear">Linear Straight Lines</option>
+                    <option value="stepped">Stepped Digital Wave</option>
+                </select>
+            </div>
+
+            <!-- TOGGLES -->
+            <div class="control-group">
+                <label>
+                    <span>Show Points / Markers</span>
+                    <input type="checkbox" id="ctrl-points" checked onchange="renderChart()">
+                </label>
+                <label style="margin-top: 8px;">
+                    <span>Fill Area Gradient</span>
+                    <input type="checkbox" id="ctrl-gradient" checked onchange="renderChart()">
+                </label>
+            </div>
+
+            <!-- STROKE WIDTH -->
+            <div class="control-group">
+                <label>
+                    <span>Line Stroke Width</span>
+                    <span id="val-stroke">4px</span>
+                </label>
+                <input type="range" id="ctrl-stroke" min="1" max="10" value="4" oninput="document.getElementById('val-stroke').innerText=this.value+'px'; renderChart();">
+            </div>
+
+            <!-- DATAGRID ROWS -->
+            <div class="control-group">
+                <label>
+                    <span>DataGrid Total Rows</span>
+                    <span id="val-rows">1,000,000</span>
+                </label>
+                <select id="ctrl-grid-rows" onchange="updateGridTotalRows()">
+                    <option value="500">500 Rows</option>
+                    <option value="10000">10,000 Rows</option>
+                    <option value="1000000" selected>1,000,000 Rows (Enterprise)</option>
+                </select>
+            </div>
+
+            <!-- SECURITY ROLE -->
+            <div class="control-group">
+                <label>0-Trust User Role</label>
+                <select id="ctrl-role" onchange="renderSecurityView()">
                     <option value="Guest">Guest (No Permissions)</option>
-                    <option value="User" selected>User (Read Only)</option>
+                    <option value="User" selected>User (Read Reports)</option>
                     <option value="Admin">Admin (Full Control)</option>
                 </select>
             </div>
 
-            <div id="rbac-preview"></div>
-
-            <div class="alert-box alert-info" style="margin-top: 1rem; font-size: 0.8rem;">
-                <strong>Wasm Linear Memory Security:</strong><br>
-                <code>SealedToken: [0x8f3a...b19e] AES-GCM-256</code><br>
-                Tokens are sealed inside Wasm memory and unreachable via JS.
-            </div>
-        </div>
-
-        <!-- 3. VECTOR SVG CHARTS -->
-        <div class="glass-card col-6">
-            <div class="card-header">
-                <span>📈 Wasm Vector SVG Chart (MRR Trend)</span>
-                <span style="font-size: 0.85rem; color: #34d399;">+142.8% YoY</span>
-            </div>
-            
-            <svg width="100%" height="180" viewBox="0 0 500 180" style="overflow: visible;">
-                <defs>
-                    <linearGradient id="chartGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                        <stop offset="0%" stop-color="var(--accent-glow)" stop-opacity="0.8"/>
-                        <stop offset="100%" stop-color="var(--accent-cyan)" stop-opacity="0.9"/>
-                    </linearGradient>
-                </defs>
-                <path d="M 20 150 Q 100 120 180 80 T 340 40 T 480 20" fill="none" stroke="url(#chartGrad)" stroke-width="4"/>
-                <circle cx="180" cy="80" r="6" fill="var(--accent-cyan)"/>
-                <circle cx="340" cy="40" r="6" fill="var(--accent-cyan)"/>
-                <circle cx="480" cy="20" r="6" fill="var(--accent-cyan)"/>
-                <text x="440" y="15" fill="var(--text-primary)" font-size="12">$450,000</text>
-            </svg>
-        </div>
-
-        <!-- 4. RUST CODE INSPECTOR -->
-        <div class="glass-card col-6">
-            <div class="card-header">
-                <span>📜 Rust Source Code Inspector (rsx!)</span>
-            </div>
-            <pre><code>// Rust Component Playground Code
-#[component]
-pub fn EnterpriseDashboard() -> Element {
-    let (theme, set_theme) = create_signal("ferrox-cyber");
-    let state = DataGridState::new(40.0, 15);
-
-    rsx! {
-        Container { fluid: true,
-            Row {
-                Col { md: 8, virtual_data_grid(cols, rows, &state) }
-                Col { md: 4, 
-                    Secure { require: "admin:delete",
-                        button { class: "btn-danger", "Format Database" }
-                    }
-                }
-            }
-        }
-    }
-}</code></pre>
         </div>
 
     </div>
 
     <script>
+        let currentChartType = 'line';
+        let chartData = [
+            { x: 20, y: 150, label: "Jan ($150k)", value: 150, color: "#9333ea" },
+            { x: 100, y: 110, label: "Feb ($220k)", value: 220, color: "#06b6d4" },
+            { x: 180, y: 70,  label: "Mar ($310k)", value: 310, color: "#10b981" },
+            { x: 260, y: 90,  label: "Apr ($280k)", value: 280, color: "#f59e0b" },
+            { x: 340, y: 40,  label: "May ($410k)", value: 410, color: "#ec4899" },
+            { x: 420, y: 20,  label: "Jun ($460k)", value: 460, color: "#3b82f6" }
+        ];
+
+        let activeTab = 'chart';
+        let totalGridRows = 1000000;
+
         function setTheme(name) {
             document.documentElement.setAttribute('data-theme', name);
+            renderChart();
         }
 
-        // GENERATION OF ENTERPRISE MOCK 1,000,000 ROWS
-        const totalRows = 1000000;
-        const rowHeight = 40;
-        const visibleCount = 15;
-        const companies = ["Acme Corp", "Stark Industries", "Cyberdyne Systems", "Wayne Enterprises", "Umbrella Corp", "Initech", "Globex"];
-        const statuses = ["COMPLETED", "PROCESSING", "VERIFIED", "E2EE SEALED"];
+        function setChartType(type) {
+            currentChartType = type;
+            document.querySelectorAll('.chart-type-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('ctype-' + type).classList.add('active');
+            renderChart();
+        }
 
-        function handleScroll() {
-            const viewport = document.getElementById('viewport');
-            const content = document.getElementById('content');
-            const scrollTop = viewport.scrollTop;
+        function switchTab(tab) {
+            activeTab = tab;
+            document.querySelectorAll('.tab-item').forEach(el => el.classList.remove('active'));
+            document.getElementById('tab-' + tab).classList.add('active');
 
+            document.getElementById('chart-type-bar').style.display = (tab === 'chart') ? 'flex' : 'none';
+            document.getElementById('view-chart').style.display = (tab === 'chart') ? 'flex' : 'none';
+            document.getElementById('view-datagrid').style.display = (tab === 'datagrid') ? 'flex' : 'none';
+            document.getElementById('view-security').style.display = (tab === 'security') ? 'flex' : 'none';
+            document.getElementById('view-design').style.display = (tab === 'design') ? 'flex' : 'none';
+
+            if (tab === 'datagrid') renderVirtualGrid();
+            if (tab === 'security') renderSecurityView();
+            updateRustCodeOutput();
+        }
+
+        const presets = {
+            mrr: [
+                { x: 20, y: 220, label: "Q1", value: 120, color: "#9333ea" },
+                { x: 120, y: 180, label: "Q2", value: 190, color: "#06b6d4" },
+                { x: 220, y: 140, label: "Q3", value: 260, color: "#10b981" },
+                { x: 320, y: 90,  label: "Q4", value: 340, color: "#f59e0b" },
+                { x: 420, y: 50,  label: "Q5", value: 420, color: "#ec4899" },
+                { x: 520, y: 20,  label: "Q6", value: 490, color: "#3b82f6" }
+            ],
+            latency: [
+                { x: 20, y: 250, label: "US-East", value: 12, color: "#10b981" },
+                { x: 120, y: 90,  label: "EU-Central", value: 48, color: "#f59e0b" },
+                { x: 220, y: 220, label: "AP-South", value: 18, color: "#06b6d4" },
+                { x: 320, y: 70,  label: "SA-East", value: 62, color: "#ec4899" },
+                { x: 420, y: 240, label: "US-West", value: 15, color: "#3b82f6" }
+            ],
+            crypto: [
+                { x: 20, y: 120, label: "00:00", value: 62, color: "#9333ea" },
+                { x: 100, y: 240, label: "04:00", value: 58, color: "#06b6d4" },
+                { x: 180, y: 80,  label: "08:00", value: 64, color: "#10b981" },
+                { x: 260, y: 190, label: "12:00", value: 60, color: "#f59e0b" },
+                { x: 340, y: 40,  label: "16:00", value: 67, color: "#ec4899" }
+            ]
+        };
+
+        function loadPreset(key) {
+            document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('p-' + key).classList.add('active');
+
+            chartData = JSON.parse(JSON.stringify(presets[key]));
+            document.getElementById('json-input').value = JSON.stringify(chartData, null, 2);
+            renderChart();
+        }
+
+        function handleJsonEdit() {
+            const raw = document.getElementById('json-input').value;
+            const statusEl = document.getElementById('json-status');
+            try {
+                const parsed = JSON.parse(raw);
+                if (Array.isArray(parsed)) {
+                    statusEl.innerText = "Valid JSON";
+                    statusEl.style.color = "#34d399";
+                }
+            } catch (e) {
+                statusEl.innerText = "Invalid JSON";
+                statusEl.style.color = "#fca5a5";
+            }
+        }
+
+        function applyJsonData() {
+            try {
+                const parsed = JSON.parse(document.getElementById('json-input').value);
+                if (Array.isArray(parsed)) {
+                    chartData = parsed;
+                    renderChart();
+                }
+            } catch(e) {
+                alert("Invalid JSON format.");
+            }
+        }
+
+        // RENDER 7 CHART TYPES
+        function renderChart() {
+            const svg = document.getElementById('svg-chart');
+            const strokeWidth = document.getElementById('ctrl-stroke').value;
+            const showPoints = document.getElementById('ctrl-points').checked;
+            const showGradient = document.getElementById('ctrl-gradient').checked;
+            const curveType = document.getElementById('ctrl-curve').value;
+
+            if (!chartData || chartData.length === 0) return;
+
+            let html = `
+                <defs>
+                    <linearGradient id="nivoGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" stop-color="var(--accent-glow)" stop-opacity="0.8"/>
+                        <stop offset="100%" stop-color="var(--accent-cyan)" stop-opacity="0.9"/>
+                    </linearGradient>
+                    <linearGradient id="nivoAreaGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" stop-color="var(--accent-cyan)" stop-opacity="0.4"/>
+                        <stop offset="100%" stop-color="var(--accent-cyan)" stop-opacity="0.0"/>
+                    </linearGradient>
+                </defs>
+            `;
+
+            if (currentChartType === 'line' || currentChartType === 'area') {
+                let pathD = "";
+                if (curveType === 'linear') {
+                    pathD = `M ${chartData[0].x} ${chartData[0].y}`;
+                    for (let i = 1; i < chartData.length; i++) pathD += ` L ${chartData[i].x} ${chartData[i].y}`;
+                } else if (curveType === 'stepped') {
+                    pathD = `M ${chartData[0].x} ${chartData[0].y}`;
+                    for (let i = 1; i < chartData.length; i++) pathD += ` H ${chartData[i].x} V ${chartData[i].y}`;
+                } else {
+                    pathD = `M ${chartData[0].x} ${chartData[0].y}`;
+                    for (let i = 0; i < chartData.length - 1; i++) {
+                        const curr = chartData[i], next = chartData[i + 1];
+                        const cp1x = curr.x + (next.x - curr.x) / 2;
+                        pathD += ` C ${cp1x} ${curr.y}, ${cp1x} ${next.y}, ${next.x} ${next.y}`;
+                    }
+                }
+
+                if (currentChartType === 'area' || showGradient) {
+                    const last = chartData[chartData.length - 1];
+                    const areaD = `${pathD} L ${last.x} 300 L ${chartData[0].x} 300 Z`;
+                    html += `<path d="${areaD}" fill="url(#nivoAreaGrad)" />`;
+                }
+
+                html += `<path d="${pathD}" fill="none" stroke="url(#nivoGrad)" stroke-width="${strokeWidth}" stroke-linecap="round"/>`;
+
+                if (showPoints) {
+                    chartData.forEach((pt, idx) => {
+                        html += `<circle cx="${pt.x}" cy="${pt.y}" r="6" fill="var(--accent-cyan)" stroke="var(--bg-primary)" stroke-width="2" style="cursor:pointer;" onmouseover="showTooltip(event, '${pt.label || pt.value}', ${pt.x}, ${pt.y})" onmouseout="hideTooltip()"/>`;
+                    });
+                }
+            } else if (currentChartType === 'bar') {
+                const maxVal = Math.max(...chartData.map(d => d.value || 100));
+                const barWidth = Math.max(30, (600 / chartData.length) - 20);
+                chartData.forEach((d, i) => {
+                    const h = ((d.value || 100) / maxVal) * 200;
+                    const x = 40 + i * (barWidth + 20);
+                    const y = 260 - h;
+                    const col = d.color || 'var(--accent-cyan)';
+                    html += `
+                        <rect x="${x}" y="${y}" width="${barWidth}" height="${h}" rx="6" fill="${col}" style="cursor:pointer;" onmouseover="showTooltip(event, '${d.label}: ${d.value}', ${x+15}, ${y})" onmouseout="hideTooltip()"/>
+                        <text x="${x + barWidth/2}" y="285" fill="var(--text-primary)" font-size="12" text-anchor="middle">${d.label || ''}</text>
+                    `;
+                });
+            } else if (currentChartType === 'donut') {
+                const cx = 350, cy = 160, r = 110, innerR = 70;
+                const total = chartData.reduce((acc, d) => acc + (d.value || 1), 0);
+                let startAngle = -Math.PI / 2;
+                chartData.forEach((d) => {
+                    const sliceAngle = ((d.value || 1) / total) * 2 * Math.PI;
+                    const endAngle = startAngle + sliceAngle;
+                    const x1 = cx + r * Math.cos(startAngle), y1 = cy + r * Math.sin(startAngle);
+                    const x2 = cx + r * Math.cos(endAngle), y2 = cy + r * Math.sin(endAngle);
+                    const ix1 = cx + innerR * Math.cos(endAngle), iy1 = cy + innerR * Math.sin(endAngle);
+                    const ix2 = cx + innerR * Math.cos(startAngle), iy2 = cy + innerR * Math.sin(startAngle);
+                    const largeArc = sliceAngle > Math.PI ? 1 : 0;
+                    const pathD = `M ${x1} ${y1} A ${r} ${r} 0 ${largeArc} 1 ${x2} ${y2} L ${ix1} ${iy1} A ${innerR} ${innerR} 0 ${largeArc} 0 ${ix2} ${iy2} Z`;
+                    const col = d.color || 'var(--accent-cyan)';
+                    html += `<path d="${pathD}" fill="${col}" stroke="var(--bg-primary)" stroke-width="2" style="cursor:pointer;" onmouseover="showTooltip(event, '${d.label}: ${d.value}', ${cx}, ${cy})" onmouseout="hideTooltip()"/>`;
+                    startAngle = endAngle;
+                });
+                html += `<text x="${cx}" y="${cy-5}" fill="var(--accent-cyan)" font-weight="700" font-size="16" text-anchor="middle">Total MRR</text>`;
+                html += `<text x="${cx}" y="${cy+18}" fill="var(--text-primary)" font-weight="700" font-size="18" text-anchor="middle">$450,000</text>`;
+            } else if (currentChartType === 'radar') {
+                const cx = 350, cy = 160, r = 110, count = chartData.length;
+                [0.3, 0.6, 1.0].forEach(lvl => {
+                    let pts = "";
+                    for(let i=0; i<count; i++) {
+                        const ang = (i/count)*2*Math.PI - Math.PI/2;
+                        pts += `${cx + r*lvl*Math.cos(ang)},${cy + r*lvl*Math.sin(ang)} `;
+                    }
+                    html += `<polygon points="${pts.trim()}" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>`;
+                });
+                let dataPts = "";
+                chartData.forEach((d, i) => {
+                    const ang = (i/count)*2*Math.PI - Math.PI/2;
+                    const valR = r * ((d.value || 50)/300);
+                    dataPts += `${cx + valR*Math.cos(ang)},${cy + valR*Math.sin(ang)} `;
+                    const lx = cx + (r+20)*Math.cos(ang), ly = cy + (r+20)*Math.sin(ang);
+                    html += `<text x="${lx}" y="${ly}" fill="var(--text-primary)" font-size="11" text-anchor="middle">${d.label || ''}</text>`;
+                });
+                html += `<polygon points="${dataPts.trim()}" fill="rgba(147, 51, 234, 0.4)" stroke="var(--accent-glow)" stroke-width="3"/>`;
+            } else if (currentChartType === 'scatter') {
+                chartData.forEach(pt => {
+                    const col = pt.color || 'var(--accent-cyan)';
+                    html += `<circle cx="${pt.x}" cy="${pt.y}" r="${pt.value ? Math.min(18, pt.value/15) : 10}" fill="${col}" opacity="0.85" stroke="var(--bg-primary)" stroke-width="2" style="cursor:pointer;" onmouseover="showTooltip(event, '${pt.label}: ${pt.x}, ${pt.y}', ${pt.x}, ${pt.y})" onmouseout="hideTooltip()"/>`;
+                });
+            }
+
+            svg.innerHTML = html;
+            updateRustCodeOutput();
+        }
+
+        function showTooltip(evt, text, x, y) {
+            const tt = document.getElementById('tooltip');
+            tt.innerText = text;
+            tt.style.left = (x + 10) + 'px';
+            tt.style.top = (y - 30) + 'px';
+            tt.style.display = 'block';
+        }
+
+        function hideTooltip() {
+            document.getElementById('tooltip').style.display = 'none';
+        }
+
+        function updateGridTotalRows() {
+            totalGridRows = parseInt(document.getElementById('ctrl-grid-rows').value);
+            document.getElementById('val-rows').innerText = totalGridRows.toLocaleString();
+            renderVirtualGrid();
+        }
+
+        function renderVirtualGrid() {
+            const viewport = document.getElementById('grid-viewport');
+            const content = document.getElementById('grid-content');
+            const rowHeight = 38, visibleCount = 10, scrollTop = viewport.scrollTop;
             const startIndex = Math.floor(scrollTop / rowHeight);
-            const endIndex = Math.min(startIndex + visibleCount, totalRows);
-
+            const endIndex = Math.min(startIndex + visibleCount, totalGridRows);
             content.style.transform = `translateY(${startIndex * rowHeight}px)`;
 
             let html = '';
             for (let i = startIndex; i < endIndex; i++) {
-                const company = companies[i % companies.length];
-                const amount = "$" + ((i * 137) % 95000 + 120).toLocaleString() + ".00";
-                const status = statuses[i % statuses.length];
-                const timestamp = new Date(1700000000000 + i * 60000).toISOString().replace('T', ' ').substring(0, 19);
-
                 html += `
                     <div class="table-row">
                         <div class="cell" style="color: var(--accent-cyan);">TX-${100000 + i}</div>
-                        <div class="cell">${company}</div>
-                        <div class="cell" style="font-weight: 600;">${amount}</div>
-                        <div class="cell" style="color: #34d399;">${status}</div>
-                        <div class="cell" style="font-size: 0.8rem; opacity: 0.7;">${timestamp}</div>
+                        <div class="cell">${companies[i % companies.length]}</div>
+                        <div class="cell" style="font-weight: 600;">$${((i * 137) % 95000 + 120).toLocaleString()}.00</div>
+                        <div class="cell" style="color: #34d399;">${statuses[i % statuses.length]}</div>
+                        <div class="cell" style="font-size: 0.8rem; opacity: 0.7;">2026-09-07 07:15:00 UTC</div>
                     </div>
                 `;
             }
             content.innerHTML = html;
-            document.getElementById('rendered-info').innerText = `Rendering ${startIndex + 1}-${endIndex} / ${totalRows.toLocaleString()} rows`;
+            document.getElementById('grid-status').innerText = `Rendering ${startIndex + 1}-${endIndex} of ${totalGridRows.toLocaleString()} rows`;
         }
 
-        function updateRole() {
-            const role = document.getElementById('role-select').value;
-            const container = document.getElementById('rbac-preview');
+        const companies = ["Acme Corp", "Stark Industries", "Cyberdyne Systems", "Wayne Enterprises", "Umbrella Corp", "Initech", "Globex"];
+        const statuses = ["VERIFIED (0-Trust)", "PROCESSING (Wasm)", "E2EE SEALED"];
 
+        function renderSecurityView() {
+            const role = document.getElementById('ctrl-role').value;
+            const output = document.getElementById('security-output');
             let html = '';
             if (role === 'Guest') {
-                html = `
-                    <div class="alert-box alert-danger">
-                        🚫 Access Denied (Guest Role).<br>Sensitive UI nodes are completely stripped from Wasm DOM memory.
-                    </div>
-                `;
+                html = `<div class="alert-box alert-danger">🚫 Access Denied (Guest Role).<br>Sensitive UI nodes are completely stripped from Wasm DOM memory (Anti-Tampering protection).</div>`;
             } else if (role === 'User') {
-                html = `
-                    <div class="alert-box alert-info">
-                        👁️ User Role (Read Only).
-                    </div>
-                    <button class="btn-action" style="width:100%; margin-bottom: 8px;">View Enterprise Reports</button>
-                    <div style="opacity: 0.4; pointer-events: none;">
-                        <button class="btn-action" style="background: red; width:100%;">[NODE UNMOUNTED] Format Database</button>
-                    </div>
-                `;
+                html = `<div class="alert-box alert-info">👁️ User Role Validated (Read Only Access).</div><button class="btn-action" style="width:100%; margin-bottom: 8px;">View Secret System Reports</button><div style="opacity: 0.4; pointer-events: none;"><button class="btn-action" style="background: red; width:100%;">[NODE UNMOUNTED] Format Database (Admin Required)</button></div>`;
             } else if (role === 'Admin') {
-                html = `
-                    <div class="alert-box alert-success">
-                        🛡️ Admin Role Confirmed.<br>All secure nodes are mounted in Wasm memory.
-                    </div>
-                    <button class="btn-action" style="width:100%; margin-bottom: 8px;">View Enterprise Reports</button>
-                    <button class="btn-action" style="background: red; width:100%;">Format Database (Admin Only)</button>
-                `;
+                html = `<div class="alert-box alert-success">🛡️ Admin Role Confirmed.<br>All secure nodes are instantiated inside WebAssembly linear memory heap.</div><button class="btn-action" style="width:100%; margin-bottom: 8px;">View Secret System Reports</button><button class="btn-action" style="background: red; width:100%;">Format Database (Admin Permission Active)</button>`;
             }
-            container.innerHTML = html;
+            output.innerHTML = html;
         }
 
-        // INIT
-        handleScroll();
-        updateRole();
+        function updateRustCodeOutput() {
+            const codeEl = document.getElementById('rust-code-output');
+            let rustCode = `// Auto-Generated Ferrox Front Nivo Chart Component Code
+`;
+            if (activeTab === 'chart') {
+                rustCode += `use ferrox_front_charts::{${currentChartType}_chart, ${currentChartType === 'bar' ? 'BarDatum' : (currentChartType === 'donut' ? 'PieDatum' : (currentChartType === 'radar' ? 'RadarDatum' : 'Point'))}};
+
+`;
+                rustCode += `// Render Vector SVG ${currentChartType.toUpperCase()} Chart
+`;
+                rustCode += `let chart = ${currentChartType}_chart(data, 700, 320);`;
+            } else if (activeTab === 'datagrid') {
+                rustCode += `use ferrox_front_ui::{virtual_data_grid, DataGridState};
+let state = DataGridState::new(38.0, 10);
+let grid = virtual_data_grid(columns, rows, &state);`;
+            } else {
+                rustCode += `use ferrox_front_security::{secure, UserIdentity, Role};
+let secure_btn = secure(&user, "admin:delete", button().text("Format Database"));`;
+            }
+            codeEl.innerText = rustCode;
+        }
+
+        document.getElementById('json-input').value = JSON.stringify(chartData, null, 2);
+        renderChart();
+        renderSecurityView();
     </script>
 </body>
 </html>
