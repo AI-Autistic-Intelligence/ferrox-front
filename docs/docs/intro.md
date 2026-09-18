@@ -1,41 +1,83 @@
 ---
 id: intro
-title: Introduction to Ferrox Front
+title: Introduction & Ferrox-Front Architecture
 sidebar_position: 1
 ---
 
-# 🛡️ Welcome to Ferrox Front
+# Introduction & Ferrox-Front Architecture
 
-**Ferrox Front** is a native **Rust** UI framework compiled to **WebAssembly (Wasm)**, designed for building Enterprise SaaS applications, high-performance real-time dashboards, and **Zero-Trust** micro-frontend architectures.
-
----
-
-## ⚡ Why a "Bootstrap Killer" in Rust Wasm?
-
-In modern JavaScript/TypeScript frontends (React, Vue, Angular), developers face three major challenges:
-1. **Virtual DOM Latency & Garbage Collection**: Traditional JS frameworks allocate large trees of JavaScript objects and re-run diffing across component subtrees on every state change, causing latencies and memory leaks on complex dashboards.
-2. **XSS Vulnerabilities & Token Theft**: Session tokens (JWTs) stored in `localStorage` or JavaScript scope are exposed to Cross-Site Scripting (XSS) attacks.
-3. **Fragile Dependencies**: Heavy Node.js toolchains and hundreds of `npm` packages introduce supply chain security risks.
-
-### **Ferrox Front completely eliminates JavaScript runtime overhead.**
-
-- 🦀 **100% Pure Rust Wasm**: Zero JS dependencies. Frontends are compiled directly to WebAssembly bytecode (`wasm32-unknown-unknown`).
-- ⚡ **Signals Reactivity**: Surgical DOM updates at 60fps via fine-grained `Signal<T>` primitives without Virtual DOM overhead.
-- 📐 **12-Column Grid System**: Responsive layout components (`Container`, `Row`, `Col`) natively integrated into Rust.
-- 🎨 **Glassmorphism Theme Engine**: 5 stunning themes (Cyber, Ocean, Forest, Sunset, Corporate) with instant runtime switching.
-- 🔒 **Zero-Trust Memory Security**: Session tokens are cryptographically sealed inside WebAssembly's private linear memory (`SealedToken`), completely unreachable by external scripts.
+Welcome to **Ferrox-Front**, the high-performance WebAssembly (Wasm) frontend framework written in pure Rust. It combines fine-grained reactive signals, compile-time JSX HTML templates, zero-trust cryptographic security, real-time WebSocket state synchronization, and GPU-accelerated WebGL charts into a unified application suite.
 
 ---
 
-## 🏗️ Crate Architecture
+## 1. What It Is & Architectural Purpose
 
-The Ferrox Front ecosystem is modularized into 8 specialized crates:
+Modern web applications require rendering complex, real-time user interfaces with high responsiveness. However, JavaScript frontend frameworks (React, Vue, Angular) struggle with heavy client-side computations (real-time telemetry charts, client-side encryption, large data grid rendering) due to single-threaded event-loop bottlenecks and garbage collection pauses.
 
-- **`ferrox-front-core`**: Reactive Signals engine, Wasm DOM builder, and Glassmorphism theme manager.
-- **`ferrox-front-macro`**: Procedural compiler for the `rsx!` macro supporting inline HTML-in-Rust component syntax.
-- **`ferrox-front-ui`**: 12-column responsive layout grid, virtualized DataGrid (1M rows support), and UI component library.
-- **`ferrox-front-security`**: Declarative RBAC `<Secure require="...">`, `SealedToken` memory protection, and WebAuthn Passkeys.
-- **`ferrox-front-router`**: Single Page Application (SPA) History API router for seamless client-side navigation.
-- **`ferrox-front-charts`**: Pure WebAssembly vector SVG charting engine.
-- **`ferrox-front-templates`**: Pre-built enterprise SaaS page templates (Admin Dashboard, Pricing Table, Auth pages).
-- **`ferrox-front-ws`**: Async WebAssembly WebSocket client for real-time data streaming.
+**Ferrox-Front** leverages Rust and WebAssembly to eliminate runtime garbage collection entirely. It delivers native 60 FPS rendering performance, compile-time type safety, and fine-grained reactive state updates without Virtual DOM overhead.
+
+```
+┌────────────────────────────────────────────────────────────────────────────────────────┐
+│                                YOUR FERROX-FRONT WASM APP                              │
+├────────────────────────────────────────────────────────────────────────────────────────┤
+│  Fine-Grained Signals  │  Compile-Time JSX  │  Wasm Router  │  WebGL Charts  │  WebSockets │
+├────────────────────────┴────────────────────┴───────────────┴────────────────┴──────────┤
+│                                FERROX-FRONT CORE CRATES                                │
+├────────────────────────────────────────────────────────────────────────────────────────┤
+│  Rust / WebAssembly  │  web-sys / js-sys Binding  │  Browser Web Cryptography API      │
+└────────────────────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 2. Crate Architecture Breakdown
+
+| Crate | Category & Purpose | Key Capabilities |
+| :--- | :--- | :--- |
+| **`ferrox-front-core`** | Framework Foundation | Signal runtime, effect scheduler, resource context primitives. |
+| **`ferrox-front-templates`**| HTML / JSX Engine | Compile-time `view!` JSX macro, static node cloning, SSR. |
+| **`ferrox-front-macro`** | Procedural Macros | Component procedural macros (`#[component]`), memo derives. |
+| **`ferrox-front-router`**| Client Navigation | Declarative Wasm client-side routing & route guard matching. |
+| **`ferrox-front-ui`** | Component Library | Accessible UI primitives (buttons, modals, data tables). |
+| **`ferrox-front-charts`**| Data Visualization | GPU-accelerated WebGL charts (candlestick, line, bar). |
+| **`ferrox-front-ws`** | Real-Time Transport | Reconnecting WebSocket manager with binary MsgPack support. |
+| **`ferrox-front-security`**| Zero-Trust Wasm | WebCrypto API integration, AES-256-GCM, XSS sanitizers. |
+
+---
+
+## 3. Core Architectural Philosophy
+
+### 1. Zero-Virtual DOM Overhead
+Unlike VDOM frameworks that diff full object trees on state mutations, Ferrox-Front binds signals directly to individual DOM node pointers.
+
+### 2. Native Memory Performance
+Rust's affine type system and ownership model guarantee memory safety and zero garbage collection pauses during intensive rendering.
+
+### 3. End-to-End Type Integrity
+Share identical Rust data models (structs, enums, validation rules) across your backend Ferrox microservices and WebAssembly frontend app.
+
+---
+
+## 4. Execution Sequence Flow
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant Browser as Browser Event Loop
+    participant Signal as Reactive Signal State
+    participant Scheduler as Ferrox Effect Scheduler
+    participant DOM as WebAssembly DOM Mutator
+
+    Browser->>Signal: User Clicks Button -> signal.set(new_val)
+    Signal->>Scheduler: Notify Subscribed Reactive Effects
+    Scheduler->>Scheduler: Batch & Deduplicate Pending Updates
+    Scheduler->>DOM: Execute Direct DOM Node Mutation (web_sys)
+    DOM-->>Browser: Updated UI Screen Rendered at 60 FPS
+```
+
+---
+
+## 5. Next Steps
+
+- Proceed to the [Quickstart Guide](quickstart.md) to build your first Rust Wasm frontend app.
+- Explore individual crate guides in the sidebar documentation sections.

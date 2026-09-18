@@ -7,6 +7,11 @@
 pub mod layout;
 pub mod components;
 pub mod tokens;
+pub mod ferrox_datagrid;
+pub mod ferrox_kanban;
+pub mod ferrox_theme;
+pub mod ferrox_admin;
+pub mod ferrox_security_dashboard;
 
 use ferrox_front_core::dom::{div, span, DomBuilder};
 use ferrox_front_core::reactivity::Signal;

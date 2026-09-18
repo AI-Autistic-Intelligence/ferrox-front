@@ -3,7 +3,7 @@
 //! `components` provides an enterprise-grade Glassmorphism component library:
 //! Buttons, Badges, Cards, Form Controls, Progress Bars, Spinners, Avatars, User Pills, and Alerts.
 
-use ferrox_front_core::dom::{div, span, button as dom_button, p, DomBuilder};
+use ferrox_front_core::dom::{div, span, button as dom_button, DomBuilder};
 
 /// Renders a Glassmorphism Card container
 pub fn card() -> DomBuilder {

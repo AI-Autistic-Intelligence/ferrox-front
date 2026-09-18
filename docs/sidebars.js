@@ -8,7 +8,7 @@ module.exports = {
     {
       type: 'category',
       label: '🧠 Core Architecture & Reactivity',
-      items: ['architecture', 'core', 'macros', 'routing'],
+      items: ['architecture', 'core', 'reactivity', 'macros', 'routing'],
     },
     {
       type: 'category',

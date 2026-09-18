@@ -1,86 +1,133 @@
 ---
 id: core
-title: Ferrox Front Core Engine (ferrox-front-core)
+title: Core Kernel, Context Providers & Resource Managers
 sidebar_position: 2
 ---
 
-# 🧠 Ferrox Front Core Engine (`ferrox-front-core`)
+# Core Kernel, Context Providers & Resource Managers
 
-`ferrox-front-core` is the foundational engine of Ferrox Front. It houses the fine-grained **Signals Reactivity Graph**, the zero-copy **Wasm DOM Builder**, and the **Glassmorphism Theme System**.
+The `ferrox-front-core` crate is the foundation kernel of the Ferrox WebAssembly frontend framework. It manages component context providers (`provide_context`, `use_context`), async resource loaders (`create_resource`), effect batch schedulers, and browser lifecycle event hooks.
 
 ---
 
-## ⚡ 1. The Signals Reactivity Engine
+## 1. What It Is & Architectural Purpose
 
-The reactive system is built around `Signal<T>`, an atomic, thread-safe, cheaply-clonable state container (`Arc<RwLock<T>>`).
+WebAssembly single-page applications require global context sharing (user identity, theme settings, API clients) across deep component trees without prop-drilling. Furthermore, async data fetching (REST/GraphQL calls) must integrate with reactive signals without race conditions or memory leaks.
 
-### API Summary
+`ferrox-front-core` provides context providers and async resource primitives. It establishes a dependency injection tree in Wasm memory and synchronizes async data fetches with reactive UI views.
 
-```rust
-use ferrox_front_core::reactivity::{create_signal, Signal};
-
-// 1. Create a reactive signal pair
-let (read_signal, write_signal) = create_signal(100);
-
-// 2. Read current value (.get())
-let current_val = read_signal.get();
-
-// 3. Set new value (.set(new_val))
-write_signal.set(200);
-
-// 4. In-place closure mutation (.update(closure))
-write_signal.update(|val| *val += 50);
+```
+┌────────────────────────────────────────────────────────────────────────┐
+│                        ferrox-front-core Kernel                        │
+├──────────────────────────────────┬─────────────────────────────────────┤
+│  Context Dependency Injection    │  Async Resource Loader              │
+│  (provide_context / use_context) │  (create_resource / Suspense)       │
+└────────────────┬─────────────────┴──────────────────┬──────────────────┘
+                 │ State Synchronization
+                 ▼
+┌────────────────────────────────────────────────────────────────────────┐
+│                        Component Tree Hierarchy                        │
+└────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 🧱 2. DOM Builder Engine (`DomBuilder`)
+## 2. What It Does & Key Capabilities
 
-Ferrox Front does not use string concatenations or runtime HTML templates. Components build node hierarchies using `DomBuilder`, which invokes browser Web APIs (`web_sys::Document`) directly.
+- **`provide_context<T>()` & `use_context<T>()`**: Type-safe context injection across component sub-trees without manual prop passing.
+- **`create_resource()`**: Asynchronous data loader that automatically re-fetches when source signals mutate and manages loading states.
+- **`<Suspense>` & `<Transition>` Components**: Declarative fallback components that render loading skeletons until async resources settle.
+- **Global Microtask Scheduler**: Schedules and deduplicates reactive effect updates using browser microtask queues (`queueMicrotask`).
 
-### Constructor & Helper Functions
+---
 
-```rust
-use ferrox_front_core::dom::{div, span, button, h1, p, DomBuilder, mount};
+## 3. How It Works Under the Hood
 
-// Create elements
-let container = div()
-    .attr("class", "my-container")
-    .attr("style", "padding: 1rem;")
-    .child(h1().text("Welcome"))
-    .child(
-        button()
-            .attr("class", "btn-primary")
-            .text("Click Me")
-            .on_click(|| println!("Clicked!"))
-    );
+### Async Resource Loader & Suspense Sequence
 
-// Mount to browser DOM
-mount("#root", container);
+```mermaid
+sequenceDiagram
+    autonumber
+    participant Comp as Component Setup
+    participant Resource as Resource<UserId, UserData>
+    participant Api as Remote HTTP API
+    participant Suspense as <Suspense> Fallback UI
+
+    Comp->>Resource: create_resource(move || user_id.get(), fetch_user)
+    Resource->>Api: Dispatch Async Fetch Request (/api/users/100)
+    Resource->>Suspense: Set Resource State = Loading
+    Suspense-->>Comp: Render <LoadingSkeleton /> Component
+    Api-->>Resource: Return UserData JSON Payload
+    Resource->>Suspense: Set Resource State = Ready(UserData)
+    Suspense-->>Comp: Swap View to Render <UserProfileData />
 ```
 
 ---
 
-## 🎨 3. Runtime Glassmorphism Theme Engine (`theme`)
+## 4. Why It Was Designed This Way
 
-Ferrox Front supports dynamic runtime theme switching at 60fps by mutating the `data-theme` attribute on the root HTML element.
+| Feature | Prop Drilling & Manual Fetches | Ferrox Core Kernel |
+| :--- | :--- | :--- |
+| **Data Propagation** | Passing global theme/auth props through 10 component layers. | Single `use_context::<AuthStore>()` call anywhere in tree. |
+| **Race Conditions** | Fast user typing causes out-of-order async fetch responses. | `create_resource` automatically cancels stale in-flight requests. |
+| **Loading States** | Manual `if is_loading { ... }` checks scattered everywhere. | Declarative `<Suspense fallback=...> ` handles loading state globally. |
 
-### Available Themes
-- `ferrox-cyber`: Dark background with neon purple/cyan accents and frosted glass blur.
-- `ocean-breeze`: Oceanic blue and Atlantic cyan gradients.
-- `midnight-forest`: Deep emerald green background.
-- `sunset-gold`: Warm amber and golden orange tones.
-- `corporate-slate`: Minimalist slate grey corporate styling.
+---
 
-### API Reference
+## 5. Practical Usage Guide & Extended Code Examples
+
+### 5.1 Context Provider & Dependency Injection
 
 ```rust
-use ferrox_front_core::theme::{set_theme, get_theme};
+use ferrox_front_core::prelude::*;
+use ferrox_front_templates::view;
 
-// Switch active theme
-set_theme("ferrox-cyber");
+#[derive(Clone)]
+pub struct UserSession {
+    pub user_id: String,
+    pub token: String,
+}
 
-// Query current theme
-let active = get_theme();
-assert_eq!(active, "ferrox-cyber");
+#[component]
+pub fn AppRoot() -> impl IntoView {
+    // Provide user session context to all descendant components
+    provide_context(UserSession {
+        user_id: "usr_777".to_string(),
+        token: "bearer_xyz_123".to_string(),
+    });
+
+    view! {
+        <main class="app">
+            <UserProfileHeader />
+        </main>
+    }
+}
+
+#[component]
+pub fn UserProfileHeader() -> impl IntoView {
+    // Retrieve injected session context anywhere in tree
+    let session = use_context::<UserSession>().expect("UserSession context missing!");
+
+    view! {
+        <header>
+            <span>"Logged in as: " {session.user_id}</span>
+        </header>
+    }
+}
 ```
+
+---
+
+## 6. Anti-Patterns: How NOT to Use It
+
+> [!CAUTION]
+> **Anti-Pattern 1: Context Overuse for Local Component State**
+> Avoid placing purely local component state (like dropdown open/closed flags) into global context. Keep context restricted to shared global application state.
+
+---
+
+## 7. Pro-Tips & Best Practices
+
+> [!TIP]
+> **Pro-Tip 1: Resource Refetching**
+> Trigger manual refetching of async resources using `resource.refetch()` when a user clicks a refresh button or completes an edit operation.

@@ -1,78 +1,116 @@
 ---
 id: security
-title: Zero-Trust Security & E2EE
-sidebar_position: 8
+title: Zero-Trust Wasm Security, WebCrypto & XSS Sanitization
+sidebar_position: 6
 ---
 
-# 🔒 Zero-Trust Security in WebAssembly (`ferrox-front-security`)
+# Zero-Trust Wasm Security, WebCrypto & XSS Sanitization
 
-In Ferrox Front, security is enforced directly inside WebAssembly bytecode, isolating application memory from browser-based script attacks. The `ferrox-front-security` crate provides a complete suite of Zero-Trust mechanisms: from memory anti-tampering to biometric passkeys.
+The `ferrox-front-security` crate delivers zero-trust security for Rust WebAssembly applications. It features browser WebCrypto API bindings (AES-256-GCM, RSA-OAEP, ECDSA), zero-copy linear memory wiping (`Zeroize`), secure storage adapters, and HTML XSS sanitizers.
 
 ---
 
-## 🛡️ 1. `SealedToken` & E2EE (End-to-End Encryption)
+## 1. What It Is & Architectural Purpose
 
-Session tokens (JWT/PASETO) are stored within WebAssembly's private linear memory space and are symmetrically encrypted (sealed). 
+Standard JavaScript web applications store sensitive tokens (JWTs, encryption keys, PII) in plain text inside JavaScript objects or localStorage, leaving them exposed to cross-site scripting (XSS) extraction attacks and browser extension inspection.
 
-Malicious JavaScript scripts (injected via XSS) or rogue browser extensions cannot inspect WebAssembly memory space to extract raw session tokens.
+`ferrox-front-security` implements zero-trust security inside WebAssembly linear memory. It encrypts sensitive payloads in Wasm memory using AES-256-GCM via the browser's native WebCrypto subsystem, automatically wiping sensitive byte arrays from linear memory when dropped.
 
-### Payload Signing & Memory Sealing
-
-```rust
-use ferrox_front_security::e2ee::{SealedToken, sign_payload};
-
-// 1. Seal a JWT token securely into Wasm linear memory
-let token = SealedToken::new("ey...my.jwt.token");
-
-// (Later) Unseal the token only when needed for an authenticated request
-let raw_token = token.unseal();
-
-// 2. Sign a payload payload using WebCrypto HMAC to prevent Man-in-the-Middle (MITM) tampering
-let payload = r#"{"action": "transfer", "amount": 5000}"#;
-let signature = sign_payload(payload);
-
-// You can now securely send `payload` and `signature` to the backend.
+```
+┌────────────────────────────────────────────────────────────────────────┐
+│                    Ferrox Zero-Trust Wasm Security                     │
+├──────────────────────────────────┬─────────────────────────────────────┤
+│  Wasm Linear Memory Encryption   │  WebCrypto Subsystem Integration    │
+│  • Automatic Zeroize Memory Wipe │  • AES-256-GCM Authenticated Cipher│
+│  • Memory Protection Boundaries  │  • SubtleCrypto Hardware Acceleration│
+└────────────────┬─────────────────┴──────────────────┬──────────────────┘
+                 │ Secure Key Storage
+                 ▼
+┌────────────────────────────────────────────────────────────────────────┐
+│                        Encrypted Browser Storage                       │
+└────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 🔑 2. `<Secure>` Component & DOM Anti-Tampering (RBAC)
+## 2. What It Does & Key Capabilities
 
-The `secure` component evaluates user identity permissions before mounting nodes into the DOM. 
-If a user lacks the required role or permission, **the DOM node is never instantiated or rendered**. This prevents attackers from unhiding administrative buttons via browser devtools (Anti-Tampering protection).
+- **AES-256-GCM Cryptography**: Authenticated symmetric encryption and decryption using WebCrypto hardware acceleration.
+- **`Zeroize` Memory Hardening**: Wipes sensitive cryptographic keys and token byte slices from Wasm linear memory on `Drop`.
+- **HTML XSS Sanitization**: Strips dangerous script tags, `javascript:` URIs, and un-sanitized HTML attributes prior to DOM rendering.
+- **Secure Encrypted Storage**: Encrypts sensitive localStorage keys with ephemeral Wasm master keys.
 
-```rust
-use ferrox_front_security::rbac::{secure, UserIdentity, Role};
-use ferrox_front_core::dom::button;
+---
 
-let user = UserIdentity {
-    id: "usr_99".to_string(),
-    role: Role::User,
-    permissions: vec!["reports:read".to_string()],
-};
+## 3. How It Works Under the Hood
 
-// This button will NOT be created in the DOM if the user lacks "admin:delete"
-// Admins automatically bypass permission checks.
-let delete_button = secure(
-    &user, 
-    "admin:delete", 
-    button().attr("class", "btn-danger").text("Format Database")
-);
+### WebCrypto AES-256-GCM Encryption Sequence
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant App as Rust Component State
+    participant Sec as ferrox-front-security Engine
+    participant Crypto as Browser WebCrypto API
+    participant Storage as Encrypted Storage Container
+
+    App->>Sec: Encrypt Token Payload ("secret_jwt_data")
+    Sec->>Sec: Generate 12-byte Cryptographic Nonce / IV
+    Sec->>Crypto: SubtleCrypto.encrypt(AES-GCM, Key, Payload)
+    Crypto-->>Sec: Return Encrypted Ciphertext + Auth Tag ArrayBuffer
+    Sec->>Storage: Store Base64 Ciphertext
+    Sec->>Sec: Zeroize Raw Payload Bytes from Wasm Memory
 ```
 
 ---
 
-## 👆 3. Passwordless WebAuthn Biometric Passkeys
+## 4. Why It Was Designed This Way
 
-`ferrox-front-security` includes native WebAssembly bindings to trigger device biometric sensors (Touch ID, Face ID, Windows Hello) via FIDO2 Passkeys APIs, replacing vulnerable passwords.
+| Feature | Standard JavaScript Security | Ferrox Wasm Security |
+| :--- | :--- | :--- |
+| **Key Exposure** | JS keys visible in browser dev console memory inspection. | Keys kept inside isolated Wasm linear memory. |
+| **XSS Immunity** | Malicious scripts can steal `window.localStorage` tokens. | Encrypted storage requires Wasm master key to decipher. |
+| **Memory Cleanup**| GC leaves sensitive string buffers in RAM indefinitely. | `Zeroize` overwrites sensitive memory with `0x00` on drop. |
+
+---
+
+## 5. Practical Usage Guide & Extended Code Examples
+
+### 5.1 AES-256-GCM Encryption and Decryption
 
 ```rust
-use ferrox_front_security::passkey::{prompt_passkey_login, register_passkey};
+use ferrox_front_security::{CryptoEngine, SecureBuffer};
 
-// Trigger device biometric sensor to register a new Passkey
-// (e.g., during user signup)
-register_passkey();
+pub async fn encrypt_sensitive_token(token: &str) -> Result<String, String> {
+    let crypto = CryptoEngine::new()?;
 
-// Later, trigger the biometric sensor to authenticate the user securely
-prompt_passkey_login();
+    // Generate ephemeral AES-256-GCM key
+    let key = crypto.generate_aes_key().await?;
+
+    // Encrypt string payload into secure buffer
+    let encrypted_data = crypto.encrypt_aes_gcm(&key, token.as_bytes()).await?;
+
+    // Decrypt payload back
+    let decrypted_bytes = crypto.decrypt_aes_gcm(&key, &encrypted_data).await?;
+    let decrypted_string = String::from_utf8(decrypted_bytes).map_err(|e| e.to_string())?;
+
+    assert_eq!(token, decrypted_string);
+    Ok(encrypted_data.to_base64())
+}
 ```
+
+---
+
+## 6. Anti-Patterns: How NOT to Use It
+
+> [!CAUTION]
+> **Anti-Pattern 1: Storing Plaintext Passwords in Long-Lived Strings**
+> Avoid storing raw user passwords or API tokens in long-lived Rust `String` structs without wrapping them in `SecureBuffer` or `Zeroize` wrappers. Plain strings persist in Wasm memory until garbage collection.
+
+---
+
+## 7. Pro-Tips & Best Practices
+
+> [!TIP]
+> **Pro-Tip 1: Content Security Policy (CSP)**
+> Always pair `ferrox-front-security` with a strict HTTP Content Security Policy (`script-src 'wasm-unsafe-eval' 'self'`) to prevent unauthorized external script injections.
