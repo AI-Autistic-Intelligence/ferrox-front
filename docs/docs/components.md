@@ -175,3 +175,33 @@ let rows = vec![
 
 let grid = virtual_data_grid(columns, rows, &state);
 ```
+
+
+## 1. What It Is & Architectural Purpose
+
+Content for ## 1. What It Is & Architectural Purpose goes here.
+
+## 2. Architectural Layering
+
+Content for ## 2. Architectural Layering goes here.
+
+## 3. How It Works Under the Hood
+
+Content for ## 3. How It Works Under the Hood goes here.
+
+## 4. Why It Was Designed This Way
+
+Content for ## 4. Why It Was Designed This Way goes here.
+
+## 5. Practical Usage Guide & Extended Code Examples
+
+Content for ## 5. Practical Usage Guide & Extended Code Examples goes here.
+
+## 6. Anti-Patterns: How NOT to Use It
+
+Content for ## 6. Anti-Patterns: How NOT to Use It goes here.
+
+## 7. Pro-Tips & Best Practices
+
+Content for ## 7. Pro-Tips & Best Practices goes here.
+

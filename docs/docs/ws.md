@@ -150,3 +150,21 @@ onerror_callback.forget();
 1. **WSS (WebSocket Secure)**: Always use `wss://` in production to enforce TLS encryption and prevent middleman payload inspection.
 2. **Reconnection Strategy**: Pair `FerroxSocket` with a retry timer to handle transient network drops automatically.
 3. **Authentication Handshake**: Send an initial zero-trust `SealedToken` in the query parameter or connection payload frame to validate authorization before opening server streams.
+
+
+## 4. Why It Was Designed This Way
+
+Content for ## 4. Why It Was Designed This Way goes here.
+
+## 5. Practical Usage Guide & Extended Code Examples
+
+Content for ## 5. Practical Usage Guide & Extended Code Examples goes here.
+
+## 6. Anti-Patterns: How NOT to Use It
+
+Content for ## 6. Anti-Patterns: How NOT to Use It goes here.
+
+## 7. Pro-Tips & Best Practices
+
+Content for ## 7. Pro-Tips & Best Practices goes here.
+

@@ -132,3 +132,33 @@ trunk serve --open
 ```
 
 Trunk will compile your Rust code into WebAssembly, launch a local web server with Hot Reloading, and open your default browser at `http://localhost:8080`.
+
+
+## 1. What It Is & Architectural Purpose
+
+Content for ## 1. What It Is & Architectural Purpose goes here.
+
+## 2. Architectural Layering
+
+Content for ## 2. Architectural Layering goes here.
+
+## 3. How It Works Under the Hood
+
+Content for ## 3. How It Works Under the Hood goes here.
+
+## 4. Why It Was Designed This Way
+
+Content for ## 4. Why It Was Designed This Way goes here.
+
+## 5. Practical Usage Guide & Extended Code Examples
+
+Content for ## 5. Practical Usage Guide & Extended Code Examples goes here.
+
+## 6. Anti-Patterns: How NOT to Use It
+
+Content for ## 6. Anti-Patterns: How NOT to Use It goes here.
+
+## 7. Pro-Tips & Best Practices
+
+Content for ## 7. Pro-Tips & Best Practices goes here.
+
