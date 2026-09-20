@@ -12,6 +12,7 @@ pub mod ferrox_kanban;
 pub mod ferrox_theme;
 pub mod ferrox_admin;
 pub mod ferrox_security_dashboard;
+pub mod json_dashboard_builder;
 
 use ferrox_front_core::dom::{div, span, DomBuilder};
 use ferrox_front_core::reactivity::Signal;

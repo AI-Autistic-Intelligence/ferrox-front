@@ -90,7 +90,7 @@ pub fn start() -> Result<(), JsValue> {
         Point { x: 320.0, y: 30.0 },
         Point { x: 400.0, y: 15.0 },
     ];
-    let chart_widget = line_chart(chart_points, 450, 160);
+    let chart_widget = line_chart("admin_line", chart_points, 450, 160, false);
 
     // 5. CONSTRUCT DASHBOARD SHOWCASE LAYOUT
     let dashboard_layout = container()

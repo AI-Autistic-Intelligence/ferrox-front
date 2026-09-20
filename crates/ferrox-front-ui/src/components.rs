@@ -120,11 +120,52 @@ pub fn progress_bar(percentage: f64) -> DomBuilder {
 }
 
 /// Renders an Avatar circle with user initials
-pub fn avatar(initials: &str) -> DomBuilder {
-    div()
+pub fn avatar(initials: &str, img_url: Option<&str>) -> DomBuilder {
+    let size = 40;
+    let mut builder = div()
         .attr("class", "ferrox-avatar")
-        .attr("style", "width: 38px; height: 38px; border-radius: 50%; background: var(--btn-bg); color: #fff; font-weight: 700; font-size: 0.88rem; display: inline-flex; align-items: center; justify-content: center; border: var(--border-glass);")
-        .text(initials)
+        .attr("style", &format!("width: {}px; height: {}px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-weight: 700; color: #fff; background: var(--btn-bg, linear-gradient(135deg, #7e22ce, #3b82f6)); overflow: hidden; border: 2px solid rgba(255,255,255,0.1);", size, size));
+
+    if let Some(url) = img_url {
+        let img = DomBuilder::new("img")
+            .attr("src", url)
+            .attr("style", "width: 100%; height: 100%; object-fit: cover;");
+        builder = builder.child(img);
+    } else {
+        builder = builder.text(initials);
+    }
+    
+    builder
+}
+
+/// Renders a Fullscreen Modal overlay with Glassmorphism styling
+pub fn modal(title: &str, content: DomBuilder) -> DomBuilder {
+    let overlay_style = "position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; z-index: 9999;";
+    let modal_style = "background: var(--bg-primary); border: var(--border-glass); border-radius: 12px; padding: 24px; box-shadow: 0 24px 64px rgba(0,0,0,0.5); min-width: 400px; max-width: 90vw; max-height: 90vh; overflow-y: auto; display: flex; flex-direction: column; gap: 20px; position: relative;";
+
+    let close_btn = button("✕", "ghost")
+        .attr("style", "position: absolute; top: 16px; right: 16px; padding: 4px 10px; font-size: 1.2rem; border-radius: 50%; color: var(--text-muted);")
+        .on_click(|| {
+            let doc = ferrox_front_core::dom::document();
+            if let Some(el) = doc.get_element_by_id("chart-modal") {
+                el.remove();
+            }
+        });
+
+    let header = div()
+        .attr("style", "font-size: 1.5rem; font-weight: 700; color: var(--text-primary); border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 12px; padding-right: 40px;")
+        .text(title);
+
+    div()
+        .attr("id", "chart-modal")
+        .attr("style", overlay_style)
+        .child(
+            div()
+                .attr("style", modal_style)
+                .child(close_btn)
+                .child(header)
+                .child(content)
+        )
 }
 
 /// Renders a User Pill component (Avatar + Name + Role)
@@ -133,7 +174,7 @@ pub fn user_pill(name: &str, role: &str) -> DomBuilder {
     div()
         .attr("class", "ferrox-user-pill")
         .attr("style", "display: inline-flex; align-items: center; gap: 10px; padding: 4px 12px 4px 4px; background: var(--bg-glass); border: var(--border-glass); border-radius: 9999px;")
-        .child(avatar(&initials))
+        .child(avatar(&initials, None))
         .child(
             div()
                 .attr("style", "display: flex; flex-direction: column;")

@@ -56,40 +56,141 @@ pub struct ScatterDatum {
 }
 
 /// Renders a Nivo-style Vector SVG Line Chart with gradient strokes.
-pub fn line_chart(data: Vec<Point>, width: u32, height: u32) -> DomBuilder {
+pub fn line_chart(id: &str, data: Vec<Point>, width: u32, height: u32, show_axes: bool) -> DomBuilder {
     let mut path_d = String::new();
     
+    let pl = if show_axes { 60.0 } else { 20.0 };
+    let pr = 20.0;
+    let pt = 20.0;
+    let pb = if show_axes { 40.0 } else { 20.0 };
+
+    let mut min_x = 0.0;
+    let mut max_x = 1.0;
+    let mut min_y = 0.0;
+    let mut max_y = 1.0;
+
     if !data.is_empty() {
-        path_d.push_str(&format!("M {} {}", data[0].x, data[0].y));
+        max_x = data.iter().map(|p| p.x).fold(f64::MIN, f64::max);
+        min_x = data.iter().map(|p| p.x).fold(f64::MAX, f64::min);
+        max_y = data.iter().map(|p| p.y).fold(f64::MIN, f64::max);
+        min_y = data.iter().map(|p| p.y).fold(f64::MAX, f64::min);
+    }
+    
+    let range_x = (max_x - min_x).max(0.1);
+    let range_y = (max_y - min_y).max(0.1);
+
+    let inner_w = width as f64 - pl - pr;
+    let inner_h = height as f64 - pt - pb;
+
+    let scale_x = |x: f64| -> f64 { pl + ((x - min_x) / range_x) * inner_w };
+    let scale_y = |y: f64| -> f64 { (height as f64 - pb) - ((y - min_y) / range_y) * inner_h };
+
+    if !data.is_empty() {
+        path_d.push_str(&format!("M {} {}", scale_x(data[0].x), scale_y(data[0].y)));
         for point in data.iter().skip(1) {
-            path_d.push_str(&format!(" L {} {}", point.x, point.y));
+            path_d.push_str(&format!(" L {} {}", scale_x(point.x), scale_y(point.y)));
         }
     }
 
-    div().child(
-        DomBuilder::new("svg")
-            .attr("class", "ferrox-svg-chart")
-            .attr("width", &width.to_string())
-            .attr("height", &height.to_string())
-            .attr("viewBox", &format!("0 0 {} {}", width, height))
-            .child(
-                DomBuilder::new("defs").child(
-                    DomBuilder::new("linearGradient")
-                        .attr("id", "lineChartGrad")
-                        .attr("x1", "0%").attr("y1", "0%").attr("x2", "100%").attr("y2", "0%")
-                        .child(DomBuilder::new("stop").attr("offset", "0%").attr("stop-color", "var(--accent-glow, #9333ea)"))
-                        .child(DomBuilder::new("stop").attr("offset", "100%").attr("stop-color", "var(--accent-cyan, #06b6d4)"))
-                )
+    let grad_id = format!("lineChartGrad-{}", id);
+    
+    let mut svg = DomBuilder::new_svg("svg")
+        .attr("class", "ferrox-svg-chart")
+        .attr("style", "max-width: 100%; height: auto; overflow: visible;")
+        .attr("width", &width.to_string())
+        .attr("height", &height.to_string())
+        .attr("viewBox", &format!("0 0 {} {}", width, height))
+        .child(
+            DomBuilder::new_svg("defs").child(
+                DomBuilder::new_svg("linearGradient")
+                    .attr("id", &grad_id)
+                    .attr("x1", "0%").attr("y1", "0%").attr("x2", "100%").attr("y2", "0%")
+                    .child(DomBuilder::new_svg("stop").attr("offset", "0%").attr("stop-color", "var(--accent-glow, #9333ea)"))
+                    .child(DomBuilder::new_svg("stop").attr("offset", "100%").attr("stop-color", "var(--accent-cyan, #06b6d4)"))
             )
-            .child(
-                DomBuilder::new("path")
-                    .attr("d", &path_d)
-                    .attr("fill", "none")
-                    .attr("stroke", "url(#lineChartGrad)")
-                    .attr("stroke-width", "4")
-                    .attr("stroke-linecap", "round")
-            )
-    )
+        );
+
+    // Draw Grid and Axes if enabled
+    if show_axes {
+        let grid_color = "rgba(255,255,255,0.1)";
+        let text_color = "rgba(255,255,255,0.5)";
+        
+        for i in 0..=5 {
+            let val = min_y + (range_y * (i as f64 / 5.0));
+            let y_pos = scale_y(val);
+            
+            svg = svg.child(
+                DomBuilder::new_svg("line")
+                    .attr("x1", &pl.to_string())
+                    .attr("x2", &(width as f64 - pr).to_string())
+                    .attr("y1", &y_pos.to_string())
+                    .attr("y2", &y_pos.to_string())
+                    .attr("stroke", grid_color)
+                    .attr("stroke-width", "1")
+            ).child(
+                DomBuilder::new_svg("text")
+                    .attr("x", &(pl - 10.0).to_string())
+                    .attr("y", &(y_pos + 4.0).to_string())
+                    .attr("fill", text_color)
+                    .attr("font-size", "12")
+                    .attr("font-family", "sans-serif")
+                    .attr("text-anchor", "end")
+                    .text(&format!("{:.2}", val))
+            );
+        }
+
+        for i in 0..=5 {
+            let val = min_x + (range_x * (i as f64 / 5.0));
+            let x_pos = scale_x(val);
+            
+            svg = svg.child(
+                DomBuilder::new_svg("line")
+                    .attr("x1", &x_pos.to_string())
+                    .attr("x2", &x_pos.to_string())
+                    .attr("y1", &pt.to_string())
+                    .attr("y2", &(height as f64 - pb).to_string())
+                    .attr("stroke", grid_color)
+                    .attr("stroke-width", "1")
+            ).child(
+                DomBuilder::new_svg("text")
+                    .attr("x", &x_pos.to_string())
+                    .attr("y", &(height as f64 - pb + 20.0).to_string())
+                    .attr("fill", text_color)
+                    .attr("font-size", "12")
+                    .attr("font-family", "sans-serif")
+                    .attr("text-anchor", "middle")
+                    .text(&format!("{:.1}", val))
+            );
+        }
+    }
+
+    svg = svg.child(
+        DomBuilder::new_svg("path")
+            .attr("d", &path_d)
+            .attr("fill", "none")
+            .attr("stroke", &format!("url(#{})", grad_id))
+            .attr("stroke-width", "4")
+            .attr("stroke-linecap", "round")
+            .attr("stroke-linejoin", "round")
+    );
+
+    if !data.is_empty() {
+        for point in &data {
+            let cx = scale_x(point.x);
+            let cy = scale_y(point.y);
+            let circle = DomBuilder::new_svg("circle")
+                .attr("cx", &cx.to_string())
+                .attr("cy", &cy.to_string())
+                .attr("r", "5")
+                .attr("fill", "var(--accent-cyan, #06b6d4)")
+                .attr("cursor", "crosshair")
+                .child(DomBuilder::new_svg("title").text(&format!("Valore: {:.3}", point.y)));
+            
+            svg = svg.child(circle);
+        }
+    }
+
+    div().child(svg)
 }
 
 /// Renders a Nivo-style Gradient Area Chart with filled baseline opacity.
@@ -111,53 +212,95 @@ pub fn area_chart(data: Vec<Point>, width: u32, height: u32) -> DomBuilder {
     };
 
     div().child(
-        DomBuilder::new("svg")
+        DomBuilder::new_svg("svg")
             .attr("class", "ferrox-svg-area-chart")
+            .attr("style", "max-width: 100%; height: auto;")
             .attr("width", &width.to_string())
             .attr("height", &height.to_string())
             .attr("viewBox", &format!("0 0 {} {}", width, height))
             .child(
-                DomBuilder::new("defs").child(
-                    DomBuilder::new("linearGradient")
+                DomBuilder::new_svg("defs").child(
+                    DomBuilder::new_svg("linearGradient")
                         .attr("id", "areaFillGrad")
                         .attr("x1", "0%").attr("y1", "0%").attr("x2", "0%").attr("y2", "100%")
-                        .child(DomBuilder::new("stop").attr("offset", "0%").attr("stop-color", "var(--accent-cyan, #06b6d4)").attr("stop-opacity", "0.4"))
-                        .child(DomBuilder::new("stop").attr("offset", "100%").attr("stop-color", "var(--accent-cyan, #06b6d4)").attr("stop-opacity", "0.0"))
+                        .child(DomBuilder::new_svg("stop").attr("offset", "0%").attr("stop-color", "var(--accent-cyan, #06b6d4)").attr("stop-opacity", "0.4"))
+                        .child(DomBuilder::new_svg("stop").attr("offset", "100%").attr("stop-color", "var(--accent-cyan, #06b6d4)").attr("stop-opacity", "0.0"))
                 )
             )
-            .child(DomBuilder::new("path").attr("d", &area_d).attr("fill", "url(#areaFillGrad)"))
-            .child(DomBuilder::new("path").attr("d", &line_d).attr("fill", "none").attr("stroke", "var(--accent-cyan, #06b6d4)").attr("stroke-width", "3"))
+            .child(DomBuilder::new_svg("path").attr("d", &area_d).attr("fill", "url(#areaFillGrad)"))
+            .child(DomBuilder::new_svg("path").attr("d", &line_d).attr("fill", "none").attr("stroke", "var(--accent-cyan, #06b6d4)").attr("stroke-width", "3"))
     )
 }
 
-/// Renders a Nivo-style Bar Chart with rounded corners and value labels.
-pub fn bar_chart(data: Vec<BarDatum>, width: u32, height: u32) -> DomBuilder {
-    let mut svg = DomBuilder::new("svg")
+pub fn bar_chart(id: &str, data: Vec<BarDatum>, width: u32, height: u32, show_axes: bool) -> DomBuilder {
+    let mut svg = DomBuilder::new_svg("svg")
         .attr("class", "ferrox-svg-bar-chart")
+        .attr("style", "max-width: 100%; height: auto; overflow: visible;")
         .attr("width", &width.to_string())
         .attr("height", &height.to_string())
         .attr("viewBox", &format!("0 0 {} {}", width, height));
 
-    let max_val = data.iter().map(|d| d.value).fold(1.0, f64::max);
+    let max_val = data.iter().map(|d| d.value).fold(0.001, f64::max);
     let bar_count = data.len();
+    
+    let pl = if show_axes { 60.0 } else { 0.0 };
+    let pr = 20.0;
+    let pt = 20.0;
+    let pb = if show_axes { 40.0 } else { 30.0 };
+    let inner_h = height as f64 - pt - pb;
+
+    if show_axes {
+        let grid_color = "rgba(255,255,255,0.1)";
+        let text_color = "rgba(255,255,255,0.5)";
+        
+        for i in 0..=5 {
+            let val = max_val * (i as f64 / 5.0);
+            let y_pos = (height as f64 - pb) - (val / max_val) * inner_h;
+            
+            svg = svg.child(
+                DomBuilder::new_svg("line")
+                    .attr("x1", &pl.to_string())
+                    .attr("x2", &(width as f64 - pr).to_string())
+                    .attr("y1", &y_pos.to_string())
+                    .attr("y2", &y_pos.to_string())
+                    .attr("stroke", grid_color)
+                    .attr("stroke-width", "1")
+            ).child(
+                DomBuilder::new_svg("text")
+                    .attr("x", &(pl - 10.0).to_string())
+                    .attr("y", &(y_pos + 4.0).to_string())
+                    .attr("fill", text_color)
+                    .attr("font-size", "12")
+                    .attr("font-family", "sans-serif")
+                    .attr("text-anchor", "end")
+                    .text(&format!("{:.2}", val))
+            );
+        }
+    }
+
     let padding = 20.0;
-    let available_w = width as f64 - (padding * (bar_count as f64 + 1.0));
-    let bar_w = (available_w / bar_count as f64).max(10.0);
+    let available_w = (width as f64 - pl - pr) - (padding * (bar_count as f64 + 1.0));
+    let bar_w = (available_w / bar_count as f64).clamp(10.0, 60.0);
+    
+    let actual_total_w = (bar_w * bar_count as f64) + (padding * (bar_count as f64 - 1.0));
+    let start_x = pl + ((width as f64 - pl - pr) - actual_total_w) / 2.0;
 
     for (i, datum) in data.iter().enumerate() {
-        let bar_h = (datum.value / max_val) * (height as f64 - 50.0);
-        let x = padding + i as f64 * (bar_w + padding);
-        let y = height as f64 - bar_h - 30.0;
+        let bar_h = (datum.value / max_val) * inner_h;
+        let x = start_x + i as f64 * (bar_w + padding);
+        let y = (height as f64 - pb) - bar_h;
 
-        let rect = DomBuilder::new("rect")
+        let rect = DomBuilder::new_svg("rect")
             .attr("x", &x.to_string())
             .attr("y", &y.to_string())
             .attr("width", &bar_w.to_string())
             .attr("height", &bar_h.to_string())
             .attr("rx", "6")
-            .attr("fill", &datum.color);
+            .attr("fill", &datum.color)
+            .attr("cursor", "crosshair")
+            .child(DomBuilder::new_svg("title").text(&format!("{}: {:.3}", datum.label, datum.value)));
 
-        let label = DomBuilder::new("text")
+        let label = DomBuilder::new_svg("text")
             .attr("x", &(x + bar_w / 2.0).to_string())
             .attr("y", &(height as f64 - 10.0).to_string())
             .attr("text-anchor", "middle")
@@ -178,7 +321,7 @@ pub fn donut_chart(data: Vec<PieDatum>, radius: f64, inner_radius: f64, center_t
     let cy = size / 2.0;
     let total: f64 = data.iter().map(|d| d.value).sum();
 
-    let mut svg = DomBuilder::new("svg")
+    let mut svg = DomBuilder::new_svg("svg")
         .attr("class", "ferrox-svg-donut-chart")
         .attr("width", &size.to_string())
         .attr("height", &size.to_string())
@@ -208,7 +351,7 @@ pub fn donut_chart(data: Vec<PieDatum>, radius: f64, inner_radius: f64, center_t
             x1_inner, y1_inner, inner_radius, inner_radius, large_arc, x2_inner, y2_inner
         );
 
-        let path = DomBuilder::new("path")
+        let path = DomBuilder::new_svg("path")
             .attr("d", &d)
             .attr("fill", &datum.color)
             .attr("stroke", "var(--bg-primary, #0a0a16)")
@@ -219,7 +362,7 @@ pub fn donut_chart(data: Vec<PieDatum>, radius: f64, inner_radius: f64, center_t
     }
 
     // Center Text Info
-    let title_text = DomBuilder::new("text")
+    let title_text = DomBuilder::new_svg("text")
         .attr("x", &cx.to_string())
         .attr("y", &(cy - 6.0).to_string())
         .attr("text-anchor", "middle")
@@ -228,7 +371,7 @@ pub fn donut_chart(data: Vec<PieDatum>, radius: f64, inner_radius: f64, center_t
         .attr("font-weight", "600")
         .text(center_title);
 
-    let val_text = DomBuilder::new("text")
+    let val_text = DomBuilder::new_svg("text")
         .attr("x", &cx.to_string())
         .attr("y", &(cy + 16.0).to_string())
         .attr("text-anchor", "middle")
@@ -247,7 +390,7 @@ pub fn radar_chart(data: Vec<RadarDatum>, radius: f64) -> DomBuilder {
     let cy = size / 2.0;
     let count = data.len();
 
-    let mut svg = DomBuilder::new("svg")
+    let mut svg = DomBuilder::new_svg("svg")
         .attr("class", "ferrox-svg-radar-chart")
         .attr("width", &size.to_string())
         .attr("height", &size.to_string())
@@ -264,7 +407,7 @@ pub fn radar_chart(data: Vec<RadarDatum>, radius: f64) -> DomBuilder {
             grid_pts.push_str(&format!("{},{} ", x, y));
         }
         svg = svg.child(
-            DomBuilder::new("polygon")
+            DomBuilder::new_svg("polygon")
                 .attr("points", grid_pts.trim())
                 .attr("fill", "none")
                 .attr("stroke", "rgba(255,255,255,0.15)")
@@ -285,7 +428,7 @@ pub fn radar_chart(data: Vec<RadarDatum>, radius: f64) -> DomBuilder {
         let label_r = radius + 20.0;
         let lx = cx + label_r * angle.cos();
         let ly = cy + label_r * angle.sin();
-        let label = DomBuilder::new("text")
+        let label = DomBuilder::new_svg("text")
             .attr("x", &lx.to_string())
             .attr("y", &ly.to_string())
             .attr("text-anchor", "middle")
@@ -295,7 +438,7 @@ pub fn radar_chart(data: Vec<RadarDatum>, radius: f64) -> DomBuilder {
         svg = svg.child(label);
     }
 
-    let polygon = DomBuilder::new("polygon")
+    let polygon = DomBuilder::new_svg("polygon")
         .attr("points", data_pts.trim())
         .attr("fill", "rgba(147, 51, 234, 0.35)")
         .attr("stroke", "var(--accent-glow, #9333ea)")
@@ -306,14 +449,14 @@ pub fn radar_chart(data: Vec<RadarDatum>, radius: f64) -> DomBuilder {
 
 /// Renders a Nivo-style Scatter Plot Chart with variable node radii and color mapping.
 pub fn scatter_chart(data: Vec<ScatterDatum>, width: u32, height: u32) -> DomBuilder {
-    let mut svg = DomBuilder::new("svg")
+    let mut svg = DomBuilder::new_svg("svg")
         .attr("class", "ferrox-svg-scatter-chart")
         .attr("width", &width.to_string())
         .attr("height", &height.to_string())
         .attr("viewBox", &format!("0 0 {} {}", width, height));
 
     for pt in data {
-        let circle = DomBuilder::new("circle")
+        let circle = DomBuilder::new_svg("circle")
             .attr("cx", &pt.x.to_string())
             .attr("cy", &pt.y.to_string())
             .attr("r", &pt.radius.to_string())

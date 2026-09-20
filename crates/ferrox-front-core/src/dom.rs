@@ -37,6 +37,12 @@ impl DomBuilder {
         Self { node: element.into() }
     }
 
+    pub fn new_svg(tag: &str) -> Self {
+        let doc = document();
+        let element = doc.create_element_ns(Some("http://www.w3.org/2000/svg"), tag).expect("Failed to create SVG element");
+        Self { node: element.into() }
+    }
+
     pub fn text_node(text: &str) -> Self {
         let doc = document();
         let text_node = doc.create_text_node(text);
@@ -66,6 +72,21 @@ impl DomBuilder {
         self
     }
 
+    /// Adds a generic event listener with Event payload.
+    pub fn on<F>(self, event_name: &str, mut callback: F) -> Self
+    where F: FnMut(web_sys::Event) + 'static {
+        use wasm_bindgen::JsCast;
+        let closure = Closure::wrap(Box::new(move |e: web_sys::Event| {
+            callback(e);
+        }) as Box<dyn FnMut(web_sys::Event)>);
+        
+        if let Some(element) = self.node.dyn_ref::<web_sys::EventTarget>() {
+            element.add_event_listener_with_callback(event_name, closure.as_ref().unchecked_ref()).unwrap();
+            closure.forget();
+        }
+        self
+    }
+
     /// Adds a text node child.
     pub fn text(self, text: &str) -> Self {
         let text_node = document().create_text_node(text);
@@ -83,6 +104,11 @@ impl DomBuilder {
     pub fn build(self) -> Node {
         self.node
     }
+
+    /// Creates a DomBuilder from an existing Node
+    pub fn from_node(node: Node) -> Self {
+        Self { node }
+    }
 }
 
 /// Helper to get the global document.
@@ -99,6 +125,7 @@ pub fn p() -> DomBuilder { DomBuilder::new("p") }
 pub fn span() -> DomBuilder { DomBuilder::new("span") }
 pub fn button() -> DomBuilder { DomBuilder::new("button") }
 pub fn table() -> DomBuilder { DomBuilder::new("table") }
+pub fn style() -> DomBuilder { DomBuilder::new("style") }
 
 /// Mounts an element to a selector (e.g. "#root")
 pub fn mount(selector: &str, builder: DomBuilder) {

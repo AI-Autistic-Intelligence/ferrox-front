@@ -1,56 +1,55 @@
-# 🎨 Ferrox Front UI (`ferrox-front-ui`)
+# Ferrox Front UI (`ferrox-front-ui`)
 
-`ferrox-front-ui` provides an enterprise-grade **Glassmorphism Design System** for WebAssembly applications. It features a 12-column responsive layout grid, design tokens, virtualized DataGrid (1,000,000+ rows), and a suite of pre-styled Rust Wasm UI components.
+`ferrox-front-ui` provides high-performance enterprise UI components for Ferrox Front.
 
----
+## 1. What It Is & Architectural Purpose
+The `ferrox-front-ui` crate is the primary user interface component library for the Ferrox Front framework. It provides a robust, responsive 12-column Grid system, layout primitives (`Container`, `Row`, `Col`), and complex high-performance widgets such as the virtualized `DataGrid`. Its architectural purpose is to supply developers with pre-built, aesthetically pleasing, and highly optimized components out-of-the-box, accelerating enterprise application development without sacrificing Wasm performance.
 
-## 🎨 Glassmorphism Design System Components
+## 2. Architectural Layering
+This crate sits above `ferrox-front-core` and `ferrox-front-macro` in the stack. It consumes the reactive signals and the `rsx!` macro to build its internal component tree. By decoupling these high-level layout elements from the core, developers can choose to use the `ferrox-front-ui` standard library or bypass it entirely to build custom DOM structures using just the core primitives. 
 
-1. **Buttons (`button`)**: Supports variants `primary`, `secondary`, `outline`, `glass`, `danger`, `ghost`.
-2. **Status Badges (`badge`)**: Pill badges with variants `primary`, `success`, `warning`, `danger`, `info`.
-3. **Cards & Panels (`card`)**: `card()`, `card_header(title)`, `card_body()`, `card_footer()`.
-4. **Notification Alerts (`alert`)**: Banner alerts for feedback (`success`, `danger`, `warning`, `info`).
-5. **Form Controls (`input`, `form_group`)**: Styled input fields with cyan label groups.
-6. **Progress Bars (`progress_bar`)**: Smooth percentage progress tracks (0% to 100%).
-7. **User Pill & Avatar (`avatar`, `user_pill`)**: Circular avatar with initials and user info pill.
-8. **Loading Spinner (`spinner`)**: Animated CSS glassmorphism spinner.
-9. **Virtualized DataGrid (`virtual_data_grid`)**: High-performance table virtualization rendering 1,000,000+ rows smoothly.
+## 3. How It Works Under the Hood
+Components in `ferrox-front-ui` are implemented as standard Rust functions returning `Element`. The `DataGrid` component, for instance, utilizes viewport intersection observation and scroll event tracking to implement row virtualization. Instead of rendering 1,000,000 DOM rows, it only mounts the ~20 rows currently visible on screen, updating their underlying text nodes as the user scrolls. This logic is tightly coupled with `ferrox-front-core` signals for maximum rendering speed.
 
----
+## 4. Why It Was Designed This Way
+Enterprise dashboards often require rendering massive datasets or complex nested layouts. Using standard HTML tables for large datasets in the browser causes severe DOM bloat, leading to crashes or massive memory spikes. This crate was designed to solve this by providing virtualization by default. The Grid system was designed to mimic the familiar Bootstrap/Tailwind mental model (12 columns) but implemented purely in Rust/Wasm for seamless integration with the `rsx!` macro.
 
-## 🚀 Usage Examples
+## 5. Practical Usage Guide & Extended Code Examples
+Use the UI components to construct responsive layouts and data tables.
 
-### 1. Buttons & Badges
-```rust
-use ferrox_front_ui::components::{button, badge};
+```rust,no_run
+use ferrox_front_core::prelude::*;
+use ferrox_front_ui::prelude::*;
 
-let btn = button("Save Changes", "primary");
-let status = badge("Active", "success");
+#[component]
+pub fn DashboardView() -> Element {
+    let massive_dataset = vec!["Row 1", "Row 2", "Row 3"]; // Imagine 1M rows
+
+    rsx! {
+        Container { fluid: true,
+            Row {
+                Col { md: 4, sm: 12,
+                    div { class: "glass-card", "Sidebar" }
+                }
+                Col { md: 8, sm: 12,
+                    DataGrid { 
+                        data: massive_dataset,
+                        columns: vec!["Data"],
+                        row_height: 40.0,
+                    }
+                }
+            }
+        }
+    }
+}
 ```
 
-### 2. Form Groups
-```rust
-use ferrox_front_ui::components::{form_group, input};
+## 6. Anti-Patterns: How NOT to Use It
+> [!CAUTION]
+> **Anti-Pattern: Deeply Nested Grids without Bounds**
+> Do not nest `Container` -> `Row` -> `Col` excessively (e.g., 10 levels deep) to achieve minor pixel padding. While Wasm is fast, excessive DOM node depth still forces the browser's layout engine to work harder during reflows. Use CSS grid or flexbox utility classes for micro-layouts inside a `Col`.
 
-let email_field = form_group("Email Address", input("email", "alex@enterprise.com"));
-```
-
-### 3. User Pill & Progress Bar
-```rust
-use ferrox_front_ui::components::{user_pill, progress_bar};
-
-let user = user_pill("Alexander Wright", "Admin");
-let progress = progress_bar(78.5);
-```
-
-### 4. 12-Column Grid Layout
-```rust
-use ferrox_front_ui::layout::{container, row, col};
-
-let layout = container()
-    .child(
-        row()
-            .child(col("12 md-6 lg-4").child(/* Col 1 */))
-            .child(col("12 md-6 lg-8").child(/* Col 2 */))
-    );
-```
+## 7. Pro-Tips & Best Practices
+> [!TIP]
+> **Pro-Tip: Fluid Containers for Dashboards**
+> For admin panels and observability dashboards, always use `<Container fluid=true>` instead of a fixed-width container. This ensures the 12-column grid utilizes 100% of the available screen real estate, which is critical for displaying wide data tables and side-by-side charts effectively.
