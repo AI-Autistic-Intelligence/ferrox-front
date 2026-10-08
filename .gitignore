@@ -22,3 +22,7 @@ Thumbs.db
 /docs/build/
 /docs/.docusaurus/
 /docs/.cache-loader/
+
+# Additional protections
+[Dd]esktop.ini
+*.pdb
