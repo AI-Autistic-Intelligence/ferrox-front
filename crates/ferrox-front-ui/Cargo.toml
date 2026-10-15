@@ -1,20 +1,21 @@
 [package]
-description = "12-column responsive Grid system, virtualized DataGrid (1M rows), and Bootstrap-style UI components in Rust Wasm."
 name = "ferrox-front-ui"
-version = "0.3.0"
+version = "0.3.1"
 edition = "2021"
+description = "12-column responsive Grid system, virtualized DataGrid (1M rows), Form validation engine, and 60+ vector icons in Rust Wasm."
 license = "MIT"
 repository = "https://github.com/AI-Autistic-Intelligence/ferrox-front"
 homepage = "https://ferrox-front.dev"
 documentation = "https://docs.ferrox-front.dev"
+readme = "README.md"
+keywords = ["wasm", "ui", "datagrid", "components", "design-system"]
+categories = ["wasm", "gui"]
 
 [dependencies]
-ferrox-front-core = { path = "../ferrox-front-core", version = "0.3.0" }
-ferrox-front-charts = { path = "../ferrox-front-charts", version = "0.3.0" }
+ferrox-front-core = { path = "../ferrox-front-core", version = "0.3.1" }
+ferrox-front-charts = { path = "../ferrox-front-charts", version = "0.3.1" }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
-web-sys = { version = "0.3.105", features = ["Event", "DragEvent", "DataTransfer", "Storage", "Window", "Location", "HtmlElement", "HtmlCollection", "HtmlAudioElement", "ResizeObserver", "ResizeObserverEntry", "DomRectReadOnly", "MouseEvent"] }
+web-sys = { version = "0.3.105", features = ["Event", "DragEvent", "DataTransfer", "Storage", "Window", "Location", "HtmlElement", "HtmlCollection", "HtmlAudioElement", "ResizeObserver", "ResizeObserverEntry", "DomRectReadOnly", "MouseEvent", "Blob", "BlobPropertyBag", "Url", "HtmlAnchorElement", "HtmlInputElement", "KeyboardEvent"] }
 wasm-bindgen = "0.2.128"
 js-sys = "0.3.105"
-
-

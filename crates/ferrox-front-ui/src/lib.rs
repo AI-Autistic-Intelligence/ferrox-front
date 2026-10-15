@@ -6,6 +6,7 @@
 
 pub mod layout;
 pub mod components;
+pub mod icons;
 pub mod tokens;
 pub mod ferrox_datagrid;
 pub mod ferrox_kanban;
@@ -13,6 +14,24 @@ pub mod ferrox_theme;
 pub mod ferrox_admin;
 pub mod ferrox_security_dashboard;
 pub mod json_dashboard_builder;
+pub mod form_engine;
+pub mod overlays;
+
+pub use components::*;
+pub use icons::*;
+pub use ferrox_datagrid::{
+    EnterpriseDataGrid, EnterpriseDataGridState, ColumnDef, SortDirection,
+    PinnedPosition, TextAlign, trigger_csv_download, generate_rfc4180_csv,
+    FerroxDataGridConfig, ferrox_datagrid,
+};
+pub use form_engine::{
+    FormField, RuleBuilder, ValidationRule, WizardStep, FormWizardState, form_wizard,
+};
+pub use overlays::{
+    CommandAction, CommandPaletteState, command_palette,
+    DatePickerSelection, DatePickerState, date_picker,
+    TreeNode, tree_view, modal_focus_trap,
+};
 
 use ferrox_front_core::dom::{div, span, DomBuilder};
 use ferrox_front_core::reactivity::Signal;

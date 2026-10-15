@@ -1,55 +1,129 @@
 # Ferrox Front UI (`ferrox-front-ui`)
 
-`ferrox-front-ui` provides high-performance enterprise UI components for Ferrox Front.
+Enterprise-grade Glassmorphism Design System, Advanced Typed DataGrid, Reactive Form Validation Engine, and Overlays in 100% pure Rust WebAssembly.
+Completely independent of JavaScript, React, and npm.
 
-## 1. What It Is & Architectural Purpose
-The `ferrox-front-ui` crate is the primary user interface component library for the Ferrox Front framework. It provides a robust, responsive 12-column Grid system, layout primitives (`Container`, `Row`, `Col`), and complex high-performance widgets such as the virtualized `DataGrid`. Its architectural purpose is to supply developers with pre-built, aesthetically pleasing, and highly optimized components out-of-the-box, accelerating enterprise application development without sacrificing Wasm performance.
+## 1. Architectural Highlights
+`ferrox-front-ui` reaches and exceeds **AG-Grid, React Hook Form, Zod, Radix UI, and Shadcn feature parity** compiled to native WebAssembly:
+- **100% Rust Wasm**: Generates surgical DOM mutations through `ferrox-front-core::DomBuilder` and `Signal<T>` with zero JavaScript runtime frameworks or node_modules.
+- **Enterprise DataGrid Pro (AG-Grid Parity)**: Typed `ColumnDef<T>`, multi-column sorting, column filters, checkbox row selection with batch actions, and in-memory WebAssembly RFC 4180 CSV export with native browser `Blob` download.
+- **Form Reactive Validation Engine (Zod + React Hook Form Parity)**: `FormField<T>` signals (`value`, `error`, `touched`, `dirty`, `is_valid`), chainable `RuleBuilder<T>` (`required`, `email`, `min_length`, `max_length`, `numeric_range`, `regex`, `custom`), accessible WCAG 2.1 AA `:focus-visible` styling with alert icons, and multi-step `FormWizard`.
+- **Advanced Enterprise Overlays**:
+  - **Command Palette (`Cmd+K` / `Ctrl+K`)**: Spotlight-style modal search with global window keyboard shortcut, fuzzy matching, and keyboard navigation.
+  - **Pure Vector DatePicker**: Monthly interactive calendar generated in pure Rust Wasm with single and range (`DateRange`) picking, month/year navigation, and quick shortcuts ("Oggi", "7 Giorni", "30 Giorni", "Mese").
+  - **TreeView Explorer**: Deep hierarchical tree navigator for files, directories, and role permissions with smooth chevron expansion and multi-select.
+  - **A11y Modal Focus Trap**: Cyclic Tab and Shift-Tab focus management conforming to WCAG 2.1 AA.
+- **60+ Native Vector SVG Icons**: Module `ferrox_front_ui::icons` renders icons directly as SVG DOM elements with zero font files or external CDNs.
+- **Real-time Theming Engine**: Dynamic switching between Glassmorphism Dark, Zinc Light, Cyberpunk Neon, and Ocean Breeze.
 
-## 2. Architectural Layering
-This crate sits above `ferrox-front-core` and `ferrox-front-macro` in the stack. It consumes the reactive signals and the `rsx!` macro to build its internal component tree. By decoupling these high-level layout elements from the core, developers can choose to use the `ferrox-front-ui` standard library or bypass it entirely to build custom DOM structures using just the core primitives. 
+---
 
-## 3. How It Works Under the Hood
-Components in `ferrox-front-ui` are implemented as standard Rust functions returning `Element`. The `DataGrid` component, for instance, utilizes viewport intersection observation and scroll event tracking to implement row virtualization. Instead of rendering 1,000,000 DOM rows, it only mounts the ~20 rows currently visible on screen, updating their underlying text nodes as the user scrolls. This logic is tightly coupled with `ferrox-front-core` signals for maximum rendering speed.
+## 2. Component Inventory
 
-## 4. Why It Was Designed This Way
-Enterprise dashboards often require rendering massive datasets or complex nested layouts. Using standard HTML tables for large datasets in the browser causes severe DOM bloat, leading to crashes or massive memory spikes. This crate was designed to solve this by providing virtualization by default. The Grid system was designed to mimic the familiar Bootstrap/Tailwind mental model (12 columns) but implemented purely in Rust/Wasm for seamless integration with the `rsx!` macro.
+### 📊 Enterprise DataGrid (`ferrox_front_ui::ferrox_datagrid`)
+```rust
+use ferrox_front_ui::ferrox_datagrid::{
+    EnterpriseDataGrid, ColumnDef, PinnedPosition, TextAlign,
+    generate_rfc4180_csv, trigger_csv_download,
+};
 
-## 5. Practical Usage Guide & Extended Code Examples
-Use the UI components to construct responsive layouts and data tables.
+let columns = vec![
+    ColumnDef::new("id", "Order ID", |r: &OrderRow| r.id.clone())
+        .with_width("130px")
+        .with_pinned(PinnedPosition::Left),
+    ColumnDef::new("price", "Price (USD)", |r: &OrderRow| format!("${:.2}", r.price))
+        .with_width("120px")
+        .with_align(TextAlign::Right),
+    ColumnDef::new("status", "Status", |r: &OrderRow| r.status.clone())
+        .with_align(TextAlign::Center),
+];
 
-```rust,no_run
-use ferrox_front_core::prelude::*;
-use ferrox_front_ui::prelude::*;
+let datagrid = EnterpriseDataGrid::new("orders-grid", columns, orders);
+let table_element = datagrid.render();
 
-#[component]
-pub fn DashboardView() -> Element {
-    let massive_dataset = vec!["Row 1", "Row 2", "Row 3"]; // Imagine 1M rows
-
-    rsx! {
-        Container { fluid: true,
-            Row {
-                Col { md: 4, sm: 12,
-                    div { class: "glass-card", "Sidebar" }
-                }
-                Col { md: 8, sm: 12,
-                    DataGrid { 
-                        data: massive_dataset,
-                        columns: vec!["Data"],
-                        row_height: 40.0,
-                    }
-                }
-            }
-        }
-    }
-}
+// Native Wasm RFC 4180 CSV Download:
+let csv_text = generate_rfc4180_csv(&headers, &rows);
+trigger_csv_download("orders_export.csv", &csv_text);
 ```
 
-## 6. Anti-Patterns: How NOT to Use It
-> [!CAUTION]
-> **Anti-Pattern: Deeply Nested Grids without Bounds**
-> Do not nest `Container` -> `Row` -> `Col` excessively (e.g., 10 levels deep) to achieve minor pixel padding. While Wasm is fast, excessive DOM node depth still forces the browser's layout engine to work harder during reflows. Use CSS grid or flexbox utility classes for micro-layouts inside a `Col`.
+### 📝 Reactive Form Validation Engine (`ferrox_front_ui::form_engine`)
+```rust
+use ferrox_front_ui::form_engine::{FormField, RuleBuilder, WizardStep, FormWizardState, form_wizard};
 
-## 7. Pro-Tips & Best Practices
-> [!TIP]
-> **Pro-Tip: Fluid Containers for Dashboards**
-> For admin panels and observability dashboards, always use `<Container fluid=true>` instead of a fixed-width container. This ensures the 12-column grid utilizes 100% of the available screen real estate, which is critical for displaying wide data tables and side-by-side charts effectively.
+// Reactive FormField with chainable validation rules
+let email_field = FormField::new(
+    "user-email",
+    "email",
+    "Email Aziendale",
+    String::new(),
+    RuleBuilder::new()
+        .required("L'indirizzo email è obbligatorio.")
+        .email("Formato email non valido.")
+        .build(),
+).with_input_type("email").with_placeholder("name@company.com");
+
+let input_dom = email_field.render();
+
+// Multi-step FormWizard with step-gated validation
+let wizard_state = FormWizardState::new(vec![step1, step2, step3]);
+let wizard_dom = form_wizard(wizard_state, || {
+    // Called when all steps pass validation
+});
+```
+
+### ⌘ Spotlight Command Palette (`ferrox_front_ui::overlays`)
+```rust
+use ferrox_front_ui::overlays::{CommandAction, CommandPaletteState, command_palette};
+
+let actions = vec![
+    CommandAction::new("act-home", "Vai alla Home", "Ritorna alla dashboard principale", "Navigazione", "home", Some("G H"), || {
+        // action logic
+    }),
+    CommandAction::new("act-csv", "Esporta Dati CSV", "Scarica report ordini in formato CSV", "Azioni Rapide", "download", Some("E C"), || {
+        // export logic
+    }),
+];
+
+let palette_state = CommandPaletteState::new(actions);
+// Opens via Cmd+K / Ctrl+K automatically or manually:
+palette_state.open();
+
+let overlay_dom = command_palette(palette_state);
+```
+
+### 📅 Pure Vector DatePicker (`ferrox_front_ui::overlays`)
+```rust
+use ferrox_front_ui::overlays::{DatePickerState, date_picker, DatePickerSelection};
+
+let date_state = DatePickerState::new(2026, 10, true /* range mode */);
+let picker_dom = date_picker(date_state, |selection| {
+    match selection {
+        DatePickerSelection::Single(d) => println!("Selected: {}", d),
+        DatePickerSelection::Range(start, end) => println!("Range: {} to {}", start, end),
+    }
+});
+```
+
+### 📁 Hierarchical TreeView (`ferrox_front_ui::overlays`)
+```rust
+use ferrox_front_ui::overlays::{TreeNode, tree_view};
+
+let nodes = vec![
+    TreeNode::new("src", "src")
+        .with_icon("folder")
+        .expanded(true)
+        .with_children(vec![
+            TreeNode::new("main", "main.rs").with_icon("code"),
+            TreeNode::new("lib", "lib.rs").with_icon("code"),
+        ]),
+];
+
+let tree_dom = tree_view(nodes, |node_id| {
+    println!("Selected node: {}", node_id);
+});
+```
+
+---
+
+## 3. Full Storybook Reference
+Consult [COMPONENT_CATALOG.md](file:///C:/Users/nn/Desktop/code/ferrox-front/crates/ferrox-front-ui/COMPONENT_CATALOG.md) for the exhaustive documentation and API specifications of every component.
