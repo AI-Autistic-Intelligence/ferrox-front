@@ -31,20 +31,38 @@ for (const cratePath of PUBLISH_ORDER) {
   console.log(`📦 Publishing [${crateName}] from ${cratePath}...`);
 
   const cmd = isDryRun
-    ? `cargo publish --allow-dirty --dry-run -p ${crateName}`
-    : `cargo publish --allow-dirty -p ${crateName}`;
+    ? `cargo publish --dry-run -p ${crateName}`
+    : `cargo publish -p ${crateName}`;
 
-  try {
-    execSync(cmd, { stdio: 'inherit' });
-    console.log(`✅ Success for ${crateName}\n`);
-    if (!isDryRun) {
-      // Sleep 15s to allow crates.io index propagation
-      console.log('⏳ Waiting 15s for crates.io index propagation...');
-      execSync('sleep 15 || timeout /t 15', { stdio: 'ignore' });
+  let published = false;
+  let attempts = 0;
+  const maxAttempts = 4;
+
+  while (!published && attempts < maxAttempts) {
+    attempts++;
+    try {
+      const output = execSync(cmd, { stdio: 'pipe', encoding: 'utf8' });
+      console.log(output);
+      console.log(`✅ Success for ${crateName}\n`);
+      published = true;
+      if (!isDryRun) {
+        console.log('⏳ Waiting 20s for crates.io index propagation...');
+        execSync('sleep 20 || timeout /t 20', { stdio: 'ignore' });
+      }
+    } catch (error) {
+      const out = (error.stdout || '') + '\n' + (error.stderr || '') + '\n' + error.message;
+      console.log(out);
+      if (out.includes('already exists') || out.includes('is already uploaded')) {
+        console.log(`ℹ️ ${crateName} is already published on crates.io, continuing...\n`);
+        published = true;
+      } else if (out.includes('failed to select a version for the requirement') && attempts < maxAttempts) {
+        console.log(`⏳ crates.io index not yet updated for dependencies of ${crateName}. Retrying in 20s (attempt ${attempts}/${maxAttempts})...`);
+        execSync('sleep 20 || timeout /t 20', { stdio: 'ignore' });
+      } else {
+        console.error(`❌ Failed to publish ${crateName}:`, error.message);
+        process.exit(1);
+      }
     }
-  } catch (error) {
-    console.error(`❌ Failed to publish ${crateName}:`, error.message);
-    process.exit(1);
   }
 }
 
