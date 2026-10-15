@@ -1,14 +1,15 @@
 [package]
-description = "Pure WebAssembly and vector SVG charting engine for interactive data visualisations (Bar, Line, Pie)."
 name = "ferrox-front-charts"
-version = "0.3.0"
+version = "0.3.1"
 edition = "2021"
+description = "Pure WebAssembly and vector SVG charting engine for interactive data visualisations (Candlestick, Depth, SMA, Bollinger, RSI, MACD)."
 license = "MIT"
 repository = "https://github.com/AI-Autistic-Intelligence/ferrox-front"
 homepage = "https://ferrox-front.dev"
 documentation = "https://docs.ferrox-front.dev"
+readme = "README.md"
+keywords = ["wasm", "charts", "svg", "candlestick", "finance"]
+categories = ["wasm", "visualization", "graphics"]
 
 [dependencies]
-ferrox-front-core = { path = "../ferrox-front-core", version = "0.3.0" }
-
-
+ferrox-front-core = { path = "../ferrox-front-core", version = "0.3.1" }
