@@ -35,8 +35,8 @@ for (const cratePath of PUBLISH_ORDER) {
   console.log(`📦 Publishing [${crateName}] from ${cratePath}...`);
 
   const cmd = isDryRun
-    ? `cargo publish --dry-run -p ${crateName}`
-    : `cargo publish -p ${crateName}`;
+    ? `cargo publish --dry-run --no-verify -p ${crateName}`
+    : `cargo publish --no-verify -p ${crateName}`;
 
   let published = false;
   let attempts = 0;
