@@ -47,7 +47,7 @@ for (const cratePath of PUBLISH_ORDER) {
       published = true;
       if (!isDryRun) {
         console.log('⏳ Waiting 20s for crates.io index propagation...');
-        execSync('sleep 20 || timeout /t 20', { stdio: 'ignore' });
+        execSync('powershell -Command "Start-Sleep -Seconds 20"');
       }
     } catch (error) {
       const out = (error.stdout || '') + '\n' + (error.stderr || '') + '\n' + error.message;
@@ -57,7 +57,7 @@ for (const cratePath of PUBLISH_ORDER) {
         published = true;
       } else if (out.includes('failed to select a version for the requirement') && attempts < maxAttempts) {
         console.log(`⏳ crates.io index not yet updated for dependencies of ${crateName}. Retrying in 20s (attempt ${attempts}/${maxAttempts})...`);
-        execSync('sleep 20 || timeout /t 20', { stdio: 'ignore' });
+        execSync('powershell -Command "Start-Sleep -Seconds 20"');
       } else {
         console.error(`❌ Failed to publish ${crateName}:`, error.message);
         process.exit(1);
