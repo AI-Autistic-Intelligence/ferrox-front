@@ -6,17 +6,17 @@ sidebar_position: 2
 
 import FerroxWasmPlayground from '@site/src/components/FerroxWasmPlayground';
 
-# Live Trading Desk Interattivo WebAssembly
+# Interactive WebAssembly Live Trading Desk
 
-Questa pagina ospita l'applicazione di riferimento enterprise **Ferrox Live Trading Desk**, compilata per target **`wasm32-unknown-unknown`** ed eseguita nativamente all'interno del tuo browser.
+This page hosts the enterprise reference application **Ferrox Live Trading Desk**, compiled for target **`wasm32-unknown-unknown`** and executing natively inside your web browser.
 
-Nessun runtime JavaScript esterno, nessun bundle React: tutta la reattività, il matching engine dell'order book e il rendering vettoriale dei grafici sono eseguiti direttamente dalla macchina virtuale WebAssembly.
+No external JavaScript runtime, no React bundle overhead: fine-grained reactivity, the in-memory order book matching engine, and pure vector chart rendering are powered directly by the WebAssembly virtual machine.
 
 ---
 
-## 🎮 Playground Interattivo Live
+## 🎮 Interactive Live Playground
 
-Puoi interagire direttamente con l'applicazione sottostante: naviga tra i tab, simula tick di mercato in tempo reale, consulta l'order book depth vettoriale ed esegui ordini di acquisto e vendita istantanei.
+You can interact directly with the embedded application below: switch tabs, simulate real-time market trade ticks, inspect vector order book depth, and submit instant buy and sell orders.
 
 <FerroxWasmPlayground 
   initialTab="trading" 
@@ -26,9 +26,9 @@ Puoi interagire direttamente con l'applicazione sottostante: naviga tra i tab, s
 
 ---
 
-## 🏛️ Architettura DRY: Integrazione dei Componenti
+## 🏛️ DRY Architecture: Component Integration
 
-Il Trading Desk è l'incarnazione della **Regola Architetturale Fondamentale (DRY)**: non contiene logica duplicata, ma compone esclusivamente le librerie core pubbliche dell'ecosistema Ferrox:
+The Trading Desk embodies the **DRY (Don't Repeat Yourself)** architectural standard: it contains no duplicated logic, composing exclusively public core libraries from the Ferrox ecosystem:
 
 ```mermaid
 sequenceDiagram
@@ -39,43 +39,43 @@ sequenceDiagram
     participant Aggregator as CandleAggregator (ferrox-front-charts)
     participant WS as ReconnectingWs (ferrox-front-ws)
 
-    Trader->>Desk: Invia Ordine Buy Limit ($97,050.00, 0.25 BTC)
+    Trader->>Desk: Submit Buy Limit Order ($97,050.00, 0.25 BTC)
     Desk->>Engine: submit_order(id, Side::Buy, 97050.0, 0.25)
-    Note over Engine: Matching in-memory < 1.8 μs
-    Engine-->>Desk: Vec<TradeResult> (Esecuzione immediata)
+    Note over Engine: In-memory matching < 1.8 μs
+    Engine-->>Desk: Vec<TradeResult> (Instant Execution)
     Desk->>Aggregator: process_tick(TradeTick { price, volume, ts })
-    Aggregator-->>Desk: Aggiorna candela 5m e buffer circolare
-    Desk->>Desk: Re-render vettoriale SVG Candlestick & Depth
-    WS-->>Desk: Streaming quotazioni continue (Auto-reconnect attivo)
+    Aggregator-->>Desk: Updates 5m candle & circular buffer
+    Desk->>Desk: Vector SVG Candlestick & Depth Re-render
+    WS-->>Desk: Continuous Market Feed (Auto-reconnect active)
 ```
 
-### 1. Motore di Matching Rust In-Process (`ferrox-engine`)
-A differenza delle architetture web convenzionali dove ogni sottomissione di ordine richiede un round-trip di rete verso un server (introducendo una latenza di 30-150 ms), Ferrox Front integra la crate `ferrox-engine` compilata come modulo Rust puro:
-- **Esecuzione In-Memory**: Gli ordini vengono confrontati all'istante contro l'albero di liquidità `BTreeMap` a virgola fissa (`1e8`).
-- **Latenza &lt; 1.8 Microsecondi**: Ideale per simulazioni a latenza zero, test di strategie algoritmiche client-side e ambienti offline.
-- **Portabilità Totale**: Lo stesso identico codice sorgente dell'order book alimenta sia il microservizio backend ad alte prestazioni (Linux/x86_64) sia il browser client (Wasm).
+### 1. In-Process Rust Matching Engine (`ferrox-engine`)
+Unlike traditional web architectures where every order submission requires a network round-trip to a remote server (introducing 30–150 ms of network latency), Ferrox Front integrates the `ferrox-engine` crate compiled directly as a pure Rust dependency:
+- **In-Memory Execution**: Orders match instantly against a fixed-point `BTreeMap` liquidity tree (`1e8` scalar).
+- **Latency &lt; 1.8 Microseconds**: Ideal for zero-latency local simulations, client-side algorithmic backtesting, and offline operation.
+- **Universal Portability**: The exact same order book codebase powers both high-throughput backend services (Linux/x86_64) and client browser runtimes (Wasm).
 
-### 2. Rendering Vettoriale ad Alte Prestazioni (`ferrox-front-charts`)
-- **`financial_technical_chart`**: Candlestick 5m con SMA 20/50, Bande di Bollinger (±2σ) e indicatori RSI e MACD integrati.
-- **`depth_chart`**: Curva cumulativa Bids/Asks con evidenziazione del mid-market price e badge calcolato per lo spread bid-ask.
-- **`CandleAggregator`**: Aggregazione reattiva di singoli tick di mercato all'interno della candela aperta corrente.
+### 2. High-Performance Vector Rendering (`ferrox-front-charts`)
+- **`financial_technical_chart`**: 5-minute Candlestick chart featuring SMA 20/50 overlays, Bollinger Bands (±2σ), and integrated RSI and MACD indicator sub-charts.
+- **`depth_chart`**: Cumulative Bid/Ask liquidity curves featuring mid-market price markers and automatic bid-ask spread badges.
+- **`CandleAggregator`**: Reactive aggregation of discrete market ticks into current open interval candles.
 
-### 3. Protocollo di Connettività Resiliente (`ferrox-front-ws`)
-- **`ReconnectingWs`**: Client WebSocket con gestione del ciclo di vita della connessione, retry esponenziale (`delay * 1.5`) e jitter casuale (±20%) per prevenire picchi simultanei di riconnessione (Thundering Herd).
-- **Buffer di Coda Offline**: Qualsiasi messaggio inviato durante un'interruzione di rete temporanea viene accodato in memoria e recapitato immediatamente al ripristino della sessione.
+### 3. Resilient Connectivity Protocol (`ferrox-front-ws`)
+- **`ReconnectingWs`**: WebSocket client managing full connection lifecycles, exponential backoff retries (`delay * 1.5`), and randomized jitter (±20%) to mitigate thundering herd reconnect storms.
+- **Offline Queue Buffer**: Messages dispatched during transient network partitions are buffered in memory and flushed immediately upon session recovery.
 
 ---
 
-## 🧪 Come Avviare il Trading Desk in Locale
+## 🧪 Running the Trading Desk Locally
 
-Se desideri eseguire e personalizzare il Trading Desk nel tuo ambiente locale:
+To launch and experiment with the Trading Desk in your local environment:
 
 ```bash
-# 1. Posizionati nella directory dell'applicazione showcase
+# 1. Navigate to the showcase application directory
 cd ferrox-front/examples/admin-dashboard
 
-# 2. Avvia il server di sviluppo con hot-reloading (Trunk)
+# 2. Start the development server with Trunk hot-reloading
 trunk serve --open
 ```
 
-L'applicazione si avvierà all'indirizzo `http://localhost:8080/` con live reload immediato ad ogni modifica al codice Rust!
+The application will start at `http://localhost:8080/` with instant live-reloading on every Rust source code edit!

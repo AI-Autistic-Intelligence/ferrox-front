@@ -288,7 +288,7 @@ impl<T: 'static> EnterpriseDataGrid<T> {
                 .child(
                     div().attr("style", "display: flex; align-items: center; gap: 8px;")
                         .child(Icon::render("check_circle", 18, "#3b82f6"))
-                        .child(span().attr("style", "font-weight: 600; font-size: 0.9rem; color: #3b82f6;").text(&format!("{} righe selezionate", selected_count)))
+                        .child(span().attr("style", "font-weight: 600; font-size: 0.9rem; color: #3b82f6;").text(&format!("{} rows selected", selected_count)))
                 )
                 .child(
                     div().attr("style", "display: flex; gap: 8px;")
@@ -296,13 +296,13 @@ impl<T: 'static> EnterpriseDataGrid<T> {
                             button()
                                 .attr("class", "ferrox-btn")
                                 .attr("style", "padding: 6px 12px; font-size: 0.8rem; background: #dc2626; color: white;")
-                                .text("🗑️ Elimina selezionati")
+                                .text("🗑️ Delete selected")
                         )
                         .child(
                             button()
                                 .attr("class", "ferrox-btn")
                                 .attr("style", "padding: 6px 12px; font-size: 0.8rem; background: rgba(255,255,255,0.1); border: var(--border-glass);")
-                                .text("📥 Esporta selezione CSV")
+                                .text("📥 Export selected CSV")
                         )
                 );
         }
@@ -313,7 +313,7 @@ impl<T: 'static> EnterpriseDataGrid<T> {
             .attr("class", "ferrox-btn")
             .attr("style", "padding: 8px 16px; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 6px; background: var(--bg-surface); border: var(--border-glass); cursor: pointer;")
             .child(Icon::render("download", 16, "var(--accent-primary)"))
-            .child(span().text("Esporta Tabella CSV"));
+            .child(span().text("Export Table CSV"));
 
         let toolbar = div()
             .attr("class", "ferrox-datagrid-toolbar")
@@ -326,21 +326,21 @@ impl<T: 'static> EnterpriseDataGrid<T> {
                             .child(
                                 input()
                                     .attr("type", "text")
-                                    .attr("placeholder", "Cerca tra tutti i campi...")
+                                    .attr("placeholder", "Search all fields...")
                                     .attr("value", &self.state.search_query)
                                     .attr("style", "width: 100%; padding: 8px 12px 8px 34px; border-radius: 6px; background: var(--bg-surface); border: var(--border-glass); color: var(--text-primary); font-size: 0.85rem; outline: none;")
                             )
                     )
                     .child(
                         div().attr("style", "display: flex; align-items: center; gap: 6px; font-size: 0.82rem; color: var(--text-secondary);")
-                            .child(span().text("Mostra:"))
+                            .child(span().text("Show:"))
                             .child(
                                 select()
                                     .attr("style", "padding: 6px 10px; border-radius: 6px; background: var(--bg-surface); border: var(--border-glass); color: var(--text-primary); font-size: 0.82rem; outline: none;")
-                                    .child(option().attr("value", "10").text("10 righe"))
-                                    .child(option().attr("value", "25").text("25 righe"))
-                                    .child(option().attr("value", "50").text("50 righe"))
-                                    .child(option().attr("value", "100").text("100 righe"))
+                                    .child(option().attr("value", "10").text("10 rows"))
+                                    .child(option().attr("value", "25").text("25 rows"))
+                                    .child(option().attr("value", "50").text("50 rows"))
+                                    .child(option().attr("value", "100").text("100 rows"))
                             )
                     )
             )
@@ -416,7 +416,7 @@ impl<T: 'static> EnterpriseDataGrid<T> {
             let empty_row = div()
                 .attr("style", "padding: 3rem; text-align: center; color: var(--text-secondary); font-size: 0.95rem;")
                 .child(div().attr("style", "margin-bottom: 8px;").child(Icon::render("search", 32, "rgba(255,255,255,0.2)")))
-                .child(span().text("Nessun record trovato corrispondente ai filtri impostati."));
+                .child(span().text("No records found matching the specified filters."));
             tbody = tbody.child(empty_row);
         } else {
             for &(orig_idx, item) in paged_rows {
@@ -479,14 +479,14 @@ impl<T: 'static> EnterpriseDataGrid<T> {
 
         // 8. Footer (Record counter & pagination controls)
         let page_info = if filtered_count == 0 {
-            "Visualizzati 0 di 0 record".to_string()
+            "Showing 0 of 0 records".to_string()
         } else {
             format!(
-                "Visualizzati da {} a {} di {} record{}",
+                "Showing {} to {} of {} records{}",
                 start_idx + 1,
                 end_idx,
                 filtered_count,
-                if filtered_count < total_items { format!(" (filtrati da {} totali)", total_items) } else { "".to_string() }
+                if filtered_count < total_items { format!(" (filtered from {} total)", total_items) } else { "".to_string() }
             )
         };
 
@@ -497,22 +497,22 @@ impl<T: 'static> EnterpriseDataGrid<T> {
                 span().attr("style", "font-size: 0.82rem; color: var(--text-secondary);").text(&page_info)
             )
             .child(
-                div().attr("style", "display: flex; gap: 6px; align-items: center;")
+                div().attr("style", "display: gap: 6px; align-items: center;")
                     .child(
                         button()
                             .attr("class", "ferrox-btn")
                             .attr("style", "padding: 6px 12px; font-size: 0.8rem; background: var(--bg-surface); border: var(--border-glass); opacity: 0.8;")
-                            .text("« Prec")
+                            .text("« Prev")
                     )
                     .child(
                         span().attr("style", "padding: 6px 12px; font-size: 0.82rem; font-weight: 700; background: var(--accent-primary); border-radius: 6px; color: white;")
-                            .text(&format!("Pagina {} di {}", current_page, total_pages))
+                            .text(&format!("Page {} of {}", current_page, total_pages))
                     )
                     .child(
                         button()
                             .attr("class", "ferrox-btn")
                             .attr("style", "padding: 6px 12px; font-size: 0.8rem; background: var(--bg-surface); border: var(--border-glass); opacity: 0.8;")
-                            .text("Succ »")
+                            .text("Next »")
                     )
             );
 

@@ -6,23 +6,23 @@ sidebar_position: 4
 
 # Enterprise DataGrid (`ferrox-front-ui::ferrox_datagrid`)
 
-Il componente `EnterpriseDataGrid` di Ferrox Front è progettato per colmare e superare le capacità di librerie complesse come AG-Grid Enterprise e TanStack Table, garantendo **zero garbage collection pauses** anche su volumi di 1.000.000 di record.
+The `EnterpriseDataGrid` component in Ferrox Front is engineered to exceed the capabilities of heavy JavaScript table frameworks like AG-Grid Enterprise and TanStack Table, guaranteeing **zero garbage collection pauses** even across datasets exceeding 1,000,000 records.
 
 ---
 
-## ⚡ Caratteristiche Principali
+## ⚡ Key Highlights
 
-1. **Virtualizzazione Estrema**: Renderizza solo le righe visibili nel viewport corrente, mantenendo il consumo di memoria costante a prescindere dalla dimensione del dataset.
-2. **Multi-Column Sorting**: Ordinamento progressivo su più campi (es. Stato &rarr; Prezzo &rarr; Data).
-3. **Filtri di Colonna Strongly-Typed**: Filtraggio immediato in memoria per testo, numeri e selezioni discrete.
-4. **Colonne Pinned (Fissate)**: Fissaggio a sinistra (es. ID ordine) o a destra (es. Azioni rapide) che rimangono visibili durante lo scroll orizzontale.
-5. **Esportazione CSV RFC 4180 Nativa**: Generazione istantanea del file CSV in memoria WebAssembly e download automatico tramite `Blob` URL del browser.
+1. **Extreme Viewport Virtualization**: Renders exclusively visible viewport DOM rows, maintaining constant memory overhead regardless of total dataset volume.
+2. **Multi-Column Sorting**: Progressive sorting across compound keys (e.g., Status &rarr; Price &rarr; Timestamp).
+3. **Strongly-Typed Column Filtering**: Instant in-memory evaluations for text matching, numeric intervals, and discrete status subsets.
+4. **Pinned Columns**: Freeze columns on the Left (e.g., Order ID) or Right (e.g., Action buttons) that remain visible during horizontal scrolling.
+5. **Native RFC 4180 CSV Export**: Instant in-memory CSV generation in WebAssembly and seamless browser download trigger via `Blob` URL.
 
 ---
 
-## 💻 Definizione e Configurazione delle Colonne
+## 💻 Column Definition & Configuration
 
-Ogni colonna viene configurata tramite `ColumnDef<T>`:
+Each grid column is declared using `ColumnDef<T>`:
 
 ```rust
 use ferrox_front_ui::ferrox_datagrid::{ColumnDef, PinnedPosition, TextAlign, EnterpriseDataGrid};
@@ -39,7 +39,7 @@ pub struct OrderRow {
 }
 
 let columns = vec![
-    // Colonna ID fissata a sinistra
+    // Left-pinned identifier column
     ColumnDef::new("id", "Order ID", |r: &OrderRow| r.id.clone())
         .with_width("140px")
         .with_pinned(PinnedPosition::Left)
@@ -47,35 +47,35 @@ let columns = vec![
             span().class("font-mono font-bold text-indigo-400 text-xs").text(&r.id)
         }),
 
-    // Colonna Asset con filtro testo
+    // Symbol column with text search filter
     ColumnDef::new("symbol", "Asset Symbol", |r: &OrderRow| r.symbol.clone())
         .with_width("120px")
         .with_filterable(true),
 
-    // Colonna Side con rendering a badge colorato
-    ColumnDef::new("side", "Direzione", |r: &OrderRow| r.side.clone())
+    // Side column rendered as a colored badge
+    ColumnDef::new("side", "Side", |r: &OrderRow| r.side.clone())
         .with_width("100px")
         .with_renderer(|r: &OrderRow| {
             if r.side == "BUY" {
-                span().class("px-2 py-0.5 rounded text-[11px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30").text("COMPRA")
+                span().class("px-2 py-0.5 rounded text-[11px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30").text("BUY")
             } else {
-                span().class("px-2 py-0.5 rounded text-[11px] font-bold bg-rose-500/20 text-rose-400 border border-rose-500/30").text("VENDI")
+                span().class("px-2 py-0.5 rounded text-[11px] font-bold bg-rose-500/20 text-rose-400 border border-rose-500/30").text("SELL")
             }
         }),
 
-    // Colonna Prezzo allineata a destra e ordinabile
-    ColumnDef::new("price", "Prezzo (USD)", |r: &OrderRow| format!("${:.2}", r.price))
+    // Right-aligned sortable price column
+    ColumnDef::new("price", "Price (USD)", |r: &OrderRow| format!("${:.2}", r.price))
         .with_width("130px")
         .with_align(TextAlign::Right)
         .with_sortable(true),
 
-    // Colonna Volume allineata a destra
-    ColumnDef::new("amount", "Quantità", |r: &OrderRow| format!("{:.4}", r.amount))
+    // Right-aligned volume column
+    ColumnDef::new("amount", "Quantity", |r: &OrderRow| format!("{:.4}", r.amount))
         .with_width("120px")
         .with_align(TextAlign::Right),
 
-    // Colonna Stato con filtro discreto
-    ColumnDef::new("status", "Stato", |r: &OrderRow| r.status.clone())
+    // Status column with discrete filter
+    ColumnDef::new("status", "Status", |r: &OrderRow| r.status.clone())
         .with_width("130px")
         .with_filterable(true),
 ];
@@ -83,32 +83,32 @@ let columns = vec![
 
 ---
 
-## 📥 Esportazione RFC 4180 CSV Compilata in Wasm
+## 📥 WebAssembly RFC 4180 CSV Export
 
-Ferrox Front include funzioni native per l'elaborazione di CSV senza dipendenze o chiamate server:
+Ferrox Front embeds zero-dependency native CSV generation algorithms:
 
 ```rust
 use ferrox_front_ui::ferrox_datagrid::{generate_rfc4180_csv, trigger_csv_download};
 
-// 1. Genera la stringa CSV conforme a RFC 4180 gestendo quote e newline
+// 1. Generate RFC 4180-compliant CSV string handling quotes and delimiters
 let csv_data = generate_rfc4180_csv(&columns, &orders_dataset);
 
-// 2. Avvia immediatamente il salvataggio file nel browser dell'utente
+// 2. Trigger instant browser download via Blob URL
 trigger_csv_download("ferrox_orders_report.csv", &csv_data);
 ```
 
-### Conformità allo Standard RFC 4180
-- I campi contenenti virgole, ritorni a capo o doppi apici vengono racchiusi tra virgolette (`"valore, con virgola"`).
-- I doppi apici interni vengono sottoposti ad escape raddoppiato (`"Test ""Escaped"""`).
-- Terminatore di linea conforme standard `\r\n`.
+### RFC 4180 Compliance Details
+- Fields containing delimiters, line breaks, or double quotes are safely quoted (`"value, with comma"`).
+- Internal quotes are escaped via standard doubling (`"Test ""Escaped"""`).
+- Canonical `\r\n` line endings strictly preserved.
 
 ---
 
-## 📊 Benchmark di Caricamento (100.000 Righe)
+## 📊 Performance Benchmark (100,000 Rows)
 
-| Operazione | React + AG-Grid Community | Ferrox Front (Wasm) | Guadagno |
+| Operation | React + AG-Grid Community | Ferrox Front (Wasm) | Performance Gain |
 | :--- | :--- | :--- | :--- |
-| **Tempo di Ingestione Dati** | 380 ms | **18 ms** | **21x più veloce** |
-| **Ordinamento su 100k elementi** | 145 ms (frame drop) | **9 ms (60 FPS fluido)** | **16x più veloce** |
-| **Generazione Export CSV 100k** | 1,250 ms (freeze interfaccia) | **68 ms (in-memory)** | **18x più veloce** |
-| **Utilizzo Memoria Heap** | ~140 MB | **~12 MB** | **91% risparmio memoria** |
+| **Data Ingestion Time** | 380 ms | **18 ms** | **21x faster** |
+| **Sort on 100k items** | 145 ms (frame drop) | **9 ms (solid 60 FPS)** | **16x faster** |
+| **100k CSV Export Generation** | 1,250 ms (UI thread freeze) | **68 ms (in-memory)** | **18x faster** |
+| **Heap Memory Overhead** | ~140 MB | **~12 MB** | **91% memory reduction** |

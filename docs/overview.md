@@ -1,45 +1,45 @@
 ---
 id: overview
-title: Visione Zero-JS & Architettura
+title: Zero-JS Vision & Architecture
 sidebar_position: 1
 ---
 
-# Ferrox Front: Framework WebAssembly Enterprise Zero-JS
+# Ferrox Front: Enterprise Zero-JS WebAssembly Framework
 
-**Ferrox Front** è un framework frontend e Design System enterprise all'avanguardia scritto interamente in **Rust WebAssembly (`wasm32-unknown-unknown`)**, progettato specificamente per eliminare JavaScript, React e i bundler npm dalle applicazioni web mission-critical e dai sistemi finanziari ad alta frequenza.
-
----
-
-## 🚀 Perché Zero-JS e Rust WebAssembly?
-
-Nel software moderno ad alte prestazioni (trading desks, cruscotti analitici, streaming di dati in tempo reale), lo stack JavaScript/TypeScript tradizionale presenta colli di bottiglia insormontabili:
-
-1. **Virtual DOM Overhead**: Diffing continuo di alberi di nodi virtuali ad ogni re-render.
-2. **Garbage Collection (GC) Stutters**: Pausa imprevista del thread principale per il recupero della memoria, inaccettabile durante il processing di flussi di quotazioni L2/L3.
-3. **Fragilità delle Dipendenze**: Migliaia di pacchetti `npm`, vulnerabilità nella supply chain e complessità di bundling.
-4. **Assenza di Condivisione Reale della Logica**: Duplicazione delle strutture dati tra backend (Rust/C++) e frontend (TypeScript).
-
-Ferrox Front ribalta questo paradigma: **l'intera interfaccia grafica, la reattività a segnali, il motore di matching dell'order book e la renderizzazione dei grafici risiedono in un singolo binario Wasm compilato e ottimizzato**.
+**Ferrox Front** is a next-generation enterprise frontend framework and Design System written entirely in **Rust WebAssembly (`wasm32-unknown-unknown`)**, specifically engineered to eliminate JavaScript, React, and npm bundlers from mission-critical web applications and high-frequency financial platforms.
 
 ---
 
-## ⚡ Confronto Prestazionale: Ferrox Front vs React 19
+## 🚀 Why Zero-JS and Rust WebAssembly?
 
-| Metrica | React 19 + Shadcn / TanStack | Ferrox Front (Rust Wasm) | Vantaggio Ferrox |
+In modern high-performance software (trading desks, analytical dashboards, real-time data streaming), traditional JavaScript/TypeScript architectures encounter fundamental bottlenecks:
+
+1. **Virtual DOM Overhead**: Continuous reconciliation and diffing of virtual tree nodes on every re-render cycle.
+2. **Garbage Collection (GC) Stutters**: Unpredictable main-thread stalls for memory reclamation, intolerable when processing high-throughput L2/L3 market tick feeds.
+3. **Dependency Fragility**: Thousands of transitive `npm` packages introducing supply-chain security risks and bundling complexity.
+4. **Lack of Shared Domain Logic**: Duplicating data models, serialization, and business rules across backend (Rust/C++) and frontend (TypeScript).
+
+Ferrox Front transforms this paradigm: **the entire graphical user interface, fine-grained reactive state, order book matching engine, and charting pipeline execute inside a single optimized, compiled WebAssembly binary**.
+
+---
+
+## ⚡ Performance Benchmark: Ferrox Front vs React 19
+
+| Metric | React 19 + Shadcn / TanStack | Ferrox Front (Rust Wasm) | Ferrox Advantage |
 | :--- | :--- | :--- | :--- |
-| **Runtime Engine** | JavaScript V8 / Hermes | Compilato Nativo Wasm32 | **Nessuna interpretazione JIT** |
-| **Modello Reattivo** | Virtual DOM Tree Diffing | **Signals Fine-Grained** (`Signal<T>`) | **Mutazione O(1) diretta del DOM** |
-| **Garbage Collector** | Tracing GC continuo | **RAII Rust deterministico** | **Zero GC Pauses** |
-| **DataGrid (100.000 righe)** | Lag di renderizzazione / freeze | Virtualizzazione fluida a 60 FPS | **Nessun memory leak** |
-| **Motore Finanziario Matching** | Proxy HTTP / Web Worker JS lento | `ferrox-engine` compilato in-process | **Latenza &lt; 1.8 μs** |
-| **Grafici Tecnici (TradingView)** | Canvas pesante / licenza proprietaria | **SVG Vettoriale Puro Zero-Copy** | **Nessuna libreria JS esterna** |
-| **Dipendenze NPM Esterne** | 1,200+ pacchetti `node_modules` | **0 pacchetti JS / 0 npm** | **Massima sicurezza supply chain** |
+| **Runtime Engine** | JavaScript V8 / Hermes | Native Compiled Wasm32 | **No JIT compilation or interpretation** |
+| **Reactivity Model** | Virtual DOM Tree Diffing | **Fine-Grained Signals** (`Signal<T>`) | **O(1) Direct DOM Mutation** |
+| **Memory Management** | Continuous Tracing GC | **Deterministic Rust RAII** | **Zero GC Pauses** |
+| **DataGrid (100,000 Rows)** | Render lag / main thread freeze | Smooth 60 FPS Virtualization | **Zero memory leaks** |
+| **Order Matching Engine** | HTTP Proxy / Slow JS Worker | In-process compiled `ferrox-engine` | **Latency &lt; 1.8 μs** |
+| **Technical Charts** | Heavy Canvas / proprietary licensing | **Pure Zero-Copy Vector SVG** | **Zero external JS charting libraries** |
+| **NPM Dependencies** | 1,200+ `node_modules` packages | **0 JS packages / 0 npm dependencies** | **Maximum supply chain security** |
 
 ---
 
-## 🧩 Ecosistema Modulare dei Crate Core
+## 🧩 Modular Core Crates Ecosystem
 
-In ottemperanza alla regola architetturale **DRY (Don't Repeat Yourself)**, nessuna logica di calcolo, componente visivo o protocollo è vincolato a showcase app o esempi. L'ecosistema è ripartito in crate indipendenti e riutilizzabili:
+Adhering strictly to the **DRY (Don't Repeat Yourself)** architectural principle, all computation engines, visual components, and network protocols are decoupled into standalone, reusable crates:
 
 ```mermaid
 graph TD
@@ -53,28 +53,28 @@ graph TD
 ```
 
 ### 1. `crates/ferrox-front-core`
-- **Signals Fine-Grained**: Primitive reattive `Signal<T>`, `create_signal`, `create_effect`, `create_memo`.
-- **Wasm DOM Builder**: Costruttore fluido (`div()`, `span()`, `button()`) per la manipolazione diretta del DOM senza Virtual DOM.
-- **Dynamic Theming Engine**: Switch dinamico a runtime tra temi Enterprise Glassmorphism, Cyber Dark, Zinc Light, Cyberpunk e Ocean Breeze.
+- **Fine-Grained Signals**: Reactive primitives `Signal<T>`, `create_signal`, `create_effect`, and `create_memo`.
+- **Wasm DOM Builder**: Fluent builder API (`div()`, `span()`, `button()`) for direct DOM manipulation without a Virtual DOM.
+- **Dynamic Theming Engine**: Runtime switching between Enterprise Glassmorphism, Cyber Dark, Zinc Light, Cyberpunk, and Ocean Breeze themes.
 
 ### 2. `crates/ferrox-front-charts`
-- **Motore Vettoriale SVG**: Generazione di grafici senza Canvas o librerie esterne.
-- **Financial Technical Charts**: Candlestick a timeframe dinamico con SMA 20/50, Bollinger Bands (±2σ), RSI (14) e MACD (12, 26, 9) differential histogram.
-- **Order Book Depth Chart**: `depth_chart(...)` con curve cumulative per Bids/Asks, mid-market price line e calcolo automatico dello spread.
-- **Streaming Aggregator**: `CandleAggregator` che converte i singoli tick `TradeTick` in candele aperte e chiuse con `CandleRingBuffer`.
+- **Vector SVG Engine**: Chart generation without Canvas or external graphics engines.
+- **Financial Technical Charts**: Dynamic candlestick timeframes featuring SMA 20/50 overlays, Bollinger Bands (±2σ), RSI (14), and MACD (12, 26, 9) differential histograms.
+- **Order Book Depth Chart**: `depth_chart(...)` rendering cumulative curves for Bids/Asks, mid-market price markers, and real-time spread calculations.
+- **Streaming Aggregator**: `CandleAggregator` transforming incoming `TradeTick` streams into open and closed interval candles via `CandleRingBuffer`.
 
 ### 3. `crates/ferrox-front-ws`
-- **`ReconnectingWs`**: Client WebSocket resiliente per browser WebAssembly con riconnessione esponenziale e jitter casuale (±20%).
-- **Offline Queue**: Buffer di accodamento messaggi che previene la perdita di payload durante disconnessioni transitorie.
-- **Typed Event Dispatcher**: Parsing strongly-typed per eventi `Trades`, `OrderBookDepth` e `Ticker`.
+- **`ReconnectingWs`**: Resilient browser WebSocket client featuring exponential backoff and randomized jitter (±20%).
+- **Offline Queue**: Message dispatch buffering preventing payload loss during transient disconnections.
+- **Typed Event Dispatcher**: Strongly-typed payload deserialization for `Trades`, `OrderBookDepth`, and `Ticker` events.
 
 ### 4. `ferrox-match/packages/ferrox-engine`
-- **Motore di Matching Puro**: `OrderBook` in memoria con `BTreeMap` a virgola fissa moltiplicata (`1e8`).
-- **Supporto Multi-Target**: Compila sia per server Linux/Windows che come dipendenza Rust pura per target `wasm32-unknown-unknown` a latenza zero.
+- **Pure Matching Engine**: In-memory `OrderBook` utilizing fixed-point `BTreeMap` precision (`1e8`).
+- **Multi-Target Compilation**: Compiles both for Linux/Windows servers and directly as a pure Rust dependency on `wasm32-unknown-unknown` with zero overhead.
 
 ---
 
-## 🛠️ Hello World con Signals e DOM Builder
+## 🛠️ Hello World with Signals and DOM Builder
 
 ```rust
 use ferrox_front_core::dom::{mount, div, h1, button};
@@ -83,21 +83,21 @@ use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen(start)]
 pub fn run() -> Result<(), JsValue> {
-    // Stato reattivo a grana fine
+    // Fine-grained reactive state
     let count = create_signal(0);
 
-    // Costruzione fluida del DOM senza Virtual DOM
+    // Fluent direct DOM construction without Virtual DOM
     let root = div()
         .class("flex flex-col items-center justify-center p-8 bg-slate-900 rounded-2xl border border-slate-800")
         .child(
             h1()
                 .class("text-2xl font-bold text-white mb-4")
-                .text(&format!("Conteggio: {}", count.get()))
+                .text(&format!("Count: {}", count.get()))
         )
         .child(
             button()
                 .class("px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg font-semibold")
-                .text("Incrementa")
+                .text("Increment")
                 .on_click(move || {
                     count.update(|n| *n += 1);
                 })
@@ -108,4 +108,4 @@ pub fn run() -> Result<(), JsValue> {
 }
 ```
 
-Nelle sezioni successive della documentazione esploreremo nel dettaglio i **Componenti UI**, l'**Enterprise DataGrid**, il **Motore Finanziario Vettoriale** e il **Trading Desk Interattivo** eseguibile direttamente nel browser.
+The subsequent sections explore the **UI Components**, the **Enterprise DataGrid**, the **Vector Financial Charting Engine**, and the **Interactive Live Trading Desk** running directly in the browser.

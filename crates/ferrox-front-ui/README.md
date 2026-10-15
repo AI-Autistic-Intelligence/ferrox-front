@@ -10,7 +10,7 @@ Completely independent of JavaScript, React, and npm.
 - **Form Reactive Validation Engine (Zod + React Hook Form Parity)**: `FormField<T>` signals (`value`, `error`, `touched`, `dirty`, `is_valid`), chainable `RuleBuilder<T>` (`required`, `email`, `min_length`, `max_length`, `numeric_range`, `regex`, `custom`), accessible WCAG 2.1 AA `:focus-visible` styling with alert icons, and multi-step `FormWizard`.
 - **Advanced Enterprise Overlays**:
   - **Command Palette (`Cmd+K` / `Ctrl+K`)**: Spotlight-style modal search with global window keyboard shortcut, fuzzy matching, and keyboard navigation.
-  - **Pure Vector DatePicker**: Monthly interactive calendar generated in pure Rust Wasm with single and range (`DateRange`) picking, month/year navigation, and quick shortcuts ("Oggi", "7 Giorni", "30 Giorni", "Mese").
+  - **Pure Vector DatePicker**: Monthly interactive calendar generated in pure Rust Wasm with single and range (`DateRange`) picking, month/year navigation, and quick shortcuts ("Today", "7 Days", "30 Days", "Month").
   - **TreeView Explorer**: Deep hierarchical tree navigator for files, directories, and role permissions with smooth chevron expansion and multi-select.
   - **A11y Modal Focus Trap**: Cyclic Tab and Shift-Tab focus management conforming to WCAG 2.1 AA.
 - **60+ Native Vector SVG Icons**: Module `ferrox_front_ui::icons` renders icons directly as SVG DOM elements with zero font files or external CDNs.
@@ -54,11 +54,11 @@ use ferrox_front_ui::form_engine::{FormField, RuleBuilder, WizardStep, FormWizar
 let email_field = FormField::new(
     "user-email",
     "email",
-    "Email Aziendale",
+    "Corporate Email",
     String::new(),
     RuleBuilder::new()
-        .required("L'indirizzo email è obbligatorio.")
-        .email("Formato email non valido.")
+        .required("Email address is required.")
+        .email("Invalid email address format.")
         .build(),
 ).with_input_type("email").with_placeholder("name@company.com");
 
@@ -76,10 +76,10 @@ let wizard_dom = form_wizard(wizard_state, || {
 use ferrox_front_ui::overlays::{CommandAction, CommandPaletteState, command_palette};
 
 let actions = vec![
-    CommandAction::new("act-home", "Vai alla Home", "Ritorna alla dashboard principale", "Navigazione", "home", Some("G H"), || {
+    CommandAction::new("act-home", "Go to Home", "Return to main dashboard", "Navigation", "home", Some("G H"), || {
         // action logic
     }),
-    CommandAction::new("act-csv", "Esporta Dati CSV", "Scarica report ordini in formato CSV", "Azioni Rapide", "download", Some("E C"), || {
+    CommandAction::new("act-csv", "Export CSV Data", "Download orders report in CSV format", "Quick Actions", "download", Some("E C"), || {
         // export logic
     }),
 ];

@@ -1,73 +1,74 @@
 # Changelog - Ferrox Ecosystem
 
-Tutte le modifiche rilevanti apportate all'ecosistema Ferrox sono documentate in questo file.
-Il formato è basato su [Keep a Changelog](https://keepachangelog.com/it/1.0.0/) e aderisce a [Semantic Versioning](https://semver.org/).
+All notable changes to the Ferrox ecosystem are documented in this file.
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
 ## [2.0.0] - 2026-10-15
 
-### ⚡ 1. Live Trading Desk & Disaccoppiamento Matching Engine (DRY Core)
+### ⚡ 1. Live Trading Desk & Matching Engine Decoupling (DRY Core)
 - **`ferrox-match / ferrox-engine`**:
-  - Estratta la logica core dell'Order Book in una crate Rust pura indipendente da N-API ed esportata come libreria universale (`rlib` e `cdylib`).
-  - Supporto multi-target: compilazione nativa per server Linux/x86_64 e target `wasm32-unknown-unknown` per simulazioni client-side a latenza zero (`< 1.8 μs`).
-  - API core standardizzata: `OrderBook::new()`, `submit_order()`, `get_depth()`, `cancel_order()`, `best_bid()`, `best_ask()`, `mid_price()`, `spread()`.
-  - Gestione temporale agnostica: `js_sys::Date::now()` su WebAssembly, `SystemTime` su runtime nativo.
-  - Suite di unit test completa con verifica di matching FIFO, esecuzioni parziali e cancellazione ordini.
+  - Extracted Order Book core logic into a pure, N-API-independent Rust crate exported as a universal library (`rlib` and `cdylib`).
+  - Multi-target compilation support: native build for Linux/x86_64 servers and `wasm32-unknown-unknown` target for client-side zero-latency simulations (`< 1.8 μs`).
+  - Standardized core API: `OrderBook::new()`, `submit_order()`, `get_depth()`, `cancel_order()`, `best_bid()`, `best_ask()`, `mid_price()`, `spread()`.
+  - Agnostic time handling: `js_sys::Date::now()` on WebAssembly, `SystemTime` on native runtime.
+  - Comprehensive unit test suite verifying FIFO matching, partial executions, and order cancellation.
 - **`ferrox-front-charts`**:
-  - Implementato `depth_chart(...)`: rendering vettoriale SVG puro della profondità di mercato (Order Book Depth) con curve cumulative Bids (emerald) e Asks (rose), linea centrale di mid-market price e pillola di spread calcolato con percentuale.
-  - Implementato `CandleAggregator`: aggregatore reattivo di trade `TradeTick { price, volume, timestamp }` nella candela aperta corrente per intervalli da 1 secondo a 1 giorno, con riversamento continuo in `CandleRingBuffer`.
+  - Implemented `depth_chart(...)`: pure SVG vector rendering of market depth (Order Book Depth) with cumulative Bids (emerald) and Asks (rose) curves, central mid-market price line, and calculated spread pill with percentage.
+  - Implemented `CandleAggregator`: reactive trade aggregator (`TradeTick { price, volume, timestamp }`) updating the current open candle across intervals from 1 second to 1 day, flushing continuously into `CandleRingBuffer`.
 - **`ferrox-front-ws`**:
-  - Riscritto il client WebAssembly `ReconnectingWs` con ciclo di vita esplicito `WsStatus`.
-  - Exponential backoff (`delay * 1.5`, tetto 30s) combinato con **randomized jitter** (±20%) per la mitigazione dei fenomeni di Thundering Herd.
-  - Coda offline in memoria (`message_queue`) per l'accodamento trasparente dei messaggi inviati durante disconnessioni transitorie.
-  - Dispatcher tipizzato di eventi per canali `Trades`, `OrderBookDepth` e `Ticker`.
+  - Re-engineered the WebAssembly `ReconnectingWs` client with an explicit `WsStatus` lifecycle state machine.
+  - Exponential backoff (`delay * 1.5`, 30s cap) combined with **randomized jitter** (±20%) for Thundering Herd mitigation.
+  - In-memory offline queue (`message_queue`) for transparent buffering of messages dispatched during transient disconnects.
+  - Strongly-typed event dispatcher for `Trades`, `OrderBookDepth`, and `Ticker` channels.
 - **`examples/admin-dashboard`**:
-  - Tab "Live Trading Desk Pro" unificato che compone esclusivamente le librerie astratte dell'ecosistema: grafico Candlestick con SMA 20/50, Bollinger Bands, RSI e MACD, Order Book Depth SVG, modulo Order Entry validato con `form_engine`, Order Book Ladder L2 e feed dei trade recenti.
+  - Unified "Live Trading Desk Pro" tab composed exclusively of abstract ecosystem libraries: Candlestick chart with SMA 20/50, Bollinger Bands, RSI, and MACD; SVG Order Book Depth; Order Entry form validated with `form_engine`; Level 2 Order Book Ladder; and real-time recent trades feed.
 
 ---
 
-### 📚 2. Documentazione Interattiva Wasm & Playground Docusaurus
-- **Compilazione & Distribuzione Wasm**:
-  - Asset pipeline con Trunk che compila l'applicazione showcase direttamente in `ferrox-docs/static/wasm/admin-dashboard/`.
-- **Componente Playground React/MDX**:
-  - Creato `FerroxWasmPlayground.tsx` isolato per Docusaurus SSR (`BrowserOnly`), con switch di tab (`#trading`, `#datagrid`, `#form`, `#explorer`), pulsante di ricarica istanza, modalità a schermo intero (`requestFullscreen`), indicatore live e badge di telemetria.
-- **Pagine di Documentazione Approfondite**:
-  - `docs/ferrox-front/overview.md`: Visione zero-JS, Signals reactivity (`Signal<T>`), confronto prestazionale dettagliato con React 19 / Virtual DOM.
-  - `docs/ferrox-front/trading-desk.md`: Pagina interattiva con il componente `<FerroxWasmPlayground />` integrato per l'esecuzione diretta nel browser.
-  - `docs/ferrox-front/components.md`: Catalogo di bottoni avanzati, form controls, switch toggle, modali e 60+ icone vettoriali pure Rust.
-  - `docs/ferrox-front/datagrid.md`: Guida all'Enterprise DataGrid a 1M righe con ordinamento, filtri ed export CSV RFC 4180.
-  - `docs/ferrox-front/charts.md`: Documentazione del motore finanziario vettoriale SVG (Candlestick, Depth Chart, indicatori tecnici e aggregatore di tick).
+### 📚 2. Interactive Wasm Documentation & Docusaurus Playground
+- **Wasm Compilation & Distribution**:
+  - Trunk asset pipeline compiling the showcase application directly into `ferrox-docs/static/wasm/admin-dashboard/`.
+- **Playground React/MDX Component**:
+  - Implemented `FerroxWasmPlayground.tsx` isolated for Docusaurus SSR (`BrowserOnly`), featuring tab navigation (`#trading`, `#datagrid`, `#form`, `#explorer`), instance reload action, fullscreen mode (`requestFullscreen`), live connection indicator, and telemetry badge.
+- **In-Depth Documentation Pages**:
+  - `docs/ferrox-front/overview.md`: Zero-JS vision, Signals reactivity (`Signal<T>`), detailed performance comparison against React 19 / Virtual DOM.
+  - `docs/ferrox-front/trading-desk.md`: Interactive page featuring the embedded `<FerroxWasmPlayground />` component for in-browser execution.
+  - `docs/ferrox-front/components.md`: Catalog of advanced buttons, form controls, switch toggles, modals, and 60+ pure Rust vector icons.
+  - `docs/ferrox-front/datagrid.md`: Guide to the Enterprise 1M-Row DataGrid with multi-column sorting, column filters, and RFC 4180 CSV export.
+  - `docs/ferrox-front/charts.md`: Documentation for the financial SVG vector engine (Candlestick, Depth Chart, technical indicators, and tick aggregation).
 
 ---
 
-### 🚀 3. Benchmark 1 Million Requests / Second (Whitepaper Ufficiale)
-- **Pubblicazione Whitepaper `1m-rps.md`**:
-  - Integrazione ufficiale dei dati prestazionali del progetto `1MilionRequestPerSecond` testato su carico enterprise (8.0 vCPU limit, PostgreSQL con 100.000 record, rate-limiting Redis distribuito).
-  - Grafici comparativi vettoriali SVG integrati:
-    1. **Throughput (Requests/sec)**: Node.js (14.781 RPS) e Rust (13.469 RPS) al vertice, seguiti da PHP (10.627 RPS), Python (7.120 RPS) e Java (3.639 RPS).
-    2. **Latenza p99 (Consistency)**: Rust trionfa con **333 ms** (più di 2x più consistente di Node a 677 ms e Python a 815 ms), confermando l'assoluta superiorità dell'assenza di Garbage Collection.
-    3. **Consumo RAM**: Rust consuma appena **38 MB**, contro i 320 MB di Node e gli 890 MB della JVM.
-  - Istruzioni complete di riproduzione locale tramite Docker Compose.
-  - Voce di navigazione dedicata inserita nella navbar e nella sidebar di `ferrox-docs`.
+### 🚀 3. 1 Million Requests / Second Benchmark (Official Whitepaper)
+- **Whitepaper Publication `1m-rps.md`**:
+  - Official release of empirical performance data from `1MilionRequestPerSecond` benchmarked against real enterprise workloads (8.0 vCPU limit, PostgreSQL with 100,000 records, distributed Redis rate limiting).
+  - Integrated comparative SVG vector charts:
+    1. **Throughput (Requests/sec)**: Node.js (14,781 RPS) and Rust (13,469 RPS) leading, followed by PHP (10,627 RPS), Python (7,120 RPS), and Java (3,639 RPS).
+    2. **p99 Latency (Consistency)**: Rust delivers **333 ms** (more than 2x more consistent than Node at 677 ms and Python at 815 ms), proving the advantage of zero Garbage Collection pauses.
+    3. **RAM Consumption**: Rust consumes just **38 MB**, compared to 320 MB for Node and 890 MB for the Java JVM.
+  - Complete local reproduction instructions using Docker Compose.
+  - Dedicated navigation item in the `ferrox-docs` top navbar and sidebar.
 
 ---
 
 ### 📦 4. Release Validation, Packaging & CI/CD Pipeline
-- **Audit Crate & Metadati**:
-  - Verificato `Cargo.toml` su tutti i crate di `ferrox` e `ferrox-front`: metadati completi (description, repository, license, documentation, homepage, readme, keywords, categories).
-  - Eliminata qualsiasi dipendenza a percorso locale senza specifica di versione (`path = ...` con associato `version = "..."`).
-  - Script topologici di pubblicazione `publish_crates.js` creati e testati per `ferrox` e `ferrox-front`.
-- **Workflow GitHub Actions (`release-pipeline.yml`)**:
-  - Matrice multipiattaforma (`ubuntu-latest`, `windows-latest`, `macos-latest`).
-  - Build e ottimizzazione WebAssembly automatica (`wasm-opt -Oz`).
-  - Build multi-architettura per immagini Docker container (`linux/amd64`, `linux/arm64`).
-  - Pubblicazione automatica sequenziale su crates.io su rilascio di tag `v*`.
+- **Crate Audit & Metadata**:
+  - Validated `Cargo.toml` across all crates in `ferrox` and `ferrox-front`: complete metadata (description, repository, license, documentation, homepage, readme, keywords, categories).
+  - Removed local-only path dependencies without version constraints (`path = ...` with associated `version = "..."`).
+  - Topological publishing scripts `publish_crates.js` created and validated for `ferrox` and `ferrox-front`.
+- **GitHub Actions Workflow (`release-pipeline.yml`)**:
+  - Cross-platform build matrix (`ubuntu-latest`, `windows-latest`, `macos-latest`).
+  - Automated WebAssembly compilation and optimization (`wasm-opt -Oz`).
+  - Multi-architecture container builds for Docker images (`linux/amd64`, `linux/arm64`).
+  - Automated sequential publication to crates.io upon `v*` tag release.
 
 ---
 
 ### 🛡️ 5. Security Elevation & Hardening (OWASP WSTG)
-- **Integrazione Security Sidecar**:
-  - `ferrox-sentinel` e `ferrox-pentest-private` per la scansione continua di vulnerabilità (SQLi, NoSQLi, JWT/PASETO token manipulation, SSRF, XSS).
-  - Token a tenuta stagna `SealedToken` in memoria WebAssembly con crittografia WebCrypto API.
-  - Container Docker rinforzati con utenti non-root, file system radice in sola lettura e quote cgroups.
+- **Security Sidecar Integration**:
+  - `ferrox-sentinel` and `ferrox-pentest-private` for continuous vulnerability scanning (SQLi, NoSQLi, JWT/PASETO token manipulation, SSRF, XSS).
+  - Watertight `SealedToken` in WebAssembly memory encrypted via WebCrypto API.
+  - Hardened Docker containers with non-root users, read-only root filesystems, and strict cgroup quotas.

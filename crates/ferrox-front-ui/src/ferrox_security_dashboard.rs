@@ -497,7 +497,7 @@ fn render_three_step_pipeline_section(config: &SecurityDashboardConfig) -> DomBu
                                             .attr("class", "ferrox-btn ferrox-btn-primary")
                                             .attr("style", "background: linear-gradient(135deg, #059669, #10b981); color: #fff; border: none; padding: 6px 14px; border-radius: 6px; font-weight: 700; font-size: 0.85rem; cursor: pointer;")
                                             .attr("onclick", "window.print()")
-                                            .text("▶ Esegui Self-Test & PDF")
+                                            .text("▶ Run Self-Test & PDF")
                                     )
                             )
                     )
@@ -507,15 +507,15 @@ fn render_three_step_pipeline_section(config: &SecurityDashboardConfig) -> DomBu
 
 fn render_vulnerability_dictionary_section() -> DomBuilder {
     card()
-        .child(card_header("📖 Vocabolario delle Vulnerabilità OWASP WSTG (Guida Divulgativa)"))
+        .child(card_header("📖 OWASP WSTG Vulnerability Glossary (Educational Guide)"))
         .child(
             card_body().child(
                 div()
                     .attr("style", "display: flex; flex-direction: column; gap: 0.75rem;")
-                    .child(render_dict_item("WSTG-CONF-001", "HSTS Header Missing", "Obbliga il browser a usare HTTPS cifrato, impedendo intercettazioni di traffico (MitM).", "Configurare 'Strict-Transport-Security: max-age=31536000'"))
-                    .child(render_dict_item("WSTG-CONF-002", "CSP Header Missing", "Definisce le risorse autorizzate, bloccando attacchi di iniezione di script malevoli (XSS).", "Impostare 'Content-Security-Policy: default-src 'self''"))
-                    .child(render_dict_item("WSTG-CONF-003", "X-Frame-Options Missing", "Impedisce a siti malevoli di incorporare l'app in iframe invisibili (Clickjacking).", "Impostare 'X-Frame-Options: DENY'"))
-                    .child(render_dict_item("WSTG-SESS-002", "Cookie Flags Missing", "Protegge i cookie di sessione dall'accesso via JavaScript in caso di XSS.", "Impostare '; HttpOnly; Secure; SameSite=Strict'"))
+                    .child(render_dict_item("WSTG-CONF-001", "HSTS Header Missing", "Enforces HTTPS encryption in the browser, preventing Man-in-the-Middle (MitM) traffic interception.", "Configure 'Strict-Transport-Security: max-age=31536000'"))
+                    .child(render_dict_item("WSTG-CONF-002", "CSP Header Missing", "Restricts authorized resources, preventing malicious script injection (XSS) attacks.", "Set 'Content-Security-Policy: default-src 'self''"))
+                    .child(render_dict_item("WSTG-CONF-003", "X-Frame-Options Missing", "Prevents malicious sites from embedding the application in invisible iframes (Clickjacking).", "Set 'X-Frame-Options: DENY'"))
+                    .child(render_dict_item("WSTG-SESS-002", "Cookie Flags Missing", "Protects session cookies from JavaScript access in the event of XSS.", "Set '; HttpOnly; Secure; SameSite=Strict'"))
             )
         )
 }
@@ -529,6 +529,6 @@ fn render_dict_item(id: &str, title: &str, concept: &str, remediation: &str) -> 
                 .child(span().attr("style", "font-weight: 700; color: #f8fafc; font-size: 0.95rem;").text(&format!("[{}] {}", id, title)))
                 .child(badge("OWASP WSTG", "info"))
         )
-        .child(div().attr("style", "font-size: 0.85rem; color: #cbd5e1; margin-bottom: 4px;").text(&format!("💡 Concetto: {}", concept)))
+        .child(div().attr("style", "font-size: 0.85rem; color: #cbd5e1; margin-bottom: 4px;").text(&format!("💡 Concept: {}", concept)))
         .child(div().attr("style", "font-size: 0.83rem; color: #34d399; font-weight: 600;").text(&format!("🛠️ Remediation: {}", remediation)))
 }

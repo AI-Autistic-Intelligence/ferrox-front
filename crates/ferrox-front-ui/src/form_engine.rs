@@ -563,9 +563,9 @@ pub fn form_wizard(
                             .attr("stroke-linecap", "round")
                             .child(polyline().attr("points", "20 6 9 17 4 12"))
                     ),
-                h3().class("text-xl font-bold text-white mb-2").text("Procedura Completata con Successo"),
+                h3().class("text-xl font-bold text-white mb-2").text("Process Completed Successfully"),
                 p().class("text-sm text-slate-400 max-w-md")
-                    .text("Tutti i dati inseriti sono stati validati in memoria Wasm con zero dipendenze esterne."),
+                    .text("All entered data has been validated in Wasm memory with zero external dependencies."),
             ])
     } else if let Some(active_step) = state.steps.get(curr) {
         div()
@@ -597,13 +597,13 @@ pub fn form_wizard(
                 "bg-slate-900 text-slate-600 cursor-not-allowed opacity-50"
             }
         ))
-        .text("← Precedente")
+        .text("← Previous")
         .on_click(move || {
             state_prev.prev();
         });
 
     let is_last_step = curr + 1 == total;
-    let next_btn_text = if is_last_step { "Conferma & Invia ✓" } else { "Successivo →" };
+    let next_btn_text = if is_last_step { "Confirm & Submit ✓" } else { "Next →" };
 
     let next_btn = button()
         .class(&format!(

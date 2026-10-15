@@ -373,11 +373,11 @@ use ferrox_front_ui::form_engine::{FormField, RuleBuilder};
 let email_field = FormField::new(
     "email-input",
     "email",
-    "Email Aziendale Verificata",
+    "Verified Corporate Email",
     String::new(),
     RuleBuilder::new()
-        .required("L'indirizzo email è obbligatorio.")
-        .email("Formato email non conforme.")
+        .required("Email address is required.")
+        .email("Invalid email format.")
         .build(),
 ).with_input_type("email").with_placeholder("finance@company.com");
 
@@ -389,8 +389,8 @@ let field_dom = email_field.render();
 ```rust
 use ferrox_front_ui::form_engine::{WizardStep, FormWizardState, form_wizard};
 
-let step1 = WizardStep::new("step-1", "Dati Personali", "Inserisci credenziali", || true, || div());
-let step2 = WizardStep::new("step-2", "Parametri Finanziari", "Definisci capitale", || true, || div());
+let step1 = WizardStep::new("step-1", "Personal Details", "Enter credentials", || true, || div());
+let step2 = WizardStep::new("step-2", "Financial Parameters", "Define capital", || true, || div());
 
 let wizard_state = FormWizardState::new(vec![step1, step2]);
 let wizard_dom = form_wizard(wizard_state, || {
@@ -407,8 +407,8 @@ let wizard_dom = form_wizard(wizard_state, || {
 use ferrox_front_ui::overlays::{CommandAction, CommandPaletteState, command_palette};
 
 let actions = vec![
-    CommandAction::new("new-order", "Nuovo Ordine", "Invia un ordine di acquisto", "Azioni Rapide", "plus", Some("N O"), || {}),
-    CommandAction::new("charts", "Vai a Grafici", "Analisi tecnica e oscillatori", "Navigazione", "activity", Some("G C"), || {}),
+    CommandAction::new("new-order", "New Order", "Submit a buy order", "Quick Actions", "plus", Some("N O"), || {}),
+    CommandAction::new("charts", "Go to Charts", "Technical analysis and oscillators", "Navigation", "activity", Some("G C"), || {}),
 ];
 
 let state = CommandPaletteState::new(actions);
@@ -422,8 +422,8 @@ use ferrox_front_ui::overlays::{DatePickerState, date_picker, DatePickerSelectio
 let state = DatePickerState::new(2026, 10, true /* range mode */);
 let picker = date_picker(state, |selection| {
     match selection {
-        DatePickerSelection::Single(d) => println!("Data: {}", d),
-        DatePickerSelection::Range(s, e) => println!("Intervallo: {} -> {}", s, e),
+        DatePickerSelection::Single(d) => println!("Date: {}", d),
+        DatePickerSelection::Range(s, e) => println!("Range: {} -> {}", s, e),
     }
 });
 ```
