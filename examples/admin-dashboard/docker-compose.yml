@@ -1,0 +1,23 @@
+services:
+  ferrox-front-dashboard:
+    build:
+      context: ../..
+      dockerfile: Dockerfile.frontend
+    container_name: ferrox-front-dashboard
+    environment:
+      - VITE_API_GATEWAY_URL=http://localhost:8080
+    ports:
+      - "4000:80"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:80/"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    networks:
+      - ferrox-network
+
+networks:
+  ferrox-network:
+    name: ferrox-network
+    driver: bridge

@@ -3,79 +3,105 @@
   L'utente può fare override dichiarando variabili su :root
 */
 
-/* 1. Ferrox Cyber (Default Dark) */
+/* 1. Glassmorphism Dark (Default) */
 :root, [data-theme="ferrox-cyber"] {
-  --bg-base: hsl(220, 20%, 8%);
-  --bg-surface: hsla(220, 20%, 14%, 0.6);
-  --bg-surface-hover: hsla(220, 20%, 18%, 0.8);
+  --bg-base: hsl(220, 24%, 7%);
+  --bg-surface: hsla(220, 24%, 12%, 0.65);
+  --bg-surface-hover: hsla(220, 24%, 18%, 0.85);
   --accent-primary: hsl(250, 100%, 70%);
   --accent-secondary: hsl(190, 100%, 50%);
-  --accent-glow: hsla(250, 100%, 70%, 0.2);
-  --text-primary: hsl(210, 20%, 95%);
-  --text-secondary: hsl(210, 10%, 65%);
-  --border-glass: 1px solid hsla(0, 0%, 100%, 0.05);
-  --shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
-  --bg-gradient: radial-gradient(at 0% 0%, hsla(253,16%,7%,1) 0, transparent 50%), radial-gradient(at 50% 0%, hsla(225,39%,30%,0.2) 0, transparent 50%), radial-gradient(at 100% 0%, hsla(339,49%,30%,0.2) 0, transparent 50%);
+  --accent-cyan: hsl(188, 95%, 48%);
+  --accent-glow: hsla(250, 100%, 70%, 0.25);
+  --text-primary: hsl(210, 20%, 96%);
+  --text-secondary: hsl(210, 15%, 65%);
+  --border-glass: 1px solid hsla(0, 0%, 100%, 0.08);
+  --shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.45);
+  --bg-gradient: radial-gradient(at 0% 0%, hsla(253,24%,8%,1) 0, transparent 50%), radial-gradient(at 50% 0%, hsla(225,40%,25%,0.25) 0, transparent 50%), radial-gradient(at 100% 0%, hsla(339,50%,25%,0.25) 0, transparent 50%);
 }
 
-/* 2. Ocean Breeze (Light) */
+/* 2. Enterprise Light / Zinc (Clean Corporate) */
+[data-theme="enterprise-zinc"], [data-theme="corporate-slate"], [data-theme="corporate-minimal"] {
+  --bg-base: hsl(240, 5%, 96%);
+  --bg-surface: hsla(0, 0%, 100%, 0.95);
+  --bg-surface-hover: hsla(240, 5%, 92%, 1);
+  --accent-primary: hsl(240, 6%, 10%);
+  --accent-secondary: hsl(215, 25%, 27%);
+  --accent-cyan: hsl(221, 83%, 53%);
+  --accent-glow: hsla(240, 6%, 10%, 0.1);
+  --text-primary: hsl(240, 10%, 10%);
+  --text-secondary: hsl(240, 4%, 46%);
+  --border-glass: 1px solid hsl(240, 6%, 86%);
+  --shadow-glass: 0 4px 16px 0 rgba(0, 0, 0, 0.06);
+  --bg-gradient: radial-gradient(at 0% 0%, hsl(240, 5%, 98%) 0, transparent 60%), radial-gradient(at 100% 100%, hsl(240, 6%, 92%) 0, transparent 60%);
+}
+
+/* 3. Cyberpunk High-Contrast (Neon Purple & Cyan) */
+[data-theme="cyberpunk-neon"] {
+  --bg-base: #05050d;
+  --bg-surface: rgba(18, 11, 38, 0.75);
+  --bg-surface-hover: rgba(35, 18, 70, 0.9);
+  --accent-primary: #ec4899;
+  --accent-secondary: #06b6d4;
+  --accent-cyan: #00f0ff;
+  --accent-glow: rgba(236, 72, 153, 0.4);
+  --text-primary: #ffffff;
+  --text-secondary: #c084fc;
+  --border-glass: 1px solid rgba(236, 72, 153, 0.35);
+  --shadow-glass: 0 0 25px rgba(236, 72, 153, 0.25), 0 8px 32px rgba(0, 0, 0, 0.8);
+  --bg-gradient: radial-gradient(at 10% 10%, rgba(236, 72, 153, 0.15) 0, transparent 40%), radial-gradient(at 90% 90%, rgba(6, 182, 212, 0.15) 0, transparent 40%);
+}
+
+/* 4. Ocean Blue */
 [data-theme="ocean-breeze"] {
-  --bg-base: hsl(210, 20%, 98%);
-  --bg-surface: hsla(0, 0%, 100%, 0.6);
-  --bg-surface-hover: hsla(0, 0%, 95%, 0.8);
-  --accent-primary: hsl(190, 90%, 45%);
-  --accent-secondary: hsl(210, 90%, 60%);
-  --accent-glow: hsla(190, 90%, 45%, 0.2);
-  --text-primary: hsl(220, 30%, 15%);
-  --text-secondary: hsl(220, 20%, 40%);
-  --border-glass: 1px solid hsla(0, 0%, 0%, 0.05);
-  --shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.05);
-  --bg-gradient: radial-gradient(at 0% 0%, hsla(190,100%,95%,1) 0, transparent 50%), radial-gradient(at 100% 100%, hsla(210,100%,95%,1) 0, transparent 50%);
+  --bg-base: #0a192f;
+  --bg-surface: rgba(16, 36, 68, 0.65);
+  --bg-surface-hover: rgba(23, 52, 98, 0.85);
+  --accent-primary: #00b4d8;
+  --accent-secondary: #90e0ef;
+  --accent-cyan: #48cae4;
+  --accent-glow: rgba(0, 180, 216, 0.3);
+  --text-primary: #f0f8ff;
+  --text-secondary: #94a3b8;
+  --border-glass: 1px solid rgba(0, 180, 216, 0.2);
+  --shadow-glass: 0 8px 32px 0 rgba(0, 10, 30, 0.6);
+  --bg-gradient: radial-gradient(at 0% 0%, #03045e 0, transparent 50%), radial-gradient(at 100% 100%, #0077b6 0, transparent 50%);
 }
 
-/* 3. Midnight Forest (Dark) */
-[data-theme="midnight-forest"] {
-  --bg-base: hsl(150, 20%, 8%);
-  --bg-surface: hsla(150, 20%, 14%, 0.6);
-  --bg-surface-hover: hsla(150, 20%, 18%, 0.8);
-  --accent-primary: hsl(140, 70%, 50%);
-  --accent-secondary: hsl(80, 80%, 50%);
-  --accent-glow: hsla(140, 70%, 50%, 0.2);
-  --text-primary: hsl(150, 20%, 95%);
-  --text-secondary: hsl(150, 10%, 65%);
-  --border-glass: 1px solid hsla(0, 0%, 100%, 0.05);
-  --shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
-  --bg-gradient: radial-gradient(at 0% 0%, hsla(140,40%,10%,1) 0, transparent 50%), radial-gradient(at 100% 100%, hsla(150,40%,15%,0.3) 0, transparent 50%);
+/* Micro-animations and Keyframes */
+@keyframes ferrox-shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
 }
 
-/* 4. Sunset Glow (Warm Dark) */
-[data-theme="sunset-glow"] {
-  --bg-base: hsl(10, 20%, 10%);
-  --bg-surface: hsla(10, 20%, 16%, 0.6);
-  --bg-surface-hover: hsla(10, 20%, 20%, 0.8);
-  --accent-primary: hsl(15, 90%, 60%);
-  --accent-secondary: hsl(40, 90%, 60%);
-  --accent-glow: hsla(15, 90%, 60%, 0.2);
-  --text-primary: hsl(10, 20%, 95%);
-  --text-secondary: hsl(10, 10%, 65%);
-  --border-glass: 1px solid hsla(0, 0%, 100%, 0.05);
-  --shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
-  --bg-gradient: radial-gradient(at 0% 0%, hsla(15,40%,15%,1) 0, transparent 50%), radial-gradient(at 100% 0%, hsla(40,40%,15%,0.3) 0, transparent 50%);
+@keyframes ferrox-toast-shrink {
+  0% { width: 100%; }
+  100% { width: 0%; }
 }
 
-/* 5. Corporate Minimal (Light) */
-[data-theme="corporate-minimal"] {
-  --bg-base: hsl(0, 0%, 98%);
-  --bg-surface: hsla(0, 0%, 100%, 0.9);
-  --bg-surface-hover: hsla(0, 0%, 96%, 0.9);
-  --accent-primary: hsl(210, 80%, 40%);
-  --accent-secondary: hsl(210, 60%, 50%);
-  --accent-glow: hsla(210, 80%, 40%, 0.1);
-  --text-primary: hsl(0, 0%, 15%);
-  --text-secondary: hsl(0, 0%, 40%);
-  --border-glass: 1px solid hsla(0, 0%, 85%, 1);
-  --shadow-glass: 0 2px 8px 0 rgba(0, 0, 0, 0.05);
-  --bg-gradient: none;
+@keyframes ferrox-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes ferrox-scale-up {
+  0% { opacity: 0; transform: scale(0.95); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes ferrox-slide-left {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(0); }
+}
+
+@keyframes ferrox-slide-right {
+  0% { transform: translateX(100%); }
+  100% { transform: translateX(0); }
+}
+
+.ferrox-shimmer-pulse {
+  background: linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.12) 50%, rgba(255,255,255,0.04) 75%);
+  background-size: 200% 100%;
+  animation: ferrox-shimmer 2s infinite linear;
 }
 
 body {
