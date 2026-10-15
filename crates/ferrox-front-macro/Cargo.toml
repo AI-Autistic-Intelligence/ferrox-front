@@ -1,6 +1,6 @@
 [package]
 name = "ferrox-front-macro"
-version = "0.3.1"
+version = "0.3.2"
 edition = "2021"
 description = "Procedural macro compiler (rsx!) for inline JSX-style HTML-in-Rust component syntax in Ferrox Front."
 license = "MIT"
