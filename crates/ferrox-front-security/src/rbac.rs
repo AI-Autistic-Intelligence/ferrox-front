@@ -7,7 +7,6 @@
 //! - `UserIdentity`: User credentials container (`id`, `role`, `permissions`, `has_permission()`).
 //! - `secure(identity, require, child)`: Mounts child DOM element into memory ONLY if permission check passes.
 
-use ferrox_front_core::reactivity::Signal;
 use ferrox_front_core::dom::{div, DomBuilder};
 
 #[derive(Clone, Debug, PartialEq)]

@@ -6,7 +6,6 @@
 //! - `set_theme(name)`: Switches active theme (`"ferrox-cyber"`, `"ocean-breeze"`, `"midnight-forest"`, `"sunset-gold"`, `"corporate-slate"`).
 //! - `get_theme()`: Retrieves currently active theme string.
 
-use wasm_bindgen::prelude::*;
 use web_sys::window;
 
 /// Sets the application theme by updating the data-theme attribute on the document element (<html>)

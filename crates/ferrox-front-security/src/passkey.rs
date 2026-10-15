@@ -6,7 +6,6 @@
 //! - `prompt_passkey_login()`: Triggers device biometric sensor (Touch ID, Face ID, Windows Hello).
 //! - `register_passkey()`: Registers a new Passkey credential.
 
-use wasm_bindgen::prelude::*;
 use web_sys::window;
 
 /// Richiama l'API WebAuthn (Passkeys) del browser.

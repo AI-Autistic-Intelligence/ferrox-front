@@ -12,8 +12,8 @@
 //! ```rust
 //! use ferrox_front_core::reactivity::create_signal;
 //!
-//! let (count, set_count) = create_signal(0);
-//! set_count.update(|n| *n += 1);
+//! let count = create_signal(0);
+//! count.update(|n| *n += 1);
 //! assert_eq!(count.get(), 1);
 //! ```
 
@@ -23,6 +23,7 @@ use std::rc::Rc;
 /// A simple reactive primitive. In a real production framework,
 /// this would be backed by a thread-local arena (like Leptos or Sycamore)
 /// to avoid Rc overhead and allow Copy semantics.
+#[derive(Clone)]
 pub struct Signal<T> {
     value: Rc<RefCell<T>>,
 }
@@ -44,6 +45,10 @@ impl<T: Clone> Signal<T> {
         *self.value.borrow_mut() = new_value;
         // In a real implementation, setting the value would trigger all
         // dependencies (Effects) to re-run.
+    }
+
+    pub fn update<R>(&self, f: impl FnOnce(&mut T) -> R) -> R {
+        f(&mut *self.value.borrow_mut())
     }
 }
 

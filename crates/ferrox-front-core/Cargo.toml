@@ -1,12 +1,15 @@
 [package]
-description = "Reactive Signals engine, Wasm Virtual DOM builder, and runtime Glassmorphism theming for Ferrox Front."
 name = "ferrox-front-core"
-version = "0.3.0"
+version = "0.3.1"
 edition = "2021"
+description = "Reactive Signals engine, Wasm Virtual DOM builder, and runtime Glassmorphism theming for Ferrox Front."
 license = "MIT"
 repository = "https://github.com/AI-Autistic-Intelligence/ferrox-front"
 homepage = "https://ferrox-front.dev"
 documentation = "https://docs.ferrox-front.dev"
+readme = "README.md"
+keywords = ["wasm", "webassembly", "signals", "reactivity", "frontend"]
+categories = ["wasm", "gui", "web-programming"]
 
 [dependencies]
 wasm-bindgen = "0.2"
@@ -17,5 +20,3 @@ features = ["Window", "Document", "Element", "HtmlElement", "Node", "Text", "Eve
 
 [dev-dependencies]
 wasm-bindgen-test = "0.3"
-
-

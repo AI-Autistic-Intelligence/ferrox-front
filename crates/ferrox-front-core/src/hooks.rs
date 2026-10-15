@@ -29,7 +29,7 @@ pub struct QueryResult<T> {
 }
 
 /// Mock CQRS use_query hook that interfaces with Ferrox backend
-pub fn use_query<T: Clone + 'static>(endpoint: &str) -> QueryResult<T> {
+pub fn use_query<T: Clone + 'static>(_endpoint: &str) -> QueryResult<T> {
     let data = Signal::new(None);
     let loading = Signal::new(true);
     let error = Signal::new(None);
@@ -51,7 +51,7 @@ pub struct CommandResult<T> {
 }
 
 /// Mock CQRS use_command hook for mutations
-pub fn use_command<T: Clone + 'static>(endpoint: &str) -> CommandResult<T> {
+pub fn use_command<T: Clone + 'static>(_endpoint: &str) -> CommandResult<T> {
     let loading = Signal::new(false);
     let result = Signal::new(None);
     

@@ -1,12 +1,15 @@
 [package]
-description = "Procedural macro compiler (rsx!) for inline JSX-style HTML-in-Rust component syntax in Ferrox Front."
 name = "ferrox-front-macro"
-version = "0.3.0"
+version = "0.3.1"
 edition = "2021"
+description = "Procedural macro compiler (rsx!) for inline JSX-style HTML-in-Rust component syntax in Ferrox Front."
 license = "MIT"
 repository = "https://github.com/AI-Autistic-Intelligence/ferrox-front"
 homepage = "https://ferrox-front.dev"
 documentation = "https://docs.ferrox-front.dev"
+readme = "README.md"
+keywords = ["wasm", "macro", "rsx", "jsx", "html"]
+categories = ["wasm", "gui"]
 
 [lib]
 proc-macro = true
@@ -15,5 +18,3 @@ proc-macro = true
 syn = { version = "2.0", features = ["full", "extra-traits"] }
 quote = "1.0"
 proc-macro2 = "1.0"
-
-

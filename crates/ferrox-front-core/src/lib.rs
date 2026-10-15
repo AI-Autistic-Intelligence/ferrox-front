@@ -14,24 +14,15 @@
 //! - 🎨 **Glassmorphism Theming Engine**: Built-in dynamic theme switching (Cyber, Ocean, Forest, Sunset, Corporate).
 //!
 //! ## Example Usage
-//! ```rust,no_run
-//! use ferrox_front_core::prelude::*;
+//! ```rust,ignore
+//! use ferrox_front_core::dom::*;
+//! use ferrox_front_core::reactivity::*;
 //!
-//! #[component]
-//! pub fn Counter() -> Element {
-//!     let (count, set_count) = create_signal(0);
-//!
-//!     rsx! {
-//!         div { class: "p-4 text-center",
-//!             h1 { "Count: {count.get()}" }
-//!             button {
-//!                 class: "btn btn-primary",
-//!                 onclick: move |_| set_count.update(|n| *n += 1),
-//!                 "Increment"
-//!             }
-//!         }
-//!     }
-//! }
+//! let count = create_signal(0);
+//! let el = div()
+//!     .class("p-4 text-center")
+//!     .child(h1().text(&format!("Count: {}", count.get())))
+//!     .child(button().text("Increment").on_click(move || count.update(|n| *n += 1)));
 //! ```
 
 pub mod dom;

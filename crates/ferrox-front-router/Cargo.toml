@@ -1,23 +1,30 @@
 [package]
-description = "Client-side History API Single Page Application (SPA) router with dynamic parameters and navigation guards."
 name = "ferrox-front-router"
-version = "0.3.0"
+version = "0.3.1"
 edition = "2021"
+description = "Client-side History API Single Page Application (SPA) router with dynamic parameters and navigation guards."
 license = "MIT"
 repository = "https://github.com/AI-Autistic-Intelligence/ferrox-front"
 homepage = "https://ferrox-front.dev"
 documentation = "https://docs.ferrox-front.dev"
+readme = "README.md"
+keywords = ["wasm", "router", "spa", "navigation"]
+categories = ["wasm", "gui"]
 
 [dependencies]
 wasm-bindgen = "0.2"
-ferrox-front-core = { path = "../ferrox-front-core", version = "0.3.0" }
+ferrox-front-core = { path = "../ferrox-front-core", version = "0.3.1" }
+ferrox-front-security = { path = "../ferrox-front-security", version = "0.3.1" }
 
 [dependencies.web-sys]
 version = "0.3"
 features = [
   "Window",
   "History",
-  "Location"
+  "Location",
+  "EventTarget",
+  "PopStateEvent",
+  "Event",
+  "MouseEvent",
+  "HtmlAnchorElement"
 ]
-
-

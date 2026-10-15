@@ -9,7 +9,7 @@
 
 use ferrox_front_core::dom::{div, h1, h2, h3, p, button, DomBuilder};
 use ferrox_front_ui::layout::{container, row, col};
-use ferrox_front_ui::components::{card, card_body};
+use ferrox_front_ui::components::card;
 
 pub fn pricing_page() -> DomBuilder {
     let header = div().attr("style", "text-align: center; margin-bottom: 3rem;")
