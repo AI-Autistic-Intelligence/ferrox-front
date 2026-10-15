@@ -3,6 +3,9 @@ members = [
     "crates/*",
     "examples/*"
 ]
+default-members = [
+    "crates/*"
+]
 resolver = "2"
 
 [profile.release]
