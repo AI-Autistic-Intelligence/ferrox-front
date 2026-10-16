@@ -825,7 +825,7 @@ pub fn badge(text: &str, variant: &str) -> DomBuilder {
 
     span()
         .attr("class", &format!("ferrox-badge ferrox-badge-{}", variant))
-        .attr("style", &format!("background: {}; color: {}; border: var(--border-glass); padding: 3px 10px; border-radius: 9999px; font-size: 0.78rem; font-weight: 700; display: inline-block;", bg, color))
+        .attr("style", &format!("background: {}; color: {}; border: var(--border-glass); padding: 3px 10px; border-radius: 9999px; font-size: 0.78rem; font-weight: 700; display: inline-block; white-space: nowrap;", bg, color))
         .text(text)
 }
 

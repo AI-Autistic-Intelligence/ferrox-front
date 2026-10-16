@@ -92,7 +92,7 @@ use ferrox_front_ui::components::{card, card_header, card_body, alert};
 
 #[wasm_bindgen(start)]
 pub fn main() -> Result<(), JsValue> {
-    let (count, set_count) = create_signal(0);
+    let count = create_signal(0);
 
     let app = container()
         .child(h1().text("⚡ Ferrox Front Wasm App"))
@@ -109,7 +109,9 @@ pub fn main() -> Result<(), JsValue> {
                                     button()
                                         .attr("class", "ferrox-btn")
                                         .text("Increment")
-                                        .on_click(move || set_count.update(|n| *n += 1))
+                                        .on_click(move || {
+                                            count.update(|n| *n += 1);
+                                        })
                                 )
                         )
                 )
@@ -132,33 +134,3 @@ trunk serve --open
 ```
 
 Trunk will compile your Rust code into WebAssembly, launch a local web server with Hot Reloading, and open your default browser at `http://localhost:8080`.
-
-
-## 1. What It Is & Architectural Purpose
-
-Content for ## 1. What It Is & Architectural Purpose goes here.
-
-## 2. Architectural Layering
-
-Content for ## 2. Architectural Layering goes here.
-
-## 3. How It Works Under the Hood
-
-Content for ## 3. How It Works Under the Hood goes here.
-
-## 4. Why It Was Designed This Way
-
-Content for ## 4. Why It Was Designed This Way goes here.
-
-## 5. Practical Usage Guide & Extended Code Examples
-
-Content for ## 5. Practical Usage Guide & Extended Code Examples goes here.
-
-## 6. Anti-Patterns: How NOT to Use It
-
-Content for ## 6. Anti-Patterns: How NOT to Use It goes here.
-
-## 7. Pro-Tips & Best Practices
-
-Content for ## 7. Pro-Tips & Best Practices goes here.
-

@@ -36,13 +36,15 @@ Ferrox-Front was designed to enforce native memory performance and end-to-end ty
 ## 5. Practical Usage Guide & Extended Code Examples
 To start using Ferrox-Front, proceed to the quickstart guide. A typical application structure is heavily reliant on the macros and core components:
 ```rust
-use ferrox_front_core::prelude::*;
+use ferrox_front_core::dom::{mount, div, h1};
+use wasm_bindgen::prelude::*;
 
-#[component]
-pub fn App() -> Element {
-    rsx! {
-        div { "Welcome to Ferrox Front!" }
-    }
+#[wasm_bindgen(start)]
+pub fn main() {
+    let root = div()
+        .class("flex items-center justify-center p-8")
+        .child(h1().text("Welcome to Ferrox Front!"));
+    mount("#root", root);
 }
 ```
 

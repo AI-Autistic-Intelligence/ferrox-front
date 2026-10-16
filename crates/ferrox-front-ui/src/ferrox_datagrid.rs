@@ -352,7 +352,7 @@ impl<T: 'static> EnterpriseDataGrid<T> {
 
         let mut thead = div()
             .attr("class", "ferrox-datagrid-header")
-            .attr("style", "display: flex; align-items: center; background: rgba(0,0,0,0.35); border-bottom: 2px solid rgba(255,255,255,0.12); padding: 13px 18px; font-weight: 700; font-size: 0.84rem; letter-spacing: 0.5px; color: var(--text-secondary);");
+            .attr("style", "display: flex; align-items: center; background: rgba(0,0,0,0.35); border-bottom: 2px solid rgba(255,255,255,0.12); padding: 13px 18px; font-weight: 700; font-size: 0.84rem; letter-spacing: 0.5px; color: var(--text-secondary); min-width: 980px; width: 100%;");
 
         // Header Checkbox
         let header_checkbox = div()
@@ -429,11 +429,11 @@ impl<T: 'static> EnterpriseDataGrid<T> {
 
                 let mut tr = div()
                     .attr("class", "ferrox-datagrid-row")
-                    .attr("style", &format!("display: flex; align-items: center; padding: 13px 18px; min-height: 48px; transition: background 0.15s; cursor: pointer; {}", row_bg));
+                    .attr("style", &format!("display: flex; align-items: center; padding: 13px 18px; min-height: 48px; transition: background 0.15s; cursor: pointer; min-width: 980px; width: 100%; {}", row_bg));
 
                 // Row Checkbox
                 let row_check = div()
-                    .attr("style", "width: 40px; display: flex; align-items: center; justify-content: center;")
+                    .attr("style", "width: 40px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;")
                     .child(
                         div().attr("style", &format!(
                             "width: 18px; height: 18px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.3); background: {}; display: flex; align-items: center; justify-content: center;",
@@ -455,9 +455,9 @@ impl<T: 'static> EnterpriseDataGrid<T> {
                         None => "flex: 1;".to_string(),
                     };
                     let align_style = match col.align {
-                        TextAlign::Left => "text-align: left;",
-                        TextAlign::Center => "text-align: center;",
-                        TextAlign::Right => "text-align: right;",
+                        TextAlign::Left => "justify-content: flex-start; text-align: left;",
+                        TextAlign::Center => "justify-content: center; text-align: center;",
+                        TextAlign::Right => "justify-content: flex-end; text-align: right;",
                     };
 
                     let cell_content = match col.custom_renderer {
@@ -467,7 +467,7 @@ impl<T: 'static> EnterpriseDataGrid<T> {
 
                     let td = div()
                         .attr("class", "ferrox-datagrid-cell")
-                        .attr("style", &format!("padding: 0 12px; font-size: 0.88rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; {} {}", width_style, align_style))
+                        .attr("style", &format!("padding: 0 12px; font-size: 0.88rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: flex; align-items: center; min-width: 0; {} {}", width_style, align_style))
                         .child(cell_content);
 
                     tr = tr.child(td);
@@ -516,13 +516,18 @@ impl<T: 'static> EnterpriseDataGrid<T> {
                     )
             );
 
-        // 9. Assemble Complete Table Widget
+        // 9. Assemble Complete Table Widget with Horizontal Scroll Area
+        let table_scroll_wrapper = div()
+            .attr("class", "ferrox-datagrid-scroll-area")
+            .attr("style", "overflow-x: auto; width: 100%; -webkit-overflow-scrolling: touch;")
+            .child(thead)
+            .child(tbody);
+
         let table_container = div()
             .attr("id", &datagrid_id_owned)
             .attr("class", "ferrox-datagrid-table-container")
-            .attr("style", "border: var(--border-glass); border-radius: 14px; overflow: hidden; background: var(--bg-surface); box-shadow: var(--shadow-glass);")
-            .child(thead)
-            .child(tbody)
+            .attr("style", "border: var(--border-glass); border-radius: 14px; overflow: hidden; background: var(--bg-surface); box-shadow: var(--shadow-glass); width: 100%;")
+            .child(table_scroll_wrapper)
             .child(footer);
 
         div()

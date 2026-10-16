@@ -8,13 +8,21 @@
 
 use web_sys::window;
 
-/// Sets the application theme by updating the data-theme attribute on the document element (<html>)
+/// Sets the application theme by updating the data-theme attribute on both <html> and <body>
 pub fn set_theme(theme_name: &str) {
     if let Some(win) = window() {
         if let Some(doc) = win.document() {
             if let Some(doc_element) = doc.document_element() {
-                doc_element.set_attribute("data-theme", theme_name).unwrap();
+                let _ = doc_element.set_attribute("data-theme", theme_name);
             }
+            if let Some(body) = doc.body() {
+                let _ = body.set_attribute("data-theme", theme_name);
+            }
+        }
+        // Notify parent window (e.g. Docusaurus iframe wrapper) of the theme change
+        if let Some(parent) = win.parent().ok().flatten() {
+            let msg = wasm_bindgen::JsValue::from_str(&format!("ferrox-theme:{}", theme_name));
+            let _ = parent.post_message(&msg, "*");
         }
     }
 }

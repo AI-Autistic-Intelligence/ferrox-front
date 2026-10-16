@@ -47,19 +47,18 @@ let btn_delete = button_advanced("Cancel", "outline", "xs", false, Some("trash")
 The enterprise input control supports prefix/suffix icons, reactive validation feedback, and instant clear triggers:
 
 ```rust
-use ferrox_front_ui::components::input_advanced;
+use ferrox_front_ui::components::{input_advanced, InputConfig};
 
-let price_input = input_advanced(
-    "Limit Price (USD)",
-    "price-input",
-    "number",
-    "97050.00",
-    "Enter limit price in USD...",
-    Some("dollar-sign"),
-    Some("Price conforms to minimum tick size of $0.50"),
-    false, // is_valid
-    false, // is_invalid
-);
+let price_input = input_advanced(InputConfig {
+    input_type: "number".to_string(),
+    placeholder: "Enter limit price in USD...".to_string(),
+    value: "97050.00".to_string(),
+    prefix_icon: Some("dollar-sign".to_string()),
+    suffix_icon: None,
+    is_valid: Some(true),
+    helper_text: Some("Price conforms to minimum tick size of $0.50".to_string()),
+    clearable: true,
+});
 ```
 
 ### 2. Validated FormField & RuleBuilder (`form_engine`)
@@ -89,50 +88,47 @@ let email_field = FormField::new(
 use ferrox_front_ui::components::switch_toggle;
 
 // Toggle for trailing stop-loss activation or dark mode
-let stop_loss_switch = switch_toggle(
-    "trailing-sl",
-    "Trailing Stop-Loss Active",
-    true, // checked
-    |is_checked| {
-        println!("Trailing SL state changed to: {}", is_checked);
-    },
-);
+let stop_loss_switch = switch_toggle("trailing-sl", true, "Trailing Stop-Loss Active");
 ```
 
 ---
 
 ## 🪟 Modals & Slide-Over Drawers
 
-### 1. Modal Dialog
+### 1. Modal Dialog (`modal_advanced`)
 
 Ferrox Front modals mount directly into the DOM with glassmorphism backdrop-blur overlays and accessible keyboard focus traps:
 
 ```rust
-use ferrox_front_ui::components::modal_dialog;
-use ferrox_front_core::dom::{p, span};
+use ferrox_front_ui::components::{modal_advanced, button_advanced};
+use ferrox_front_core::dom::{div, p};
 
-let confirmation_modal = modal_dialog(
+let modal_footer = div().class("flex gap-2")
+    .child(button_advanced("Cancel", "ghost", "sm", false, None))
+    .child(button_advanced("Execute Now", "primary", "sm", false, Some("zap")));
+
+let confirmation_modal = modal_advanced(
+    "confirm-order-modal",
     "Confirm Market Order Execution",
     p().text("Are you sure you want to execute 0.5 BTC at market with an estimated fill price of $97,050.00 USD?"),
-    "Execute Now",
-    "Cancel",
-    || println!("Order confirmed!"),
-    || println!("Operation cancelled"),
+    "md",
+    Some(modal_footer),
 );
 ```
 
-### 2. Slide-Over Drawer
+### 2. Slide-Over Drawer (`drawer`)
 
 Drawers slide smoothly from the right or left viewport boundary with hardware-accelerated CSS transforms, ideal for configuration panels and order book filter drawers:
 
 ```rust
-use ferrox_front_ui::components::drawer_panel;
+use ferrox_front_ui::components::drawer;
+use ferrox_front_core::dom::p;
 
-let settings_drawer = drawer_panel(
+let settings_drawer = drawer(
+    "settings-drawer",
     "Trading Desk Configuration",
     p().text("Tune matching engine thresholds and minimum order book volume filters."),
-    true, // is_open
-    || println!("Drawer closed"),
+    "right", // "left" or "right"
 );
 ```
 

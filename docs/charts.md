@@ -25,8 +25,8 @@ let candle_history: Vec<CandleDatum> = vec![
 ];
 
 let mut options = TechnicalChartOptions::default();
-options.show_sma_20 = true;       // 20-period Simple Moving Average (amber overlay)
-options.show_sma_50 = true;       // 50-period Simple Moving Average (cyan overlay)
+options.show_sma20 = true;       // 20-period Simple Moving Average (amber overlay)
+options.show_sma50 = true;       // 50-period Simple Moving Average (cyan overlay)
 options.show_bollinger = true;    // Bollinger Bands (±2 standard deviations)
 options.show_rsi = true;          // 14-period RSI sub-panel with 70/30 threshold markers
 options.show_macd = true;         // MACD (12, 26, 9) sub-panel with dual-color differential histogram
@@ -113,11 +113,17 @@ let current_candles = aggregator.get_candles_with_active();
 Ferrox Front also delivers lightweight, embeddable vector telemetry widgets:
 
 ```rust
-use ferrox_front_charts::{gauge_chart, sparkline};
+use ferrox_front_charts::{gauge_chart, sparkline_chart, SparklineType};
 
 // Semi-circular speedometer gauge for Fear & Greed index or CPU load
-let cpu_gauge = gauge_chart("cpu-usage", 78.5, 0.0, 100.0, "%", 220, 140);
+let cpu_gauge = gauge_chart("cpu-usage", 78.5, 0.0, 100.0, "CPU Load", "%", 220, 140);
 
 // Minimalist vector sparkline for compact table trend visualization
-let price_sparkline = sparkline("btc-trend", &[96100.0, 96400.0, 96250.0, 96900.0, 97050.0], 120, 32);
+let price_sparkline = sparkline_chart(
+    vec![96100.0, 96400.0, 96250.0, 96900.0, 97050.0],
+    120,
+    32,
+    SparklineType::Line,
+    "#10b981",
+);
 ```

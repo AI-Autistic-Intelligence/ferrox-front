@@ -66,21 +66,23 @@ pub fn card_advanced(
     };
     div()
         .class(&format!(
-            "ferrox-card bg-slate-900/70 border border-slate-800/90 rounded-2xl backdrop-blur-2xl shadow-2xl {}",
+            "ferrox-card rounded-2xl backdrop-blur-2xl shadow-2xl {}",
             effective_padding
         ))
         .children(vec![
             div()
-                .class("flex items-center justify-between pb-4 mb-5 border-b border-slate-800/70")
+                .class("flex items-center justify-between pb-4 mb-5 border-b")
+                .attr("style", "border-bottom: var(--border-glass);")
                 .children(vec![
                     div()
                         .class("flex items-center gap-3")
                         .children(vec![
-                            div().class("w-9 h-9 rounded-xl bg-indigo-600/20 text-indigo-400 flex items-center justify-center flex-shrink-0")
-                                .child(Icon::render(icon, 18, "#818cf8")),
+                            div().class("w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0")
+                                .attr("style", "background: var(--accent-glow); color: var(--accent-primary);")
+                                .child(Icon::render(icon, 18, "var(--accent-primary)")),
                             div().children(vec![
-                                h3().class("text-base font-bold text-white tracking-tight leading-snug").text(title),
-                                p().class("text-xs text-slate-400 mt-0.5 leading-normal").text(subtitle),
+                                h3().class("text-base font-bold tracking-tight leading-snug").attr("style", "color: var(--text-primary);").text(title),
+                                p().class("text-xs mt-0.5 leading-normal").attr("style", "color: var(--text-secondary);").text(subtitle),
                             ]),
                         ]),
                 ]),
@@ -173,7 +175,8 @@ fn render_top_bar(active_tab: &str, cmd_palette: &CommandPaletteState) -> DomBui
     let cp_clone = cmd_palette.clone();
 
     let tab_buttons = div()
-        .attr("class", "ferrox-tab-switcher flex flex-wrap items-center gap-2 p-1.5 rounded-2xl bg-slate-900/80 border border-slate-800/80 shadow-md")
+        .attr("class", "ferrox-tab-switcher flex flex-wrap items-center gap-2 p-1.5 rounded-2xl shadow-md")
+        .attr("style", "background: var(--bg-surface-hover); border: var(--border-glass);")
         .children(vec![
             button_advanced("⚡ Trading Desk Pro", "glass", "sm", false, None)
                 .attr("style", if active_tab == "trading" { "background: var(--accent-primary); color: #fff; font-weight: 700; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);" } else { "opacity: 0.8;" })
@@ -213,7 +216,8 @@ fn render_top_bar(active_tab: &str, cmd_palette: &CommandPaletteState) -> DomBui
         .children(vec![cmd_k_btn, theme_selector]);
 
     div()
-        .attr("class", "ferrox-topbar flex flex-wrap items-center justify-between gap-4 px-6 py-3.5 border-b border-slate-800/80 bg-slate-950/80 backdrop-blur-xl sticky top-0 z-40")
+        .attr("class", "ferrox-topbar flex flex-wrap items-center justify-between gap-4 px-6 py-3.5 border-b backdrop-blur-xl sticky top-0 z-40")
+        .attr("style", "background: var(--bg-surface); border-bottom: var(--border-glass);")
         .children(vec![
             div()
                 .attr("class", "flex items-center gap-3")
@@ -491,13 +495,13 @@ fn render_datagrid_tab() -> DomBuilder {
 
     let columns = vec![
         ColumnDef::new("id", "Order ID", |r: &OrderRow| r.id.clone())
-            .with_width("130px")
+            .with_width("120px")
             .with_pinned(PinnedPosition::Left)
             .with_renderer(|r: &OrderRow| {
                 span().class("font-mono font-bold text-indigo-400 text-xs").text(&r.id)
             }),
         ColumnDef::new("symbol", "Asset Symbol", |r: &OrderRow| r.symbol.clone())
-            .with_width("120px")
+            .with_width("110px")
             .with_renderer(|r: &OrderRow| {
                 div().class("flex items-center gap-1.5")
                     .children(vec![
@@ -506,7 +510,7 @@ fn render_datagrid_tab() -> DomBuilder {
                     ])
             }),
         ColumnDef::new("side", "Side", |r: &OrderRow| r.side.clone())
-            .with_width("90px")
+            .with_width("85px")
             .with_align(TextAlign::Center)
             .with_renderer(|r: &OrderRow| {
                 if r.side == "BUY" {
@@ -516,19 +520,19 @@ fn render_datagrid_tab() -> DomBuilder {
                 }
             }),
         ColumnDef::new("price", "Price (USD)", |r: &OrderRow| format!("${:.2}", r.price))
-            .with_width("130px")
+            .with_width("115px")
             .with_align(TextAlign::Right),
         ColumnDef::new("amount", "Amount", |r: &OrderRow| format!("{:.3}", r.amount))
-            .with_width("110px")
+            .with_width("95px")
             .with_align(TextAlign::Right),
         ColumnDef::new("total", "Total Value", |r: &OrderRow| format!("${:.2}", r.total))
-            .with_width("140px")
+            .with_width("125px")
             .with_align(TextAlign::Right)
             .with_renderer(|r: &OrderRow| {
                 span().class("font-mono font-bold text-xs text-emerald-400").text(&format!("${:.2}", r.total))
             }),
         ColumnDef::new("status", "Status", |r: &OrderRow| r.status.clone())
-            .with_width("120px")
+            .with_width("145px")
             .with_align(TextAlign::Center)
             .with_renderer(|r: &OrderRow| {
                 match r.status.as_str() {
@@ -539,7 +543,7 @@ fn render_datagrid_tab() -> DomBuilder {
                 }
             }),
         ColumnDef::new("timestamp", "Execution Time", |r: &OrderRow| r.timestamp.clone())
-            .with_width("160px"),
+            .with_width("145px"),
     ];
 
     let datagrid = EnterpriseDataGrid::new(
@@ -1351,7 +1355,7 @@ pub fn render_app(mode: &str) {
     let cp_overlay = command_palette(cmd_palette_state);
 
     let app = div()
-        .attr("class", "ferrox-app-shell min-h-screen bg-slate-950 text-slate-100 flex flex-col")
+        .attr("class", "ferrox-app-shell min-h-screen flex flex-col")
         .children(vec![top_bar, body_content, cp_overlay]);
 
     mount("#root", app);

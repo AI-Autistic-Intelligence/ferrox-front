@@ -1335,13 +1335,13 @@ pub fn gauge_chart(id: &str, value: f64, min: f64, max: f64, label: &str, unit: 
     let w = width as f64;
     let h = height as f64;
     let cx = w / 2.0;
-    let cy = h - 25.0;
-    let radius = ((w / 2.0) - 30.0).min(h - 45.0).max(45.0);
+    let cy = (h * 0.54).round();
+    let radius = ((w / 2.0) - 24.0).min(cy - 12.0).max(40.0);
 
     let span = (max - min).max(0.001);
     let ratio = ((value - min) / span).clamp(0.0, 1.0);
 
-    // Speedometer arch from 180° (-PI) to 0° (0.0)
+    // Speedometer arch from 180° (-PI) to 0° (0.0) strictly in the upper half (y <= cy)
     let start_angle = -PI;
     let current_angle = start_angle + ratio * PI;
 
@@ -1373,13 +1373,13 @@ pub fn gauge_chart(id: &str, value: f64, min: f64, max: f64, label: &str, unit: 
         .attr("height", &height.to_string())
         .attr("viewBox", &format!("0 0 {} {}", width, height));
 
-    // Background Arc
+    // Background Track Arc
     svg = svg.child(
         DomBuilder::new_svg("path")
             .attr("d", &bg_d)
             .attr("fill", "none")
-            .attr("stroke", "rgba(255,255,255,0.08)")
-            .attr("stroke-width", "16")
+            .attr("stroke", "rgba(148, 163, 184, 0.2)")
+            .attr("stroke-width", "13")
             .attr("stroke-linecap", "round")
     );
 
@@ -1390,7 +1390,7 @@ pub fn gauge_chart(id: &str, value: f64, min: f64, max: f64, label: &str, unit: 
                 .attr("d", &val_d)
                 .attr("fill", "none")
                 .attr("stroke", val_color)
-                .attr("stroke-width", "16")
+                .attr("stroke-width", "13")
                 .attr("stroke-linecap", "round")
         );
     }
@@ -1398,8 +1398,8 @@ pub fn gauge_chart(id: &str, value: f64, min: f64, max: f64, label: &str, unit: 
     // Graduated Ticks at 0%, 25%, 50%, 75%, 100%
     for step in [0.0, 0.25, 0.50, 0.75, 1.0] {
         let tick_angle = start_angle + step * PI;
-        let r_inner = radius - 16.0;
-        let r_outer = radius + 12.0;
+        let r_inner = radius - 14.0;
+        let r_outer = radius + 9.0;
 
         let x_in = cx + r_inner * tick_angle.cos();
         let y_in = cy + r_inner * tick_angle.sin();
@@ -1412,13 +1412,13 @@ pub fn gauge_chart(id: &str, value: f64, min: f64, max: f64, label: &str, unit: 
                 .attr("y1", &y_in.to_string())
                 .attr("x2", &x_out.to_string())
                 .attr("y2", &y_out.to_string())
-                .attr("stroke", "rgba(255,255,255,0.25)")
+                .attr("stroke", "rgba(148, 163, 184, 0.35)")
                 .attr("stroke-width", "1.5")
         );
     }
 
-    // Needle Indicator
-    let needle_len = radius - 8.0;
+    // Needle Indicator (sweeps strictly in upper semicircle y <= cy)
+    let needle_len = radius - 6.0;
     let needle_x = cx + needle_len * current_angle.cos();
     let needle_y = cy + needle_len * current_angle.sin();
 
@@ -1428,61 +1428,65 @@ pub fn gauge_chart(id: &str, value: f64, min: f64, max: f64, label: &str, unit: 
             .attr("y1", &cy.to_string())
             .attr("x2", &needle_x.to_string())
             .attr("y2", &needle_y.to_string())
-            .attr("stroke", "#ffffff")
-            .attr("stroke-width", "3")
+            .attr("stroke", "var(--text-primary, #ffffff)")
+            .attr("stroke-width", "2.5")
             .attr("stroke-linecap", "round")
     ).child(
-        // Pivot Circle
+        // Pivot Circle centered at (cx, cy)
         DomBuilder::new_svg("circle")
             .attr("cx", &cx.to_string())
             .attr("cy", &cy.to_string())
-            .attr("r", "7")
+            .attr("r", "5.5")
             .attr("fill", val_color)
-            .attr("stroke", "#ffffff")
+            .attr("stroke", "var(--bg-surface, #0f172a)")
             .attr("stroke-width", "2")
     );
 
-    // Readout Text
+    // Readout Text placed safely below the pivot (no possible needle collision)
     let readout_str = format!("{:.1} {}", value, unit);
     svg = svg.child(
         DomBuilder::new_svg("text")
             .attr("x", &cx.to_string())
-            .attr("y", &(cy - 24.0).to_string())
+            .attr("y", &(cy + 25.0).to_string())
             .attr("text-anchor", "middle")
             .attr("fill", "var(--text-primary, #ffffff)")
-            .attr("font-size", "20")
-            .attr("font-weight", "700")
+            .attr("font-size", "18")
+            .attr("font-weight", "800")
             .text(&readout_str)
     ).child(
         DomBuilder::new_svg("text")
             .attr("x", &cx.to_string())
-            .attr("y", &(cy - 8.0).to_string())
+            .attr("y", &(cy + 42.0).to_string())
             .attr("text-anchor", "middle")
-            .attr("fill", "var(--text-secondary, rgba(255,255,255,0.6))")
+            .attr("fill", "var(--text-secondary, #94a3b8)")
             .attr("font-size", "11")
-            .attr("font-weight", "500")
+            .attr("font-weight", "600")
             .text(label)
     ).child(
-        // Min Label
+        // Min Label at bottom left of arc
         DomBuilder::new_svg("text")
             .attr("x", &(cx - radius).to_string())
-            .attr("y", &(cy + 18.0).to_string())
+            .attr("y", &(cy + 13.0).to_string())
             .attr("text-anchor", "middle")
-            .attr("fill", "rgba(255,255,255,0.4)")
+            .attr("fill", "var(--text-secondary, #94a3b8)")
             .attr("font-size", "10")
+            .attr("font-weight", "500")
             .text(&format!("{:.0}", min))
     ).child(
-        // Max Label
+        // Max Label at bottom right of arc
         DomBuilder::new_svg("text")
             .attr("x", &(cx + radius).to_string())
-            .attr("y", &(cy + 18.0).to_string())
+            .attr("y", &(cy + 13.0).to_string())
             .attr("text-anchor", "middle")
-            .attr("fill", "rgba(255,255,255,0.4)")
+            .attr("fill", "var(--text-secondary, #94a3b8)")
             .attr("font-size", "10")
+            .attr("font-weight", "500")
             .text(&format!("{:.0}", max))
     );
 
-    div().child(svg)
+    div()
+        .attr("style", "display: flex; justify-content: center; align-items: center; width: 100%;")
+        .child(svg)
 }
 
 /// Renders a 2D Heatmap Matrix Chart with color gradient cells for traffic intensity,
