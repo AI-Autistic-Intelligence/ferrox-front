@@ -487,10 +487,10 @@ pub fn date_picker(
     let sel = state.selection.get();
 
     let month_names = [
-        "Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno",
-        "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre",
+        "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December",
     ];
-    let month_label = month_names.get((month - 1) as usize).unwrap_or(&"Mese");
+    let month_label = month_names.get((month - 1) as usize).unwrap_or(&"Month");
 
     // Month Navigation Header
     let state_prev = state.clone();
@@ -512,8 +512,8 @@ pub fn date_picker(
                 .on_click(move || state_next.next_month()),
         ]);
 
-    // Weekday column labels (Lun .. Dom)
-    let weekdays = ["Lu", "Ma", "Me", "Gi", "Ve", "Sa", "Do"];
+    // Weekday column labels (Mon .. Sun)
+    let weekdays = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];
     let mut weekday_row = div().class("grid grid-cols-7 text-center py-1.5 border-b border-slate-800/60");
     for w in weekdays {
         weekday_row = weekday_row.child(

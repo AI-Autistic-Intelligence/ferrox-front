@@ -29,13 +29,13 @@ pub enum WsStatus {
 impl std::fmt::Display for WsStatus {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            WsStatus::Connecting => write!(f, "Connessione in corso..."),
-            WsStatus::Connected => write!(f, "Connesso a Ferrox WS"),
+            WsStatus::Connecting => write!(f, "Connecting..."),
+            WsStatus::Connected => write!(f, "Connected to Ferrox WS"),
             WsStatus::Reconnecting { attempt, next_delay_ms } => {
-                write!(f, "Riconnessione (tentativo #{}, {}ms)...", attempt, next_delay_ms)
+                write!(f, "Reconnecting (attempt #{}, {}ms)...", attempt, next_delay_ms)
             }
-            WsStatus::Disconnected => write!(f, "Disconnesso"),
-            WsStatus::Error(err) => write!(f, "Errore: {}", err),
+            WsStatus::Disconnected => write!(f, "Disconnected"),
+            WsStatus::Error(err) => write!(f, "Error: {}", err),
         }
     }
 }

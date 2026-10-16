@@ -257,7 +257,7 @@ impl FormField<String> {
             "ferrox-form-input",
             "w-full",
             "px-4",
-            "py-2.5",
+            "py-3",
             "rounded-xl",
             "text-sm",
             "font-sans",
@@ -348,7 +348,7 @@ impl FormField<String> {
         // Label
         let label_elem = label()
             .attr("for", &field_id)
-            .class("block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5")
+            .class("block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-2.5")
             .text(&self.label);
 
         // Input wrapper
@@ -359,7 +359,7 @@ impl FormField<String> {
 
         // Group container
         let mut group = div()
-            .class("ferrox-form-group flex flex-col mb-4")
+            .class("ferrox-form-group flex flex-col mb-5")
             .child(label_elem)
             .child(input_wrapper);
 
@@ -569,13 +569,13 @@ pub fn form_wizard(
             ])
     } else if let Some(active_step) = state.steps.get(curr) {
         div()
-            .class("wizard-step-body p-6 rounded-2xl bg-slate-900/40 border border-slate-800/80 mb-6")
+            .class("wizard-step-body p-7 md:p-8 rounded-2xl bg-slate-900/50 border border-slate-800/80 mb-8 shadow-inner")
             .children(vec![
                 div()
-                    .class("mb-5 border-b border-slate-800/60 pb-3")
+                    .class("mb-6 border-b border-slate-800/80 pb-4")
                     .children(vec![
-                        h4().class("text-base font-bold text-white").text(&active_step.title),
-                        p().class("text-xs text-slate-400 mt-0.5").text(&active_step.subtitle),
+                        h4().class("text-base font-bold text-white tracking-wide").text(&active_step.title),
+                        p().class("text-xs text-slate-400 mt-1").text(&active_step.subtitle),
                     ]),
                 (active_step.render_content)(),
             ])
@@ -626,10 +626,10 @@ pub fn form_wizard(
         });
 
     let footer_actions = div()
-        .class("flex items-center justify-between pt-4 border-t border-slate-800/80")
+        .class("flex items-center justify-between pt-6 border-t border-slate-800/80")
         .children(vec![prev_btn, next_btn]);
 
     div()
-        .class("ferrox-form-wizard w-full max-w-2xl mx-auto p-6 rounded-3xl bg-slate-950/80 border border-slate-800/80 shadow-2xl backdrop-blur-xl")
+        .class("ferrox-form-wizard w-full max-w-2xl mx-auto p-8 md:p-9 rounded-3xl bg-slate-950/80 border border-slate-800/80 shadow-2xl backdrop-blur-xl")
         .children(vec![step_nav, content_area, footer_actions])
 }

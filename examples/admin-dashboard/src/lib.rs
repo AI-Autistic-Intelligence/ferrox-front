@@ -59,23 +59,28 @@ pub fn card_advanced(
     _glow: bool,
     padding_class: &str,
 ) -> DomBuilder {
+    let effective_padding = match padding_class {
+        "p-4" => "p-6",
+        "p-5" => "p-7",
+        other => other,
+    };
     div()
         .class(&format!(
-            "ferrox-card bg-slate-900/60 border border-slate-800/80 rounded-2xl backdrop-blur-xl shadow-xl {}",
-            padding_class
+            "ferrox-card bg-slate-900/70 border border-slate-800/90 rounded-2xl backdrop-blur-2xl shadow-2xl {}",
+            effective_padding
         ))
         .children(vec![
             div()
-                .class("flex items-center justify-between pb-3 mb-3 border-b border-slate-800/60")
+                .class("flex items-center justify-between pb-4 mb-5 border-b border-slate-800/70")
                 .children(vec![
                     div()
-                        .class("flex items-center gap-2.5")
+                        .class("flex items-center gap-3")
                         .children(vec![
-                            div().class("w-8 h-8 rounded-lg bg-indigo-600/20 text-indigo-400 flex items-center justify-center")
-                                .child(Icon::render(icon, 16, "#818cf8")),
+                            div().class("w-9 h-9 rounded-xl bg-indigo-600/20 text-indigo-400 flex items-center justify-center flex-shrink-0")
+                                .child(Icon::render(icon, 18, "#818cf8")),
                             div().children(vec![
-                                h3().class("text-sm font-bold text-white leading-tight").text(title),
-                                p().class("text-[11px] text-slate-400 leading-tight mt-0.5").text(subtitle),
+                                h3().class("text-base font-bold text-white tracking-tight leading-snug").text(title),
+                                p().class("text-xs text-slate-400 mt-0.5 leading-normal").text(subtitle),
                             ]),
                         ]),
                 ]),
@@ -168,25 +173,25 @@ fn render_top_bar(active_tab: &str, cmd_palette: &CommandPaletteState) -> DomBui
     let cp_clone = cmd_palette.clone();
 
     let tab_buttons = div()
-        .attr("class", "ferrox-tab-switcher flex items-center gap-1.5 p-1 rounded-xl bg-slate-900/60 border border-slate-800")
+        .attr("class", "ferrox-tab-switcher flex flex-wrap items-center gap-2 p-1.5 rounded-2xl bg-slate-900/80 border border-slate-800/80 shadow-md")
         .children(vec![
             button_advanced("⚡ Trading Desk Pro", "glass", "sm", false, None)
-                .attr("style", if active_tab == "trading" { "background: var(--accent-primary); color: #fff; font-weight: 700;" } else { "opacity: 0.7;" })
+                .attr("style", if active_tab == "trading" { "background: var(--accent-primary); color: #fff; font-weight: 700; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);" } else { "opacity: 0.8;" })
                 .on_click(|| render_app("trading")),
             button_advanced("📊 Enterprise DataGrid", "glass", "sm", false, None)
-                .attr("style", if active_tab == "datagrid" { "background: var(--accent-primary); color: #fff; font-weight: 700;" } else { "opacity: 0.7;" })
+                .attr("style", if active_tab == "datagrid" { "background: var(--accent-primary); color: #fff; font-weight: 700; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);" } else { "opacity: 0.8;" })
                 .on_click(|| render_app("datagrid")),
             button_advanced("🎨 UI Elements", "glass", "sm", false, None)
-                .attr("style", if active_tab == "components" { "background: var(--accent-primary); color: #fff; font-weight: 700;" } else { "opacity: 0.7;" })
+                .attr("style", if active_tab == "components" { "background: var(--accent-primary); color: #fff; font-weight: 700; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);" } else { "opacity: 0.8;" })
                 .on_click(|| render_app("components")),
             button_advanced("📈 Charting Suite", "glass", "sm", false, None)
-                .attr("style", if active_tab == "charts" { "background: var(--accent-primary); color: #fff; font-weight: 700;" } else { "opacity: 0.7;" })
+                .attr("style", if active_tab == "charts" { "background: var(--accent-primary); color: #fff; font-weight: 700; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);" } else { "opacity: 0.8;" })
                 .on_click(|| render_app("charts")),
             button_advanced("📝 Form Wizard", "glass", "sm", false, None)
-                .attr("style", if active_tab == "form" { "background: var(--accent-primary); color: #fff; font-weight: 700;" } else { "opacity: 0.7;" })
+                .attr("style", if active_tab == "form" { "background: var(--accent-primary); color: #fff; font-weight: 700; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);" } else { "opacity: 0.8;" })
                 .on_click(|| render_app("form")),
             button_advanced("📁 Explorer & Overlays", "glass", "sm", false, None)
-                .attr("style", if active_tab == "explorer" { "background: var(--accent-primary); color: #fff; font-weight: 700;" } else { "opacity: 0.7;" })
+                .attr("style", if active_tab == "explorer" { "background: var(--accent-primary); color: #fff; font-weight: 700; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);" } else { "opacity: 0.8;" })
                 .on_click(|| render_app("explorer")),
         ]);
 
@@ -208,7 +213,7 @@ fn render_top_bar(active_tab: &str, cmd_palette: &CommandPaletteState) -> DomBui
         .children(vec![cmd_k_btn, theme_selector]);
 
     div()
-        .attr("class", "ferrox-topbar flex items-center justify-between px-6 py-3 border-b border-slate-800/80 bg-slate-950/80 backdrop-blur-xl sticky top-0 z-40")
+        .attr("class", "ferrox-topbar flex flex-wrap items-center justify-between gap-4 px-6 py-3.5 border-b border-slate-800/80 bg-slate-950/80 backdrop-blur-xl sticky top-0 z-40")
         .children(vec![
             div()
                 .attr("class", "flex items-center gap-3")
@@ -428,21 +433,21 @@ fn render_trading_desk_tab() -> DomBuilder {
 
     // 8. Main Chart and Order Entry Row
     let chart_and_entry_row = row()
-        .child(col("12 lg-8").child(
+        .child(col("12 md-8").child(
             card_advanced(
                 "Trading Desk Pro • Bitcoin Perpetual (BTC/USD 5m)",
                 "TradingView Parity Engine: Candlestick, SMA (20, 50), Bollinger (±2σ), RSI (14), MACD (12,26,9)",
                 "chart-candlestick",
                 "glass",
                 false,
-                "p-4",
+                "p-6",
             )
             .child(main_chart)
             .child(
-                div().class("flex items-center justify-between pt-3 mt-2 border-t border-slate-800 text-xs text-slate-400")
+                div().class("flex items-center justify-between pt-4 mt-4 border-t border-slate-800/80 text-xs text-slate-400")
                     .children(vec![
                         span().text("CandleAggregator (5m) • Active Crosshair & Dynamic Data Reader"),
-                        div().class("flex items-center gap-2")
+                        div().class("flex items-center gap-3")
                             .children(vec![
                                 button_advanced("🔌 Connect WS Feed", "outline", "xs", false, Some("activity"))
                                     .on_click(|| {
@@ -454,26 +459,26 @@ fn render_trading_desk_tab() -> DomBuilder {
                     ])
             )
         ))
-        .child(col("12 lg-4").child(order_entry_card));
+        .child(col("12 md-4").child(order_entry_card));
 
     // 9. Depth Chart, Order Book Ladder, and Recent Trades Row
     let depth_and_ladder_row = row()
-        .child(col("12 lg-6").child(
+        .child(col("12 md-6").child(
             card_advanced(
                 "Order Book Market Depth (Bids vs Asks)",
                 "Cumulative Depth Curve with Mid-Price and Spread",
                 "chart-bar",
                 "glass",
                 false,
-                "p-4",
+                "p-6",
             )
             .child(depth_svg)
         ))
-        .child(col("12 lg-3").child(order_book_card))
-        .child(col("12 lg-3").child(trades_card));
+        .child(col("12 md-3").child(order_book_card))
+        .child(col("12 md-3").child(trades_card));
 
     container()
-        .attr("style", "max-width: 1400px; margin: 0 auto; padding: 2rem 1.5rem; display: flex; flex-direction: column; gap: 20px;")
+        .attr("style", "max-width: 1440px; margin: 0 auto; padding: 2.5rem 2rem; display: flex; flex-direction: column; gap: 28px;")
         .children(vec![stat_cards, chart_and_entry_row, depth_and_ladder_row])
 }
 
@@ -548,9 +553,9 @@ fn render_datagrid_tab() -> DomBuilder {
     // Export button toolbar
     let orders_export = orders.clone();
     let export_bar = div()
-        .class("flex items-center justify-between p-3 rounded-xl bg-slate-900/60 border border-slate-800")
+        .class("flex flex-wrap items-center justify-between gap-4 p-4 px-6 rounded-2xl bg-slate-900/80 border border-slate-800/80 shadow-lg mb-2")
         .children(vec![
-            span().class("text-xs text-slate-300").text("Direct Table Export (WebAssembly Blob RFC 4180):"),
+            span().class("text-xs text-slate-300 font-medium").text("Direct Table Export (WebAssembly Blob RFC 4180):"),
             button_advanced("📥 Export All 1,000 Orders (CSV)", "primary", "xs", false, Some("download"))
                 .on_click(move || {
                     let headers = vec!["Order ID", "Asset Symbol", "Side", "Price", "Amount", "Total", "Status", "Timestamp"];
@@ -570,13 +575,13 @@ fn render_datagrid_tab() -> DomBuilder {
         ]);
 
     container()
-        .attr("style", "max-width: 1400px; margin: 0 auto; padding: 2rem 1.5rem; display: flex; flex-direction: column; gap: 20px;")
+        .attr("style", "max-width: 1400px; margin: 0 auto; padding: 2.5rem 2rem; display: flex; flex-direction: column; gap: 28px;")
         .children(vec![
             div()
-                .class("flex items-center justify-between pb-2 border-b border-slate-800")
+                .class("flex flex-wrap items-center justify-between gap-4 pb-3 border-b border-slate-800/80")
                 .children(vec![
                     div().children(vec![
-                        h2().class("text-xl font-bold text-white").text("Enterprise DataGrid Pro • AG-Grid Parity"),
+                        h2().class("text-2xl font-bold text-white tracking-tight").text("Enterprise DataGrid Pro • AG-Grid Parity"),
                         p().class("text-xs text-slate-400 mt-1")
                             .text("1,000 orders in Wasm linear memory, multi-column sorting, reactive filters, row selection, and native CSV export download."),
                     ]),
@@ -721,13 +726,13 @@ fn render_form_wizard_tab() -> DomBuilder {
     });
 
     container()
-        .attr("style", "max-width: 1400px; margin: 0 auto; padding: 2rem 1.5rem; display: flex; flex-direction: column; gap: 20px;")
+        .attr("style", "max-width: 1400px; margin: 0 auto; padding: 2.5rem 2rem; display: flex; flex-direction: column; gap: 28px;")
         .children(vec![
             div()
-                .class("text-center max-w-xl mx-auto mb-4")
+                .class("text-center max-w-xl mx-auto mb-6")
                 .children(vec![
-                    h2().class("text-2xl font-bold text-white").text("Form Validation Wizard • Strict Reactive Gating"),
-                    p().class("text-xs text-slate-400 mt-1")
+                    h2().class("text-2xl font-bold text-white tracking-tight").text("Form Validation Wizard • Strict Reactive Gating"),
+                    p().class("text-xs text-slate-400 mt-2")
                         .text("Zod + React Hook Form Parity: Real-time validation, touched/dirty states, WCAG 2.1 AA compliance."),
                 ]),
             wizard,
@@ -819,24 +824,24 @@ fn render_explorer_tab(cmd_palette: &CommandPaletteState) -> DomBuilder {
         }
     });
 
-    let explorer_col = col("12 lg-6").child(
-        card_advanced("Hierarchical TreeView Explorer", "Radix-Style Structural Navigator", "folder", "glass", false, "p-4")
+    let explorer_col = col("12 md-6").child(
+        card_advanced("Hierarchical TreeView Explorer", "Radix-Style Structural Navigator", "folder", "glass", false, "p-6")
             .child(tree)
             .child(
-                div().id("tree-selected-label").class("text-xs text-indigo-400 mt-3 pt-2 border-t border-slate-800")
+                div().id("tree-selected-label").class("text-xs text-indigo-400 mt-4 pt-3 border-t border-slate-800/80")
                     .text("Click a tree node to inspect its details.")
             )
     );
 
-    let overlays_col = col("12 lg-6").child(
-        card_advanced("Pure Vector DatePicker & Command Palette", "Enterprise Overlay Components", "calendar", "glass", false, "p-4")
+    let overlays_col = col("12 md-6").child(
+        card_advanced("Pure Vector DatePicker & Command Palette", "Enterprise Overlay Components", "calendar", "glass", false, "p-6")
             .child(
-                div().class("flex flex-col items-center gap-4")
+                div().class("flex flex-col items-center gap-6")
                     .children(vec![
                         calendar,
-                        div().id("datepicker-selected-label").class("text-xs text-emerald-400")
+                        div().id("datepicker-selected-label").class("text-xs text-emerald-400 font-semibold")
                             .text("Time Filter: No date selected."),
-                        div().class("w-full pt-3 border-t border-slate-800 flex items-center justify-between")
+                        div().class("w-full pt-4 border-t border-slate-800/80 flex items-center justify-between")
                             .children(vec![
                                 span().class("text-xs text-slate-400").text("Global keyboard shortcut:"),
                                 button_advanced("Open Command Palette (⌘K / Ctrl+K)", "primary", "sm", false, Some("search"))
@@ -847,12 +852,12 @@ fn render_explorer_tab(cmd_palette: &CommandPaletteState) -> DomBuilder {
     );
 
     container()
-        .attr("style", "max-width: 1400px; margin: 0 auto; padding: 2rem 1.5rem; display: flex; flex-direction: column; gap: 20px;")
+        .attr("style", "max-width: 1400px; margin: 0 auto; padding: 2.5rem 2rem; display: flex; flex-direction: column; gap: 28px;")
         .children(vec![
             div()
-                .class("pb-2 border-b border-slate-800")
+                .class("pb-3 border-b border-slate-800/80 mb-2")
                 .children(vec![
-                    h2().class("text-xl font-bold text-white").text("File Explorer, Vector DatePicker & Command Palette"),
+                    h2().class("text-2xl font-bold text-white tracking-tight").text("File Explorer, Vector DatePicker & Command Palette"),
                     p().class("text-xs text-slate-400 mt-1")
                         .text("Fluid hierarchical navigation, date range picking, and Spotlight-style instant search."),
                 ]),
@@ -872,14 +877,14 @@ fn render_components_catalog_tab() -> DomBuilder {
         "zap",
         "glass",
         false,
-        "p-5",
+        "p-6",
     )
     .child(
-        div().class("space-y-4")
+        div().class("space-y-6")
             .children(vec![
                 div().children(vec![
-                    span().class("text-xs font-semibold text-slate-400 uppercase tracking-wider block mb-2").text("Visual Variants"),
-                    div().class("flex flex-wrap items-center gap-2.5")
+                    span().class("text-xs font-bold text-slate-300 uppercase tracking-wider block mb-3").text("Visual Variants"),
+                    div().class("flex flex-wrap items-center gap-3")
                         .children(vec![
                             button_advanced("Primary Action", "primary", "sm", false, Some("zap")),
                             button_advanced("Secondary Glass", "glass", "sm", false, Some("layers")),
@@ -889,9 +894,9 @@ fn render_components_catalog_tab() -> DomBuilder {
                             button_advanced("Link Text", "link", "sm", false, Some("external-link")),
                         ]),
                 ]),
-                div().children(vec![
-                    span().class("text-xs font-semibold text-slate-400 uppercase tracking-wider block mb-2").text("Scale & Sizing Options"),
-                    div().class("flex flex-wrap items-center gap-2.5")
+                div().class("pt-4 border-t border-slate-800/80").children(vec![
+                    span().class("text-xs font-bold text-slate-300 uppercase tracking-wider block mb-3").text("Scale & Sizing Options"),
+                    div().class("flex flex-wrap items-center gap-3")
                         .children(vec![
                             button_advanced("XS Button (24px)", "primary", "xs", false, None),
                             button_advanced("SM Button (32px)", "primary", "sm", false, None),
@@ -899,8 +904,8 @@ fn render_components_catalog_tab() -> DomBuilder {
                             button_advanced("LG Button (48px)", "primary", "lg", false, None),
                         ]),
                 ]),
-                div().children(vec![
-                    span().class("text-xs font-semibold text-slate-400 uppercase tracking-wider block mb-2").text("Active Loading Spinners & Segmented Group"),
+                div().class("pt-4 border-t border-slate-800/80").children(vec![
+                    span().class("text-xs font-bold text-slate-300 uppercase tracking-wider block mb-3").text("Active Loading Spinners & Segmented Group"),
                     div().class("flex flex-wrap items-center gap-4")
                         .children(vec![
                             button_advanced("Processing Order...", "primary", "sm", true, None),
@@ -946,29 +951,29 @@ fn render_components_catalog_tab() -> DomBuilder {
         "file-text",
         "glass",
         false,
-        "p-5",
+        "p-6",
     )
     .child(
-        div().class("grid grid-cols-1 md:grid-cols-2 gap-4")
+        div().class("grid grid-cols-1 md:grid-cols-2 gap-6")
             .children(vec![
-                div().class("space-y-1.5")
+                div().class("space-y-2")
                     .children(vec![
-                        span().class("text-xs font-semibold text-slate-300").text("Verified Input (Valid)"),
+                        span().class("text-xs font-bold text-slate-300 block mb-1").text("Verified Input (Valid)"),
                         input_valid,
                     ]),
-                div().class("space-y-1.5")
+                div().class("space-y-2")
                     .children(vec![
-                        span().class("text-xs font-semibold text-slate-300").text("Tick Boundary Input (Invalid)"),
+                        span().class("text-xs font-bold text-slate-300 block mb-1").text("Tick Boundary Input (Invalid)"),
                         input_invalid,
                     ]),
-                div().class("space-y-1.5 md:col-span-2")
+                div().class("space-y-2 md:col-span-2 pt-3 border-t border-slate-800/80")
                     .children(vec![
-                        span().class("text-xs font-semibold text-slate-300").text("Compliance Notes (Textarea with Counter)"),
+                        span().class("text-xs font-bold text-slate-300 block mb-1").text("Compliance Notes (Textarea with Counter)"),
                         textarea_advanced("kyc-notes", "Enter compliance audit remarks...", 250, "Authorized by compliance officer under SOC2 Type II guidelines."),
                     ]),
-                div().class("space-y-1.5 md:col-span-2")
+                div().class("space-y-2 md:col-span-2 pt-3 border-t border-slate-800/80")
                     .children(vec![
-                        span().class("text-xs font-semibold text-slate-300").text("Interactive Slippage Tolerance Slider"),
+                        span().class("text-xs font-bold text-slate-300 block mb-1").text("Interactive Slippage Tolerance Slider"),
                         range_slider_with_bubble("slippage-slider", 0, 100, 35, "%"),
                     ]),
             ])
@@ -981,26 +986,26 @@ fn render_components_catalog_tab() -> DomBuilder {
         "check",
         "glass",
         false,
-        "p-5",
+        "p-6",
     )
     .child(
-        div().class("space-y-4")
+        div().class("space-y-6")
             .children(vec![
-                div().class("flex flex-wrap items-center gap-6")
+                div().class("flex flex-wrap items-center gap-8 py-2")
                     .children(vec![
                         switch_toggle("sw-stream", true, "Order Book Streaming (< 1.8 μs)"),
                         switch_toggle("sw-hft", false, "HFT Dark Pool Routing"),
                         switch_toggle("sw-sim", true, "Hardware Acceleration (WebGL)"),
                     ]),
-                div().class("flex flex-wrap items-center gap-6 pt-2 border-t border-slate-800")
+                div().class("flex flex-wrap items-center gap-8 pt-4 border-t border-slate-800/80")
                     .children(vec![
                         checkbox_advanced("cb-all", "Select All Order Books", false, true),
                         checkbox_advanced("cb-btc", "Auto-Hedge Spot Liquidity", true, false),
                         checkbox_advanced("cb-eth", "Cross-Margin Liquidation Safeguard", true, false),
                     ]),
-                div().class("pt-2 border-t border-slate-800")
+                div().class("pt-4 border-t border-slate-800/80")
                     .children(vec![
-                        span().class("text-xs font-semibold text-slate-400 uppercase tracking-wider block mb-2").text("Execution Architecture Selection"),
+                        span().class("text-xs font-bold text-slate-300 uppercase tracking-wider block mb-3").text("Execution Architecture Selection"),
                         radio_group(
                             "exec_arch",
                             vec![
@@ -1021,14 +1026,14 @@ fn render_components_catalog_tab() -> DomBuilder {
         "layers",
         "glass",
         false,
-        "p-5",
+        "p-6",
     )
     .child(
-        div().class("space-y-4")
+        div().class("space-y-6")
             .children(vec![
                 div().children(vec![
-                    span().class("text-xs font-semibold text-slate-400 uppercase tracking-wider block mb-2").text("Interactive Dialog & Drawer Triggers"),
-                    div().class("flex flex-wrap items-center gap-3")
+                    span().class("text-xs font-bold text-slate-300 uppercase tracking-wider block mb-3").text("Interactive Dialog & Drawer Triggers"),
+                    div().class("flex flex-wrap items-center gap-4 mb-2")
                         .children(vec![
                             button_advanced("Launch Modal Dialog", "primary", "sm", false, Some("layers"))
                                 .on_click(|| {
@@ -1057,9 +1062,9 @@ fn render_components_catalog_tab() -> DomBuilder {
                                 }),
                         ]),
                 ]),
-                div().children(vec![
-                    span().class("text-xs font-semibold text-slate-400 uppercase tracking-wider block mb-2").text("Status Badges & Alert Banners"),
-                    div().class("flex flex-wrap items-center gap-2 mb-3")
+                div().class("pt-4 border-t border-slate-800/80").children(vec![
+                    span().class("text-xs font-bold text-slate-300 uppercase tracking-wider block mb-3").text("Status Badges & Alert Banners"),
+                    div().class("flex flex-wrap items-center gap-3 mb-4")
                         .children(vec![
                             badge("MATCHED", "success"),
                             badge("PARTIAL FILL", "warning"),
@@ -1084,7 +1089,7 @@ fn render_components_catalog_tab() -> DomBuilder {
     let mut icon_grid_items = Vec::new();
     for name in icon_names {
         icon_grid_items.push(
-            div().class("flex flex-col items-center justify-center p-3 rounded-xl bg-slate-900/50 border border-slate-800 hover:border-indigo-500/50 transition-all gap-1.5")
+            div().class("flex flex-col items-center justify-center p-3.5 rounded-xl bg-slate-900/60 border border-slate-800/80 hover:border-indigo-500/50 hover:bg-slate-800/60 transition-all gap-2 min-h-[88px]")
                 .children(vec![
                     Icon::render(name, 22, "#818cf8"),
                     span().class("text-[10px] text-slate-400 font-mono").text(name),
@@ -1098,25 +1103,25 @@ fn render_components_catalog_tab() -> DomBuilder {
         "palette",
         "glass",
         false,
-        "p-5",
+        "p-6",
     )
     .child(
-        div().class("grid grid-cols-3 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-2.5")
+        div().class("grid grid-cols-3 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-3.5")
             .children(icon_grid_items)
     );
 
     container()
-        .attr("style", "max-width: 1400px; margin: 0 auto; padding: 2rem 1.5rem; display: flex; flex-direction: column; gap: 24px;")
+        .attr("style", "max-width: 1440px; margin: 0 auto; padding: 2.5rem 2rem; display: flex; flex-direction: column; gap: 32px;")
         .children(vec![
             div()
-                .class("pb-2 border-b border-slate-800")
+                .class("pb-4 border-b border-slate-800")
                 .children(vec![
                     h2().class("text-2xl font-black text-white tracking-tight").text("Enterprise Design System & UI Elements"),
                     p().class("text-xs text-slate-400 mt-1")
                         .text("Complete interactive catalog of Ferrox Front WebAssembly UI elements conforming to WCAG 2.1 AA."),
                 ]),
-            row().child(col("12 lg-6").child(buttons_card)).child(col("12 lg-6").child(forms_card)),
-            row().child(col("12 lg-6").child(states_card)).child(col("12 lg-6").child(overlays_card)),
+            row().child(col("12 md-6").child(buttons_card)).child(col("12 md-6").child(forms_card)),
+            row().child(col("12 md-6").child(states_card)).child(col("12 md-6").child(overlays_card)),
             row().child(col("12").child(icons_card)),
         ])
 }
@@ -1184,12 +1189,12 @@ fn render_charts_gallery_tab() -> DomBuilder {
         "activity",
         "glass",
         false,
-        "p-5",
+        "p-6",
     )
     .child(
-        div().class("grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4")
+        div().class("grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5")
             .children(vec![
-                div().class("p-3.5 rounded-xl bg-slate-900/60 border border-slate-800 flex items-center justify-between")
+                div().class("p-4 rounded-2xl bg-slate-900/60 border border-slate-800/80 flex items-center justify-between")
                     .children(vec![
                         div().children(vec![
                             span().class("text-xs text-slate-400 block").text("BTC/USD"),
@@ -1197,7 +1202,7 @@ fn render_charts_gallery_tab() -> DomBuilder {
                         ]),
                         btc_spark,
                     ]),
-                div().class("p-3.5 rounded-xl bg-slate-900/60 border border-slate-800 flex items-center justify-between")
+                div().class("p-4 rounded-2xl bg-slate-900/60 border border-slate-800/80 flex items-center justify-between")
                     .children(vec![
                         div().children(vec![
                             span().class("text-xs text-slate-400 block").text("ETH/USD"),
@@ -1205,7 +1210,7 @@ fn render_charts_gallery_tab() -> DomBuilder {
                         ]),
                         eth_spark,
                     ]),
-                div().class("p-3.5 rounded-xl bg-slate-900/60 border border-slate-800 flex items-center justify-between")
+                div().class("p-4 rounded-2xl bg-slate-900/60 border border-slate-800/80 flex items-center justify-between")
                     .children(vec![
                         div().children(vec![
                             span().class("text-xs text-slate-400 block").text("SOL/USD"),
@@ -1213,7 +1218,7 @@ fn render_charts_gallery_tab() -> DomBuilder {
                         ]),
                         sol_spark,
                     ]),
-                div().class("p-3.5 rounded-xl bg-slate-900/60 border border-slate-800 flex items-center justify-between")
+                div().class("p-4 rounded-2xl bg-slate-900/60 border border-slate-800/80 flex items-center justify-between")
                     .children(vec![
                         div().children(vec![
                             span().class("text-xs text-slate-400 block").text("FERR/USD"),
@@ -1230,14 +1235,14 @@ fn render_charts_gallery_tab() -> DomBuilder {
         "cpu",
         "glass",
         false,
-        "p-5",
+        "p-6",
     )
     .child(
-        div().class("grid grid-cols-1 sm:grid-cols-3 gap-4 text-center")
+        div().class("grid grid-cols-1 sm:grid-cols-3 gap-6 text-center")
             .children(vec![
-                div().class("flex flex-col items-center").child(cpu_gauge),
-                div().class("flex flex-col items-center").child(match_gauge),
-                div().class("flex flex-col items-center").child(tps_gauge),
+                div().class("flex flex-col items-center p-3").child(cpu_gauge),
+                div().class("flex flex-col items-center p-3").child(match_gauge),
+                div().class("flex flex-col items-center p-3").child(tps_gauge),
             ])
     );
 
@@ -1247,11 +1252,11 @@ fn render_charts_gallery_tab() -> DomBuilder {
         "chart-candlestick",
         "glass",
         false,
-        "p-5",
+        "p-6",
     )
     .child(main_chart)
     .child(
-        div().class("flex items-center justify-between pt-3 mt-3 border-t border-slate-800 text-xs text-slate-400")
+        div().class("flex items-center justify-between pt-4 mt-4 border-t border-slate-800/80 text-xs text-slate-400")
             .children(vec![
                 span().text("Pure Rust Vector SVG Rendering • Dynamic Crosshair Tracking"),
                 button_advanced("⚡ Push Simulated Market Tick", "primary", "xs", false, Some("zap"))
@@ -1265,22 +1270,22 @@ fn render_charts_gallery_tab() -> DomBuilder {
         "chart-bar",
         "glass",
         false,
-        "p-5",
+        "p-6",
     )
     .child(depth_svg);
 
     container()
-        .attr("style", "max-width: 1400px; margin: 0 auto; padding: 2rem 1.5rem; display: flex; flex-direction: column; gap: 24px;")
+        .attr("style", "max-width: 1400px; margin: 0 auto; padding: 2.5rem 2rem; display: flex; flex-direction: column; gap: 28px;")
         .children(vec![
             div()
-                .class("pb-2 border-b border-slate-800")
+                .class("pb-3 border-b border-slate-800/80 mb-2")
                 .children(vec![
                     h2().class("text-2xl font-black text-white tracking-tight").text("SVG Vector Financial Charting Suite"),
                     p().class("text-xs text-slate-400 mt-1")
                         .text("High-precision quantitative visualizations engineered with zero JavaScript or Canvas overhead."),
                 ]),
             row().child(col("12").child(sparklines_card)),
-            row().child(col("12 lg-7").child(technical_card)).child(col("12 lg-5").child(depth_card)),
+            row().child(col("12 md-7").child(technical_card)).child(col("12 md-5").child(depth_card)),
             row().child(col("12").child(gauges_card)),
         ])
 }

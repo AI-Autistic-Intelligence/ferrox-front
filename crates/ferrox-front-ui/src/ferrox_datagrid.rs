@@ -311,32 +311,32 @@ impl<T: 'static> EnterpriseDataGrid<T> {
         let datagrid_id_owned = self.id.clone();
         let export_csv_btn = button()
             .attr("class", "ferrox-btn")
-            .attr("style", "padding: 8px 16px; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 6px; background: var(--bg-surface); border: var(--border-glass); cursor: pointer;")
+            .attr("style", "padding: 10px 18px; font-size: 0.85rem; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; background: var(--bg-surface); border: var(--border-glass); cursor: pointer; border-radius: 8px;")
             .child(Icon::render("download", 16, "var(--accent-primary)"))
             .child(span().text("Export Table CSV"));
 
         let toolbar = div()
             .attr("class", "ferrox-datagrid-toolbar")
-            .attr("style", "display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 12px;")
+            .attr("style", "display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; flex-wrap: wrap; gap: 16px;")
             .child(
-                div().attr("style", "display: flex; align-items: center; gap: 10px;")
+                div().attr("style", "display: flex; align-items: center; gap: 12px;")
                     .child(
-                        div().attr("style", "position: relative; width: 280px;")
-                            .child(span().attr("style", "position: absolute; left: 10px; top: 50%; transform: translateY(-50%); opacity: 0.5; pointer-events: none;").child(Icon::render("search", 16, "var(--text-secondary)")))
+                        div().attr("style", "position: relative; width: 300px;")
+                            .child(span().attr("style", "position: absolute; left: 12px; top: 50%; transform: translateY(-50%); opacity: 0.5; pointer-events: none;").child(Icon::render("search", 16, "var(--text-secondary)")))
                             .child(
                                 input()
                                     .attr("type", "text")
                                     .attr("placeholder", "Search all fields...")
                                     .attr("value", &self.state.search_query)
-                                    .attr("style", "width: 100%; padding: 8px 12px 8px 34px; border-radius: 6px; background: var(--bg-surface); border: var(--border-glass); color: var(--text-primary); font-size: 0.85rem; outline: none;")
+                                    .attr("style", "width: 100%; padding: 10px 14px 10px 38px; border-radius: 8px; background: var(--bg-surface); border: var(--border-glass); color: var(--text-primary); font-size: 0.88rem; outline: none;")
                             )
                     )
                     .child(
-                        div().attr("style", "display: flex; align-items: center; gap: 6px; font-size: 0.82rem; color: var(--text-secondary);")
+                        div().attr("style", "display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: var(--text-secondary);")
                             .child(span().text("Show:"))
                             .child(
                                 select()
-                                    .attr("style", "padding: 6px 10px; border-radius: 6px; background: var(--bg-surface); border: var(--border-glass); color: var(--text-primary); font-size: 0.82rem; outline: none;")
+                                    .attr("style", "padding: 8px 12px; border-radius: 8px; background: var(--bg-surface); border: var(--border-glass); color: var(--text-primary); font-size: 0.85rem; outline: none; cursor: pointer;")
                                     .child(option().attr("value", "10").text("10 rows"))
                                     .child(option().attr("value", "25").text("25 rows"))
                                     .child(option().attr("value", "50").text("50 rows"))
@@ -352,11 +352,11 @@ impl<T: 'static> EnterpriseDataGrid<T> {
 
         let mut thead = div()
             .attr("class", "ferrox-datagrid-header")
-            .attr("style", "display: flex; align-items: center; background: rgba(0,0,0,0.3); border-bottom: 2px solid rgba(255,255,255,0.1); padding: 10px 14px; font-weight: 700; font-size: 0.82rem; letter-spacing: 0.5px; color: var(--text-secondary);");
+            .attr("style", "display: flex; align-items: center; background: rgba(0,0,0,0.35); border-bottom: 2px solid rgba(255,255,255,0.12); padding: 13px 18px; font-weight: 700; font-size: 0.84rem; letter-spacing: 0.5px; color: var(--text-secondary);");
 
         // Header Checkbox
         let header_checkbox = div()
-            .attr("style", "width: 36px; display: flex; align-items: center; justify-content: center; cursor: pointer;")
+            .attr("style", "width: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer;")
             .child(
                 div().attr("style", &format!(
                     "width: 18px; height: 18px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.3); background: {}; display: flex; align-items: center; justify-content: center;",
@@ -402,7 +402,7 @@ impl<T: 'static> EnterpriseDataGrid<T> {
 
             let col_header = div()
                 .attr("class", "ferrox-datagrid-th")
-                .attr("style", &format!("display: flex; align-items: center; gap: 6px; padding: 0 10px; cursor: pointer; user-select: none; {} {}", width_style, align_style))
+                .attr("style", &format!("display: flex; align-items: center; gap: 8px; padding: 0 12px; cursor: pointer; user-select: none; {} {}", width_style, align_style))
                 .child(span().text(&col.header))
                 .child(sort_icon);
 
@@ -414,26 +414,26 @@ impl<T: 'static> EnterpriseDataGrid<T> {
 
         if paged_rows.is_empty() {
             let empty_row = div()
-                .attr("style", "padding: 3rem; text-align: center; color: var(--text-secondary); font-size: 0.95rem;")
-                .child(div().attr("style", "margin-bottom: 8px;").child(Icon::render("search", 32, "rgba(255,255,255,0.2)")))
+                .attr("style", "padding: 4rem 2rem; text-align: center; color: var(--text-secondary); font-size: 0.95rem;")
+                .child(div().attr("style", "margin-bottom: 12px;").child(Icon::render("search", 36, "rgba(255,255,255,0.2)")))
                 .child(span().text("No records found matching the specified filters."));
             tbody = tbody.child(empty_row);
         } else {
             for &(orig_idx, item) in paged_rows {
                 let is_selected = self.state.selected_rows.contains(&orig_idx);
                 let row_bg = if is_selected {
-                    "background: rgba(59, 130, 246, 0.12); border-bottom: 1px solid rgba(59, 130, 246, 0.25);"
+                    "background: rgba(59, 130, 246, 0.14); border-bottom: 1px solid rgba(59, 130, 246, 0.3);"
                 } else {
-                    "border-bottom: 1px solid rgba(255,255,255,0.05);"
+                    "border-bottom: 1px solid rgba(255,255,255,0.06);"
                 };
 
                 let mut tr = div()
                     .attr("class", "ferrox-datagrid-row")
-                    .attr("style", &format!("display: flex; align-items: center; padding: 10px 14px; transition: background 0.15s; cursor: pointer; {}", row_bg));
+                    .attr("style", &format!("display: flex; align-items: center; padding: 13px 18px; min-height: 48px; transition: background 0.15s; cursor: pointer; {}", row_bg));
 
                 // Row Checkbox
                 let row_check = div()
-                    .attr("style", "width: 36px; display: flex; align-items: center; justify-content: center;")
+                    .attr("style", "width: 40px; display: flex; align-items: center; justify-content: center;")
                     .child(
                         div().attr("style", &format!(
                             "width: 18px; height: 18px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.3); background: {}; display: flex; align-items: center; justify-content: center;",
@@ -467,7 +467,7 @@ impl<T: 'static> EnterpriseDataGrid<T> {
 
                     let td = div()
                         .attr("class", "ferrox-datagrid-cell")
-                        .attr("style", &format!("padding: 0 10px; font-size: 0.88rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; {} {}", width_style, align_style))
+                        .attr("style", &format!("padding: 0 12px; font-size: 0.88rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; {} {}", width_style, align_style))
                         .child(cell_content);
 
                     tr = tr.child(td);
@@ -492,26 +492,26 @@ impl<T: 'static> EnterpriseDataGrid<T> {
 
         let footer = div()
             .attr("class", "ferrox-datagrid-footer")
-            .attr("style", "display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; border-top: var(--border-glass); background: rgba(0,0,0,0.2); flex-wrap: wrap; gap: 12px;")
+            .attr("style", "display: flex; justify-content: space-between; align-items: center; padding: 14px 20px; border-top: var(--border-glass); background: rgba(0,0,0,0.25); flex-wrap: wrap; gap: 14px;")
             .child(
-                span().attr("style", "font-size: 0.82rem; color: var(--text-secondary);").text(&page_info)
+                span().attr("style", "font-size: 0.84rem; color: var(--text-secondary);").text(&page_info)
             )
             .child(
-                div().attr("style", "display: gap: 6px; align-items: center;")
+                div().attr("style", "display: flex; gap: 8px; align-items: center;")
                     .child(
                         button()
                             .attr("class", "ferrox-btn")
-                            .attr("style", "padding: 6px 12px; font-size: 0.8rem; background: var(--bg-surface); border: var(--border-glass); opacity: 0.8;")
+                            .attr("style", "padding: 7px 14px; font-size: 0.82rem; background: var(--bg-surface); border: var(--border-glass); opacity: 0.8; border-radius: 6px;")
                             .text("« Prev")
                     )
                     .child(
-                        span().attr("style", "padding: 6px 12px; font-size: 0.82rem; font-weight: 700; background: var(--accent-primary); border-radius: 6px; color: white;")
+                        span().attr("style", "padding: 7px 14px; font-size: 0.82rem; font-weight: 700; background: var(--accent-primary); border-radius: 6px; color: white;")
                             .text(&format!("Page {} of {}", current_page, total_pages))
                     )
                     .child(
                         button()
                             .attr("class", "ferrox-btn")
-                            .attr("style", "padding: 6px 12px; font-size: 0.8rem; background: var(--bg-surface); border: var(--border-glass); opacity: 0.8;")
+                            .attr("style", "padding: 7px 14px; font-size: 0.82rem; background: var(--bg-surface); border: var(--border-glass); opacity: 0.8; border-radius: 6px;")
                             .text("Next »")
                     )
             );
@@ -520,7 +520,7 @@ impl<T: 'static> EnterpriseDataGrid<T> {
         let table_container = div()
             .attr("id", &datagrid_id_owned)
             .attr("class", "ferrox-datagrid-table-container")
-            .attr("style", "border: var(--border-glass); border-radius: 10px; overflow: hidden; background: var(--bg-surface); box-shadow: var(--shadow-glass);")
+            .attr("style", "border: var(--border-glass); border-radius: 14px; overflow: hidden; background: var(--bg-surface); box-shadow: var(--shadow-glass);")
             .child(thead)
             .child(tbody)
             .child(footer);
