@@ -19,7 +19,8 @@
 //!   Glassmorphism Dark, Zinc Light, Cyberpunk Neon, and Ocean Breeze.
 
 use wasm_bindgen::prelude::*;
-use web_sys::window;
+use wasm_bindgen::JsCast;
+use web_sys::{window, MessageEvent};
 use ferrox_front_core::dom::{mount, div, span, p, h2, h3, DomBuilder};
 use ferrox_front_core::theme::set_theme;
 use ferrox_front_ui::layout::{container, row, col};
@@ -188,7 +189,7 @@ fn render_top_bar(active_tab: &str, cmd_palette: &CommandPaletteState) -> DomBui
     let theme_selector = div()
         .attr("class", "ferrox-theme-selector flex items-center gap-1.5")
         .children(vec![
-            span().text("Tema:").attr("style", "font-size: 0.8rem; opacity: 0.7; font-weight: 600; margin-right: 2px;"),
+            span().text("Theme:").attr("style", "font-size: 0.8rem; opacity: 0.7; font-weight: 600; margin-right: 2px;"),
             button_advanced("🔮 Cyber Dark", "outline", "xs", false, None).on_click(|| set_theme("ferrox-cyber")),
             button_advanced("🏢 Zinc Light", "outline", "xs", false, None).on_click(|| set_theme("enterprise-zinc")),
             button_advanced("⚡ Cyberpunk", "outline", "xs", false, None).on_click(|| set_theme("cyberpunk-neon")),
@@ -268,22 +269,22 @@ fn render_trading_desk_tab() -> DomBuilder {
     let field_price = FormField::new(
         "trade-price",
         "price",
-        "Prezzo Limite (USD)",
+        "Limit Price (USD)",
         "97050.00".to_string(),
-        RuleBuilder::new().required("Prezzo obbligatorio").numeric_range(100.0, 1000000.0, "Prezzo non valido").build(),
+        RuleBuilder::new().required("Price is required").numeric_range(100.0, 1000000.0, "Invalid price").build(),
     ).with_placeholder("97050.00");
 
     let field_amount = FormField::new(
         "trade-amount",
         "amount",
-        "Quantità (BTC)",
+        "Quantity (BTC)",
         "0.25".to_string(),
-        RuleBuilder::new().required("Quantità obbligatoria").numeric_range(0.001, 1000.0, "Quantità non valida").build(),
+        RuleBuilder::new().required("Quantity is required").numeric_range(0.001, 1000.0, "Invalid quantity").build(),
     ).with_placeholder("0.25");
 
     let order_entry_card = card_advanced(
         "Order Entry • ferrox-engine",
-        "Esecuzione a Latenza Zero (Wasm In-Memory Match)",
+        "Zero-Latency In-Memory Matching",
         "credit-card",
         "glass",
         false,
@@ -294,23 +295,23 @@ fn render_trading_desk_tab() -> DomBuilder {
             .children(vec![
                 div().class("flex items-center gap-2 mb-2")
                     .children(vec![
-                        button_advanced("COMPRA / BUY", "primary", "sm", false, None)
+                        button_advanced("BUY", "primary", "sm", false, None)
                             .attr("style", "background: #10b981; color: white; flex: 1;"),
-                        button_advanced("VENDI / SELL", "outline", "sm", false, None)
+                        button_advanced("SELL", "outline", "sm", false, None)
                             .attr("style", "border-color: #ef4444; color: #ef4444; flex: 1;"),
                     ]),
                 field_price.render(),
                 field_amount.render(),
                 div().class("flex items-center justify-between text-xs text-slate-400 py-1 border-t border-slate-800")
                     .children(vec![
-                        span().text("Valore Stimato:"),
+                        span().text("Estimated Value:"),
                         span().class("font-mono font-bold text-white").text("$24,262.50 USD"),
                     ]),
-                button_advanced("⚡ Invia Ordine (Wasm Match Engine)", "primary", "md", false, Some("zap"))
+                button_advanced("⚡ Submit Order (Wasm Match Engine)", "primary", "md", false, Some("zap"))
                     .attr("style", "width: 100%;")
                     .on_click(move || {
                         if let Some(win) = window() {
-                            let _ = win.alert_with_message("✅ Ordine inviato ed eseguito istantaneamente nel motore di matching ferrox-engine!");
+                            let _ = win.alert_with_message("✅ Order submitted and executed instantly in ferrox-engine matching engine!");
                         }
                     }),
             ])
@@ -349,7 +350,7 @@ fn render_trading_desk_tab() -> DomBuilder {
 
     let order_book_card = card_advanced(
         "Order Book Ladder (L2)",
-        "Profondità di Mercato BTC/USD",
+        "BTC/USD Market Depth",
         "layers",
         "glass",
         false,
@@ -382,7 +383,7 @@ fn render_trading_desk_tab() -> DomBuilder {
 
     let trades_card = card_advanced(
         "Recent Trades Feed",
-        "Transazioni Eseguite in Tempo Reale",
+        "Real-Time Executed Transactions",
         "activity",
         "glass",
         false,
@@ -398,7 +399,7 @@ fn render_trading_desk_tab() -> DomBuilder {
                 .child(span().class("text-xs text-emerald-400 font-semibold").text("+4.85% (+$4,450.00 24h)"))
         ))
         .child(col("12 md-3").child(
-            card_advanced("24h Spot Vol", "Vol Totale Wasm", "activity", "glass", false, "p-4")
+            card_advanced("24h Spot Vol", "Total Wasm Volume", "activity", "glass", false, "p-4")
                 .child(div().class("text-2xl font-bold text-white mb-1").text("6,840.5 BTC"))
                 .child(span().class("text-xs text-indigo-400 font-semibold").text("$664.2M equivalent"))
         ))
@@ -415,7 +416,7 @@ fn render_trading_desk_tab() -> DomBuilder {
                         span().text(&format!("{}", WsStatus::Connected)),
                     ])
                 )
-                .child(span().class("text-xs text-indigo-300").text("Auto-Reconnection + Backoff Attivo"))
+                .child(span().class("text-xs text-indigo-300").text("Auto-Reconnection + Backoff Active"))
         ));
 
     // 8. Main Chart and Order Entry Row
@@ -433,14 +434,14 @@ fn render_trading_desk_tab() -> DomBuilder {
             .child(
                 div().class("flex items-center justify-between pt-3 mt-2 border-t border-slate-800 text-xs text-slate-400")
                     .children(vec![
-                        span().text("CandleAggregator (5m) • Crosshair & Dynamic Data Reader Attivi"),
+                        span().text("CandleAggregator (5m) • Active Crosshair & Dynamic Data Reader"),
                         div().class("flex items-center gap-2")
                             .children(vec![
-                                button_advanced("🔌 Connetti WS Feed", "outline", "xs", false, Some("activity"))
+                                button_advanced("🔌 Connect WS Feed", "outline", "xs", false, Some("activity"))
                                     .on_click(|| {
                                         let _ = ReconnectingWs::new("wss://stream.ferrox.exchange/ws/v1");
                                     }),
-                                button_advanced("⚡ Simula Tick Live", "primary", "xs", false, Some("zap"))
+                                button_advanced("⚡ Simulate Live Tick", "primary", "xs", false, Some("zap"))
                                     .on_click(|| render_app("trading")),
                             ]),
                     ])
@@ -453,7 +454,7 @@ fn render_trading_desk_tab() -> DomBuilder {
         .child(col("12 lg-6").child(
             card_advanced(
                 "Order Book Market Depth (Bids vs Asks)",
-                "Curva di Profondità Cumulativa con Mid-Price e Spread",
+                "Cumulative Depth Curve with Mid-Price and Spread",
                 "chart-bar",
                 "glass",
                 false,
@@ -542,8 +543,8 @@ fn render_datagrid_tab() -> DomBuilder {
     let export_bar = div()
         .class("flex items-center justify-between p-3 rounded-xl bg-slate-900/60 border border-slate-800")
         .children(vec![
-            span().class("text-xs text-slate-300").text("Esportazione Tabellare Diretta (WebAssembly Blob RFC 4180):"),
-            button_advanced("📥 Esporta Tutti i 1.000 Ordini (CSV)", "primary", "xs", false, Some("download"))
+            span().class("text-xs text-slate-300").text("Direct Table Export (WebAssembly Blob RFC 4180):"),
+            button_advanced("📥 Export All 1,000 Orders (CSV)", "primary", "xs", false, Some("download"))
                 .on_click(move || {
                     let headers = vec!["Order ID", "Asset Symbol", "Side", "Price", "Amount", "Total", "Status", "Timestamp"];
                     let rows: Vec<Vec<String>> = orders_export.iter().map(|o| vec![
@@ -570,9 +571,9 @@ fn render_datagrid_tab() -> DomBuilder {
                     div().children(vec![
                         h2().class("text-xl font-bold text-white").text("Enterprise DataGrid Pro • AG-Grid Parity"),
                         p().class("text-xs text-slate-400 mt-1")
-                            .text("1.000 ordini in memoria lineare Wasm, ordinamento multi-colonna, filtri reattivi, selezione e download CSV nativo."),
+                            .text("1,000 orders in Wasm linear memory, multi-column sorting, reactive filters, row selection, and native CSV export download."),
                     ]),
-                    badge("1.000 Records Wasm", "primary"),
+                    badge("1,000 Records Wasm", "primary"),
                 ]),
             export_bar,
             rendered_grid,
@@ -584,30 +585,30 @@ fn render_datagrid_tab() -> DomBuilder {
 // =============================================================================
 
 fn render_form_wizard_tab() -> DomBuilder {
-    // Step 1: Dati Personali & Azienda
+    // Step 1: Company Details
     let field_company = FormField::new(
         "field-company",
         "company",
-        "Ragione Sociale / Ente",
+        "Company Name / Entity",
         String::new(),
-        RuleBuilder::new().required("La Ragione Sociale è obbligatoria.").min_length(3, "Minimo 3 caratteri.").build(),
+        RuleBuilder::new().required("Company name is required.").min_length(3, "Minimum 3 characters.").build(),
     ).with_placeholder("Ferrox Financial Labs Ltd.");
 
     let field_email = FormField::new(
         "field-email",
         "email",
-        "Email Aziendale Verificata",
+        "Verified Corporate Email",
         String::new(),
-        RuleBuilder::new().required("L'indirizzo email è obbligatorio.").email("Formato email non valido (es. user@company.com).").build(),
+        RuleBuilder::new().required("Corporate email is required.").email("Invalid email format (e.g. user@company.com).").build(),
     ).with_input_type("email").with_placeholder("compliance@ferrox.io");
 
     let field_vat = FormField::new(
         "field-vat",
         "vat",
-        "Partita IVA / Tax Identifier",
+        "Tax Identifier / VAT Number",
         String::new(),
-        RuleBuilder::new().required("Il Tax ID è obbligatorio.").min_length(8, "Il Tax ID deve avere almeno 8 caratteri.").build(),
-    ).with_placeholder("IT12345678901");
+        RuleBuilder::new().required("Tax ID is required.").min_length(8, "Tax ID must be at least 8 characters.").build(),
+    ).with_placeholder("US987654321");
 
     let f_comp_clone = field_company.clone();
     let f_email_clone = field_email.clone();
@@ -615,8 +616,8 @@ fn render_form_wizard_tab() -> DomBuilder {
 
     let step1 = WizardStep::new(
         "step-1",
-        "1. Dati Aziendali",
-        "Inserisci i dati legali dell'organizzazione autorizzata al trading.",
+        "1. Company Details",
+        "Enter the legal entity information authorized for trading.",
         move || {
             let v1 = f_comp_clone.validate();
             let v2 = f_email_clone.validate();
@@ -632,30 +633,30 @@ fn render_form_wizard_tab() -> DomBuilder {
         },
     );
 
-    // Step 2: Parametri Finanziari & Trading
+    // Step 2: Financial Parameters
     let field_capital = FormField::new(
         "field-capital",
         "capital",
-        "Capitale Iniziale Allocato (USD)",
+        "Initial Allocated Capital (USD)",
         "50000".to_string(),
-        RuleBuilder::new().required("Inserisci il capitale.").numeric_range(1000.0, 10000000.0, "Il capitale deve essere compreso tra $1.000 e $10.000.000.").build(),
-    ).with_placeholder("es. 50000");
+        RuleBuilder::new().required("Capital is required.").numeric_range(1000.0, 10000000.0, "Capital must be between $1,000 and $10,000,000.").build(),
+    ).with_placeholder("e.g. 50000");
 
     let field_risk = FormField::new(
         "field-risk",
         "risk",
-        "Tolleranza Massima Rischio / Trade (%)",
+        "Max Risk Tolerance / Trade (%)",
         "2.5".to_string(),
-        RuleBuilder::new().required("Inserisci la percentuale di rischio.").numeric_range(0.1, 10.0, "La percentuale di rischio deve essere tra 0.1% e 10.0%.").build(),
-    ).with_placeholder("es. 2.5");
+        RuleBuilder::new().required("Risk percentage is required.").numeric_range(0.1, 10.0, "Risk percentage must be between 0.1% and 10.0%.").build(),
+    ).with_placeholder("e.g. 2.5");
 
     let f_cap_clone = field_capital.clone();
     let f_risk_clone = field_risk.clone();
 
     let step2 = WizardStep::new(
         "step-2",
-        "2. Parametri Finanziari",
-        "Definisci la dotazione di capitale e le metriche di Risk Management.",
+        "2. Financial Parameters",
+        "Configure capital allocation and Risk Management metrics.",
         move || {
             let v1 = f_cap_clone.validate();
             let v2 = f_risk_clone.validate();
@@ -669,13 +670,13 @@ fn render_form_wizard_tab() -> DomBuilder {
         },
     );
 
-    // Step 3: Zero-Trust Security Token & Conferma
+    // Step 3: Zero-Trust Security Token & Confirmation
     let field_key_name = FormField::new(
         "field-key-name",
         "key_name",
-        "Etichetta Chiave Crittografica (SealedToken)",
+        "Cryptographic Key Label (SealedToken)",
         "Production-Trading-Desk-Key-1".to_string(),
-        RuleBuilder::new().required("L'etichetta chiave è obbligatoria.").min_length(5, "Minimo 5 caratteri.").build(),
+        RuleBuilder::new().required("Key label is required.").min_length(5, "Minimum 5 characters.").build(),
     );
 
     let f_key_clone = field_key_name.clone();
@@ -683,7 +684,7 @@ fn render_form_wizard_tab() -> DomBuilder {
     let step3 = WizardStep::new(
         "step-3",
         "3. Zero-Trust Security",
-        "Sigillatura crittografica delle credenziali in memoria lineare Wasm.",
+        "Cryptographic credential sealing inside Wasm linear memory.",
         move || {
             f_key_clone.validate()
         },
@@ -693,8 +694,8 @@ fn render_form_wizard_tab() -> DomBuilder {
                 div()
                     .class("p-4 rounded-xl bg-slate-900/60 border border-slate-800 text-xs text-slate-300 space-y-2 mt-4")
                     .children(vec![
-                        div().class("font-bold text-indigo-400").text("🔒 Protezione Zero-Trust SealedToken"),
-                        p().text("Le credenziali generate saranno memorizzate esclusivamente nella memoria lineare WebAssembly isolata, impenetrabile da estensioni browser o script XSS esterni."),
+                        div().class("font-bold text-indigo-400").text("🔒 Zero-Trust SealedToken Protection"),
+                        p().text("Generated credentials are stored exclusively in isolated WebAssembly linear memory, impenetrable to browser extensions or external XSS scripts."),
                         span().class("inline-block font-mono text-[10px] text-emerald-400 bg-emerald-950/60 px-2 py-0.5 rounded")
                             .text("SEALED_TOKEN_STATUS: READY"),
                     ])
@@ -708,7 +709,7 @@ fn render_form_wizard_tab() -> DomBuilder {
         // Create sealed token as proof of completed registration
         let _token = SealedToken::new("ferrox_session_token_authorized_9984");
         if let Some(win) = window() {
-            let _ = win.alert_with_message("✅ Onboarding completato con successo! Sessione autenticata con SealedToken in memoria Wasm.");
+            let _ = win.alert_with_message("✅ Onboarding completed successfully! Session authenticated with SealedToken in Wasm memory.");
         }
     });
 
@@ -720,7 +721,7 @@ fn render_form_wizard_tab() -> DomBuilder {
                 .children(vec![
                     h2().class("text-2xl font-bold text-white").text("Form Validation Wizard • Strict Reactive Gating"),
                     p().class("text-xs text-slate-400 mt-1")
-                        .text("Zod + React Hook Form Parity: validazioni in tempo reale, stati touched/dirty, conformità WCAG 2.1 AA."),
+                        .text("Zod + React Hook Form Parity: Real-time validation, touched/dirty states, WCAG 2.1 AA compliance."),
                 ]),
             wizard,
         ])
@@ -791,7 +792,7 @@ fn render_explorer_tab(cmd_palette: &CommandPaletteState) -> DomBuilder {
         if let Some(win) = window() {
             let doc = win.document().unwrap();
             if let Some(info_el) = doc.get_element_by_id("tree-selected-label") {
-                info_el.set_inner_html(&format!("Nodo Selezionato: <strong>{}</strong>", node_id));
+                info_el.set_inner_html(&format!("Selected Node: <strong>{}</strong>", node_id));
             }
         }
     });
@@ -803,35 +804,35 @@ fn render_explorer_tab(cmd_palette: &CommandPaletteState) -> DomBuilder {
             let doc = win.document().unwrap();
             if let Some(info_el) = doc.get_element_by_id("datepicker-selected-label") {
                 let text = match sel {
-                    ferrox_front_ui::overlays::DatePickerSelection::Single(d) => format!("Data: {}", d),
-                    ferrox_front_ui::overlays::DatePickerSelection::Range(s, e) => format!("Intervallo: {} → {}", s, e),
+                    ferrox_front_ui::overlays::DatePickerSelection::Single(d) => format!("Date: {}", d),
+                    ferrox_front_ui::overlays::DatePickerSelection::Range(s, e) => format!("Range: {} → {}", s, e),
                 };
-                info_el.set_inner_html(&format!("Filtro Temporale: <strong>{}</strong>", text));
+                info_el.set_inner_html(&format!("Time Filter: <strong>{}</strong>", text));
             }
         }
     });
 
     let explorer_col = col("12 lg-6").child(
-        card_advanced("Hierarchical TreeView Explorer", "Navigatore Strutturale Radix-Style", "folder", "glass", false, "p-4")
+        card_advanced("Hierarchical TreeView Explorer", "Radix-Style Structural Navigator", "folder", "glass", false, "p-4")
             .child(tree)
             .child(
                 div().id("tree-selected-label").class("text-xs text-indigo-400 mt-3 pt-2 border-t border-slate-800")
-                    .text("Clicca su un nodo dell'albero per ispezionarne i dettagli.")
+                    .text("Click a tree node to inspect its details.")
             )
     );
 
     let overlays_col = col("12 lg-6").child(
-        card_advanced("Pure Vector DatePicker & Command Palette", "Componenti Enterprise Overlays", "calendar", "glass", false, "p-4")
+        card_advanced("Pure Vector DatePicker & Command Palette", "Enterprise Overlay Components", "calendar", "glass", false, "p-4")
             .child(
                 div().class("flex flex-col items-center gap-4")
                     .children(vec![
                         calendar,
                         div().id("datepicker-selected-label").class("text-xs text-emerald-400")
-                            .text("Filtro Temporale: Nessuna data selezionata."),
+                            .text("Time Filter: No date selected."),
                         div().class("w-full pt-3 border-t border-slate-800 flex items-center justify-between")
                             .children(vec![
-                                span().class("text-xs text-slate-400").text("Scorciatoia globale tastiera:"),
-                                button_advanced("Apri Command Palette (⌘K / Ctrl+K)", "primary", "sm", false, Some("search"))
+                                span().class("text-xs text-slate-400").text("Global keyboard shortcut:"),
+                                button_advanced("Open Command Palette (⌘K / Ctrl+K)", "primary", "sm", false, Some("search"))
                                     .on_click(move || cp_clone.open()),
                             ])
                     ])
@@ -846,7 +847,7 @@ fn render_explorer_tab(cmd_palette: &CommandPaletteState) -> DomBuilder {
                 .children(vec![
                     h2().class("text-xl font-bold text-white").text("File Explorer, Vector DatePicker & Command Palette"),
                     p().class("text-xs text-slate-400 mt-1")
-                        .text("Navigazione gerarchica fluida, selezione intervallo date e ricerca istantanea in stile Spotlight."),
+                        .text("Fluid hierarchical navigation, date range picking, and Spotlight-style instant search."),
                 ]),
             row().child(explorer_col).child(overlays_col),
         ])
@@ -858,11 +859,11 @@ fn render_explorer_tab(cmd_palette: &CommandPaletteState) -> DomBuilder {
 
 fn create_command_palette() -> CommandPaletteState {
     let actions = vec![
-        CommandAction::new("act-trading", "Vai a Trading Desk Pro", "Grafico Candlestick, indicatori e streaming", "Navigazione", "chart-candlestick", Some("G T"), || render_app("trading")),
-        CommandAction::new("act-datagrid", "Vai a Enterprise DataGrid", "Tabella 1.000 ordini, filtri e CSV export", "Navigazione", "grid", Some("G D"), || render_app("datagrid")),
-        CommandAction::new("act-form", "Vai a Form Validation Wizard", "Onboarding multi-step con validazione strict", "Navigazione", "file-text", Some("G F"), || render_app("form")),
-        CommandAction::new("act-explorer", "Vai a Explorer & Overlays", "TreeView, Vector DatePicker e controlli", "Navigazione", "folder", Some("G E"), || render_app("explorer")),
-        CommandAction::new("act-csv", "Esporta Tutti gli Ordini in CSV", "Download RFC 4180 generato in memoria Wasm", "Azioni Rapide", "download", Some("E C"), || {
+        CommandAction::new("act-trading", "Go to Trading Desk Pro", "Candlestick chart, indicators, and streaming", "Navigation", "chart-candlestick", Some("G T"), || render_app("trading")),
+        CommandAction::new("act-datagrid", "Go to Enterprise DataGrid", "1,000 orders grid, filters, and CSV export", "Navigation", "grid", Some("G D"), || render_app("datagrid")),
+        CommandAction::new("act-form", "Go to Form Validation Wizard", "Multi-step onboarding with strict validation", "Navigation", "file-text", Some("G F"), || render_app("form")),
+        CommandAction::new("act-explorer", "Go to Explorer & Overlays", "TreeView, Vector DatePicker, and controls", "Navigation", "folder", Some("G E"), || render_app("explorer")),
+        CommandAction::new("act-csv", "Export All Orders to CSV", "Download RFC 4180 generated in Wasm memory", "Quick Actions", "download", Some("E C"), || {
             let orders = generate_1000_orders();
             let headers = vec!["Order ID", "Asset Symbol", "Side", "Price", "Amount", "Total", "Status", "Timestamp"];
             let rows: Vec<Vec<String>> = orders.iter().map(|o| vec![
@@ -878,10 +879,10 @@ fn create_command_palette() -> CommandPaletteState {
             let csv_data = generate_rfc4180_csv(&headers, &rows);
             let _ = trigger_csv_download("ferrox_quick_export.csv", &csv_data);
         }),
-        CommandAction::new("act-theme-cyber", "Imposta Tema Cyber Dark", "Palette viola/blu scuro con glassmorphism", "Tema", "palette", None, || set_theme("ferrox-cyber")),
-        CommandAction::new("act-theme-zinc", "Imposta Tema Zinc Light", "Design aziendale ad alto contrasto chiaro", "Tema", "palette", None, || set_theme("enterprise-zinc")),
-        CommandAction::new("act-theme-neon", "Imposta Tema Cyberpunk Neon", "Colori vibranti giallo/ciano ad alto contrasto", "Tema", "palette", None, || set_theme("cyberpunk-neon")),
-        CommandAction::new("act-theme-ocean", "Imposta Tema Ocean Breeze", "Gradiente profondo blu oceano", "Tema", "palette", None, || set_theme("ocean-breeze")),
+        CommandAction::new("act-theme-cyber", "Set Cyber Dark Theme", "Deep purple/blue glassmorphism palette", "Theme", "palette", None, || set_theme("ferrox-cyber")),
+        CommandAction::new("act-theme-zinc", "Set Zinc Light Theme", "High-contrast enterprise light design", "Theme", "palette", None, || set_theme("enterprise-zinc")),
+        CommandAction::new("act-theme-neon", "Set Cyberpunk Neon Theme", "Vibrant high-contrast yellow/cyan colors", "Theme", "palette", None, || set_theme("cyberpunk-neon")),
+        CommandAction::new("act-theme-ocean", "Set Ocean Breeze Theme", "Deep ocean blue gradient", "Theme", "palette", None, || set_theme("ocean-breeze")),
     ];
 
     CommandPaletteState::new(actions)
@@ -890,6 +891,10 @@ fn create_command_palette() -> CommandPaletteState {
 pub fn render_app(mode: &str) {
     if let Some(win) = window() {
         let _ = win.location().set_hash(mode);
+        if let Ok(Some(parent)) = win.parent() {
+            let msg = wasm_bindgen::JsValue::from_str(&format!("ferrox-tab:{}", mode));
+            let _ = parent.post_message(&msg, "*");
+        }
     }
 
     let cmd_palette_state = create_command_palette();
@@ -922,6 +927,50 @@ pub fn start() -> Result<(), JsValue> {
                 initial_mode = h.to_string();
             }
         }
+
+        // Setup hashchange listener so parent iframe or url hash changes re-render immediately
+        let on_hash_change = Closure::wrap(Box::new(move || {
+            if let Some(win) = window() {
+                if let Ok(hash) = win.location().hash() {
+                    let h = hash.trim_start_matches('#');
+                    let mode = match h {
+                        "datagrid" => "datagrid",
+                        "form" => "form",
+                        "explorer" => "explorer",
+                        _ => "trading",
+                    };
+                    render_app(mode);
+                }
+            }
+        }) as Box<dyn FnMut()>);
+
+        let _ = win.add_event_listener_with_callback(
+            "hashchange",
+            on_hash_change.as_ref().unchecked_ref(),
+        );
+        on_hash_change.forget();
+
+        // Also setup postMessage listener in case parent window communicates via postMessage
+        let on_message = Closure::wrap(Box::new(move |e: MessageEvent| {
+            if let Some(msg_str) = e.data().as_string() {
+                if msg_str.starts_with("ferrox-set-tab:") {
+                    let tab = msg_str.trim_start_matches("ferrox-set-tab:");
+                    let mode = match tab {
+                        "datagrid" => "datagrid",
+                        "form" => "form",
+                        "explorer" => "explorer",
+                        _ => "trading",
+                    };
+                    render_app(mode);
+                }
+            }
+        }) as Box<dyn FnMut(MessageEvent)>);
+
+        let _ = win.add_event_listener_with_callback(
+            "message",
+            on_message.as_ref().unchecked_ref(),
+        );
+        on_message.forget();
     }
 
     render_app(&initial_mode);

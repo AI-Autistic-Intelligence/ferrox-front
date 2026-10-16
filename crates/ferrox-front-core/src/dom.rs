@@ -199,12 +199,13 @@ pub fn defs() -> DomBuilder { DomBuilder::new_svg("defs") }
 pub fn linear_gradient() -> DomBuilder { DomBuilder::new_svg("linearGradient") }
 pub fn stop() -> DomBuilder { DomBuilder::new_svg("stop") }
 
-/// Mounts an element to a selector (e.g. "#root")
+/// Mounts an element to a selector (e.g. "#root"), clearing existing children first
 pub fn mount(selector: &str, builder: DomBuilder) {
     let doc = document();
     let root = doc.query_selector(selector)
         .expect("Failed to parse selector")
         .expect("Element not found");
     
+    root.set_inner_html("");
     root.append_child(&builder.build()).expect("Failed to mount app");
 }

@@ -4,7 +4,7 @@
 //! 1. **Command Palette (`Cmd+K` / `Ctrl+K`)**: Spotlight-style modal search with global shortcut listener,
 //!    fuzzy search, category grouping, and keyboard navigation.
 //! 2. **Pure Vector DatePicker**: Monthly interactive calendar generated in pure Rust WebAssembly with single or
-//!    range (DateRange) picking, month/year navigation, and quick shortcuts ("Oggi", "Ultimi 7 gg", "Ultimi 30 gg").
+//!    range (DateRange) picking, month/year navigation, and quick shortcuts ("Today", "Last 7 Days", "Last 30 Days").
 //! 3. **TreeView Hierarchical Explorer**: Deep tree navigator for files, categories, and role permissions with
 //!    smooth chevron expansion and multi-select support.
 //! 4. **A11y Modal Focus Trap**: WCAG 2.1 AA compliant cyclic Tab and Shift-Tab focus management for modals.
@@ -184,7 +184,7 @@ pub fn command_palette(state: CommandPaletteState) -> DomBuilder {
     let search_el = input()
         .id("ferrox-command-palette-input")
         .attr("type", "text")
-        .attr("placeholder", "Digita un comando o cerca...")
+        .attr("placeholder", "Type a command or search...")
         .attr("value", &state.query.get())
         .attr("autocomplete", "off")
         .class("w-full bg-transparent px-4 py-3 text-sm text-white placeholder-slate-400 outline-none font-sans")
@@ -226,7 +226,7 @@ pub fn command_palette(state: CommandPaletteState) -> DomBuilder {
         item_list = item_list.child(
             div()
                 .class("p-6 text-center text-xs text-slate-500")
-                .text("Nessun comando o azione corrispondente.")
+                .text("No matching commands or actions found.")
         );
     } else {
         let mut last_category = String::new();
@@ -316,7 +316,7 @@ pub fn command_palette(state: CommandPaletteState) -> DomBuilder {
             div()
                 .class("flex items-center justify-between px-4 py-2 bg-slate-900/60 border-t border-slate-800/60 text-[10px] text-slate-400")
                 .children(vec![
-                    span().text("↑↓ per navigare • ↵ per selezionare"),
+                    span().text("↑↓ to navigate • ↵ to select"),
                     span().text("Ferrox Command Palette v0.3.0"),
                 ]),
         ]);
@@ -590,19 +590,19 @@ pub fn date_picker(
         .children(vec![
             button()
                 .class("px-2 py-1 rounded bg-slate-800/80 text-slate-300 hover:text-white hover:bg-slate-700 transition-colors")
-                .text("Oggi")
+                .text("Today")
                 .on_click(move || state_sc1.apply_shortcut("today")),
             button()
                 .class("px-2 py-1 rounded bg-slate-800/80 text-slate-300 hover:text-white hover:bg-slate-700 transition-colors")
-                .text("7 Giorni")
+                .text("7 Days")
                 .on_click(move || state_sc2.apply_shortcut("last_7_days")),
             button()
                 .class("px-2 py-1 rounded bg-slate-800/80 text-slate-300 hover:text-white hover:bg-slate-700 transition-colors")
-                .text("30 Giorni")
+                .text("30 Days")
                 .on_click(move || state_sc3.apply_shortcut("last_30_days")),
             button()
                 .class("px-2 py-1 rounded bg-slate-800/80 text-slate-300 hover:text-white hover:bg-slate-700 transition-colors")
-                .text("Mese")
+                .text("Month")
                 .on_click(move || state_sc4.apply_shortcut("this_month")),
         ]);
 
