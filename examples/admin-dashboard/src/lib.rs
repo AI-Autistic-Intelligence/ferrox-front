@@ -41,6 +41,7 @@ use ferrox_front_ui::overlays::{
 use ferrox_front_charts::{
     CandleDatum, TechnicalChartOptions, financial_technical_chart,
     depth_chart, CandleAggregator, TradeTick, Timeframe,
+    gauge_chart, sparkline_chart, SparklineType,
 };
 use ferrox_front_ws::{ReconnectingWs, WsStatus};
 use ferrox_engine::{OrderBook, Side as EngineSide};
@@ -175,6 +176,12 @@ fn render_top_bar(active_tab: &str, cmd_palette: &CommandPaletteState) -> DomBui
             button_advanced("📊 Enterprise DataGrid", "glass", "sm", false, None)
                 .attr("style", if active_tab == "datagrid" { "background: var(--accent-primary); color: #fff; font-weight: 700;" } else { "opacity: 0.7;" })
                 .on_click(|| render_app("datagrid")),
+            button_advanced("🎨 UI Elements", "glass", "sm", false, None)
+                .attr("style", if active_tab == "components" { "background: var(--accent-primary); color: #fff; font-weight: 700;" } else { "opacity: 0.7;" })
+                .on_click(|| render_app("components")),
+            button_advanced("📈 Charting Suite", "glass", "sm", false, None)
+                .attr("style", if active_tab == "charts" { "background: var(--accent-primary); color: #fff; font-weight: 700;" } else { "opacity: 0.7;" })
+                .on_click(|| render_app("charts")),
             button_advanced("📝 Form Wizard", "glass", "sm", false, None)
                 .attr("style", if active_tab == "form" { "background: var(--accent-primary); color: #fff; font-weight: 700;" } else { "opacity: 0.7;" })
                 .on_click(|| render_app("form")),
@@ -854,13 +861,440 @@ fn render_explorer_tab(cmd_palette: &CommandPaletteState) -> DomBuilder {
 }
 
 // =============================================================================
-// 7. APPLICATION SHELL & ROUTER DISPATCH
+// 7. TAB 5: DESIGN SYSTEM & UI ELEMENTS CATALOG
+// =============================================================================
+
+fn render_components_catalog_tab() -> DomBuilder {
+    // 1. Buttons & Button Groups Section
+    let buttons_card = card_advanced(
+        "Button Variants, Sizing & Loading States",
+        "WCAG 2.1 AA accessible buttons with hover micro-animations and active spinners",
+        "zap",
+        "glass",
+        false,
+        "p-5",
+    )
+    .child(
+        div().class("space-y-4")
+            .children(vec![
+                div().children(vec![
+                    span().class("text-xs font-semibold text-slate-400 uppercase tracking-wider block mb-2").text("Visual Variants"),
+                    div().class("flex flex-wrap items-center gap-2.5")
+                        .children(vec![
+                            button_advanced("Primary Action", "primary", "sm", false, Some("zap")),
+                            button_advanced("Secondary Glass", "glass", "sm", false, Some("layers")),
+                            button_advanced("Outline Cyan", "outline", "sm", false, Some("search")),
+                            button_advanced("Destructive", "danger", "sm", false, Some("trash")),
+                            button_advanced("Ghost Neutral", "ghost", "sm", false, None),
+                            button_advanced("Link Text", "link", "sm", false, Some("external-link")),
+                        ]),
+                ]),
+                div().children(vec![
+                    span().class("text-xs font-semibold text-slate-400 uppercase tracking-wider block mb-2").text("Scale & Sizing Options"),
+                    div().class("flex flex-wrap items-center gap-2.5")
+                        .children(vec![
+                            button_advanced("XS Button (24px)", "primary", "xs", false, None),
+                            button_advanced("SM Button (32px)", "primary", "sm", false, None),
+                            button_advanced("MD Button (40px)", "primary", "md", false, None),
+                            button_advanced("LG Button (48px)", "primary", "lg", false, None),
+                        ]),
+                ]),
+                div().children(vec![
+                    span().class("text-xs font-semibold text-slate-400 uppercase tracking-wider block mb-2").text("Active Loading Spinners & Segmented Group"),
+                    div().class("flex flex-wrap items-center gap-4")
+                        .children(vec![
+                            button_advanced("Processing Order...", "primary", "sm", true, None),
+                            button_advanced("Syncing Linear Mem...", "glass", "sm", true, None),
+                            button_group(vec![
+                                button_advanced("1M", "glass", "xs", false, None),
+                                button_advanced("5M", "primary", "xs", false, None),
+                                button_advanced("15M", "glass", "xs", false, None),
+                                button_advanced("1H", "glass", "xs", false, None),
+                                button_advanced("1D", "glass", "xs", false, None),
+                            ]),
+                        ]),
+                ]),
+            ])
+    );
+
+    // 2. Form Controls & Advanced Inputs Section
+    let input_valid = input_advanced(InputConfig {
+        input_type: "email".into(),
+        placeholder: "trader@ferrox.exchange".into(),
+        value: "trader@ferrox.exchange".into(),
+        prefix_icon: Some("mail".into()),
+        suffix_icon: Some("check".into()),
+        is_valid: Some(true),
+        helper_text: Some("Verified institutional email address.".into()),
+        clearable: false,
+    });
+
+    let input_invalid = input_advanced(InputConfig {
+        input_type: "number".into(),
+        placeholder: "Enter price...".into(),
+        value: "0.00".into(),
+        prefix_icon: Some("dollar-sign".into()),
+        suffix_icon: Some("alert-circle".into()),
+        is_valid: Some(false),
+        helper_text: Some("Price must exceed minimum tick size ($0.50).".into()),
+        clearable: false,
+    });
+
+    let forms_card = card_advanced(
+        "Form Controls & Reactive Inputs",
+        "Strongly-typed validation states, prefix/suffix SVG icons, and live helpers",
+        "file-text",
+        "glass",
+        false,
+        "p-5",
+    )
+    .child(
+        div().class("grid grid-cols-1 md:grid-cols-2 gap-4")
+            .children(vec![
+                div().class("space-y-1.5")
+                    .children(vec![
+                        span().class("text-xs font-semibold text-slate-300").text("Verified Input (Valid)"),
+                        input_valid,
+                    ]),
+                div().class("space-y-1.5")
+                    .children(vec![
+                        span().class("text-xs font-semibold text-slate-300").text("Tick Boundary Input (Invalid)"),
+                        input_invalid,
+                    ]),
+                div().class("space-y-1.5 md:col-span-2")
+                    .children(vec![
+                        span().class("text-xs font-semibold text-slate-300").text("Compliance Notes (Textarea with Counter)"),
+                        textarea_advanced("kyc-notes", "Enter compliance audit remarks...", 250, "Authorized by compliance officer under SOC2 Type II guidelines."),
+                    ]),
+                div().class("space-y-1.5 md:col-span-2")
+                    .children(vec![
+                        span().class("text-xs font-semibold text-slate-300").text("Interactive Slippage Tolerance Slider"),
+                        range_slider_with_bubble("slippage-slider", 0, 100, 35, "%"),
+                    ]),
+            ])
+    );
+
+    // 3. Toggles, Checkboxes & State Controls Section
+    let states_card = card_advanced(
+        "Switches, Checkboxes & Selection Controls",
+        "Micro-animated toggle switches, custom SVG checkboxes and radio groups",
+        "check",
+        "glass",
+        false,
+        "p-5",
+    )
+    .child(
+        div().class("space-y-4")
+            .children(vec![
+                div().class("flex flex-wrap items-center gap-6")
+                    .children(vec![
+                        switch_toggle("sw-stream", true, "Order Book Streaming (< 1.8 μs)"),
+                        switch_toggle("sw-hft", false, "HFT Dark Pool Routing"),
+                        switch_toggle("sw-sim", true, "Hardware Acceleration (WebGL)"),
+                    ]),
+                div().class("flex flex-wrap items-center gap-6 pt-2 border-t border-slate-800")
+                    .children(vec![
+                        checkbox_advanced("cb-all", "Select All Order Books", false, true),
+                        checkbox_advanced("cb-btc", "Auto-Hedge Spot Liquidity", true, false),
+                        checkbox_advanced("cb-eth", "Cross-Margin Liquidation Safeguard", true, false),
+                    ]),
+                div().class("pt-2 border-t border-slate-800")
+                    .children(vec![
+                        span().class("text-xs font-semibold text-slate-400 uppercase tracking-wider block mb-2").text("Execution Architecture Selection"),
+                        radio_group(
+                            "exec_arch",
+                            vec![
+                                ("in-process", "🦀 In-Process Rust Matching Engine (Zero JS / < 1.8 μs)"),
+                                ("clustered", "⚡ High-Throughput Raft Consensus Cluster (1M RPS)"),
+                                ("decentralized", "🌐 Layer-2 Optimistic State Rollup"),
+                            ],
+                            "in-process",
+                        ),
+                    ]),
+            ])
+    );
+
+    // 4. Surfaces, Overlays & Feedback Section
+    let overlays_card = card_advanced(
+        "Surfaces, Overlays, Toasts & Badges",
+        "Glassmorphism modals, sliding drawers, progress indicators, and status badges",
+        "layers",
+        "glass",
+        false,
+        "p-5",
+    )
+    .child(
+        div().class("space-y-4")
+            .children(vec![
+                div().children(vec![
+                    span().class("text-xs font-semibold text-slate-400 uppercase tracking-wider block mb-2").text("Interactive Dialog & Drawer Triggers"),
+                    div().class("flex flex-wrap items-center gap-3")
+                        .children(vec![
+                            button_advanced("Launch Modal Dialog", "primary", "sm", false, Some("layers"))
+                                .on_click(|| {
+                                    if let Some(doc) = window().and_then(|w| w.document()) {
+                                        if let Some(body) = doc.body() {
+                                            let m = modal_advanced(
+                                                "demo-comp-modal",
+                                                "Trading Node Security Verification",
+                                                p().class("text-slate-300 text-sm")
+                                                    .text("Confirm authorization of in-memory matching engine node #042 with sub-microsecond zero-trust token?"),
+                                                Some(button_advanced("Authorize Node", "primary", "sm", false, None)),
+                                                "md",
+                                            );
+                                            let _ = body.append_child(&m.build());
+                                        }
+                                    }
+                                }),
+                            button_advanced("Trigger Live Toast Alert", "outline", "sm", false, Some("info"))
+                                .on_click(|| {
+                                    if let Some(doc) = window().and_then(|w| w.document()) {
+                                        if let Some(body) = doc.body() {
+                                            let t = toast("Trade Executed", "0.5 BTC filled at $97,050.00 with zero slippage", "success");
+                                            let _ = body.append_child(&t.build());
+                                        }
+                                    }
+                                }),
+                        ]),
+                ]),
+                div().children(vec![
+                    span().class("text-xs font-semibold text-slate-400 uppercase tracking-wider block mb-2").text("Status Badges & Alert Banners"),
+                    div().class("flex flex-wrap items-center gap-2 mb-3")
+                        .children(vec![
+                            badge("MATCHED", "success"),
+                            badge("PARTIAL FILL", "warning"),
+                            badge("CANCELLED", "danger"),
+                            badge("RESTING LIQUIDITY", "info"),
+                            badge("ROUTED VIA WASM", "primary"),
+                        ]),
+                    alert("Zero-copy Rust WebAssembly pipeline validated under WCAG 2.1 AA accessibility guidelines.", "success"),
+                ]),
+            ])
+    );
+
+    // 5. Pure Rust 60+ SVG Vector Icons Section
+    let icon_names = vec![
+        "zap", "activity", "trend-up", "trend-down", "dollar-sign", "credit-card",
+        "chart-candlestick", "chart-bar", "layers", "cpu", "lock", "shield",
+        "info", "alert-circle", "palette", "moon", "sun", "search",
+        "settings", "trash", "edit", "check", "x", "chevron-right",
+        "chevron-left", "menu", "folder", "database", "download"
+    ];
+
+    let mut icon_grid_items = Vec::new();
+    for name in icon_names {
+        icon_grid_items.push(
+            div().class("flex flex-col items-center justify-center p-3 rounded-xl bg-slate-900/50 border border-slate-800 hover:border-indigo-500/50 transition-all gap-1.5")
+                .children(vec![
+                    Icon::render(name, 22, "#818cf8"),
+                    span().class("text-[10px] text-slate-400 font-mono").text(name),
+                ])
+        );
+    }
+
+    let icons_card = card_advanced(
+        "Pure Rust 60+ SVG Vector Icon Engine",
+        "Zero HTTP requests, zero external webfonts, rendered natively into DOM in WebAssembly",
+        "palette",
+        "glass",
+        false,
+        "p-5",
+    )
+    .child(
+        div().class("grid grid-cols-3 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-2.5")
+            .children(icon_grid_items)
+    );
+
+    container()
+        .attr("style", "max-width: 1400px; margin: 0 auto; padding: 2rem 1.5rem; display: flex; flex-direction: column; gap: 24px;")
+        .children(vec![
+            div()
+                .class("pb-2 border-b border-slate-800")
+                .children(vec![
+                    h2().class("text-2xl font-black text-white tracking-tight").text("Enterprise Design System & UI Elements"),
+                    p().class("text-xs text-slate-400 mt-1")
+                        .text("Complete interactive catalog of Ferrox Front WebAssembly UI elements conforming to WCAG 2.1 AA."),
+                ]),
+            row().child(col("12 lg-6").child(buttons_card)).child(col("12 lg-6").child(forms_card)),
+            row().child(col("12 lg-6").child(states_card)).child(col("12 lg-6").child(overlays_card)),
+            row().child(col("12").child(icons_card)),
+        ])
+}
+
+// =============================================================================
+// 8. TAB 6: FINANCIAL & VECTOR CHARTING SUITE
+// =============================================================================
+
+fn render_charts_gallery_tab() -> DomBuilder {
+    let candle_data = mock_candlestick_data();
+    let mut aggregator = CandleAggregator::new(Timeframe::Min5, 50);
+    for (idx, c) in candle_data.iter().enumerate() {
+        let ts = 1760518800000 + (idx as u64 * 300_000);
+        aggregator.process_tick(TradeTick::new(c.close, c.volume, ts));
+    }
+    let chart_candles = aggregator.get_candles_with_active();
+
+    let chart_opts = TechnicalChartOptions::default();
+    let main_chart = financial_technical_chart(
+        "gallery-pro-chart",
+        if chart_candles.is_empty() { &candle_data } else { &chart_candles },
+        &chart_opts,
+        860,
+        480,
+    );
+
+    let mut order_book = OrderBook::new("BTC/USD");
+    order_book.submit_order("seed-bid-1".into(), EngineSide::Buy, 97040.0, 1.25);
+    order_book.submit_order("seed-bid-2".into(), EngineSide::Buy, 97020.0, 3.40);
+    order_book.submit_order("seed-bid-3".into(), EngineSide::Buy, 97000.0, 6.80);
+    order_book.submit_order("seed-bid-4".into(), EngineSide::Buy, 96980.0, 10.50);
+    order_book.submit_order("seed-bid-5".into(), EngineSide::Buy, 96950.0, 15.20);
+    order_book.submit_order("seed-ask-1".into(), EngineSide::Sell, 97060.0, 0.95);
+    order_book.submit_order("seed-ask-2".into(), EngineSide::Sell, 97080.0, 2.80);
+    order_book.submit_order("seed-ask-3".into(), EngineSide::Sell, 97100.0, 5.90);
+    order_book.submit_order("seed-ask-4".into(), EngineSide::Sell, 97120.0, 9.40);
+    order_book.submit_order("seed-ask-5".into(), EngineSide::Sell, 97150.0, 14.10);
+
+    let (bids_levels, asks_levels) = order_book.get_depth(10);
+    let bids_tuples: Vec<(f64, f64)> = bids_levels.iter().map(|l| (l.price, l.volume)).collect();
+    let asks_tuples: Vec<(f64, f64)> = asks_levels.iter().map(|l| (l.price, l.volume)).collect();
+
+    let depth_svg = depth_chart(
+        "gallery-market-depth",
+        &bids_tuples,
+        &asks_tuples,
+        560,
+        280,
+    );
+
+    // Speedometer Telemetry Gauges
+    let cpu_gauge = gauge_chart("gauge-cpu", 42.5, 0.0, 100.0, "CPU Load", "%", 220, 130);
+    let match_gauge = gauge_chart("gauge-latency", 1.8, 0.0, 10.0, "Engine Latency", "μs", 220, 130);
+    let tps_gauge = gauge_chart("gauge-tps", 940.0, 0.0, 1000.0, "Order Book TPS", "k", 220, 130);
+
+    // Area Sparklines for top assets
+    let btc_spark = sparkline_chart(vec![95200.0, 95800.0, 95400.0, 96300.0, 96800.0, 97050.0], 140, 36, SparklineType::Area, "#10b981");
+    let eth_spark = sparkline_chart(vec![2740.0, 2710.0, 2780.0, 2810.0, 2840.0, 2855.0], 140, 36, SparklineType::Area, "#38bdf8");
+    let sol_spark = sparkline_chart(vec![182.0, 189.0, 185.0, 194.0, 196.0, 198.5], 140, 36, SparklineType::Area, "#a855f7");
+    let ferr_spark = sparkline_chart(vec![12.4, 13.1, 12.9, 14.2, 14.8, 15.6], 140, 36, SparklineType::Area, "#f59e0b");
+
+    let sparklines_card = card_advanced(
+        "Real-Time Multi-Asset Vector Sparklines",
+        "Embedded mini-charts for DataGrid cells and live portfolio metric cards",
+        "activity",
+        "glass",
+        false,
+        "p-5",
+    )
+    .child(
+        div().class("grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4")
+            .children(vec![
+                div().class("p-3.5 rounded-xl bg-slate-900/60 border border-slate-800 flex items-center justify-between")
+                    .children(vec![
+                        div().children(vec![
+                            span().class("text-xs text-slate-400 block").text("BTC/USD"),
+                            span().class("text-base font-bold text-white").text("$97,050.00"),
+                        ]),
+                        btc_spark,
+                    ]),
+                div().class("p-3.5 rounded-xl bg-slate-900/60 border border-slate-800 flex items-center justify-between")
+                    .children(vec![
+                        div().children(vec![
+                            span().class("text-xs text-slate-400 block").text("ETH/USD"),
+                            span().class("text-base font-bold text-white").text("$2,855.00"),
+                        ]),
+                        eth_spark,
+                    ]),
+                div().class("p-3.5 rounded-xl bg-slate-900/60 border border-slate-800 flex items-center justify-between")
+                    .children(vec![
+                        div().children(vec![
+                            span().class("text-xs text-slate-400 block").text("SOL/USD"),
+                            span().class("text-base font-bold text-white").text("$198.50"),
+                        ]),
+                        sol_spark,
+                    ]),
+                div().class("p-3.5 rounded-xl bg-slate-900/60 border border-slate-800 flex items-center justify-between")
+                    .children(vec![
+                        div().children(vec![
+                            span().class("text-xs text-slate-400 block").text("FERR/USD"),
+                            span().class("text-base font-bold text-white").text("$15.60"),
+                        ]),
+                        ferr_spark,
+                    ]),
+            ])
+    );
+
+    let gauges_card = card_advanced(
+        "Telemetry Speedometers & Quantitative Gauges",
+        "High-precision semi-circular gauges with graduated arcs and numeric readouts",
+        "cpu",
+        "glass",
+        false,
+        "p-5",
+    )
+    .child(
+        div().class("grid grid-cols-1 sm:grid-cols-3 gap-4 text-center")
+            .children(vec![
+                div().class("flex flex-col items-center").child(cpu_gauge),
+                div().class("flex flex-col items-center").child(match_gauge),
+                div().class("flex flex-col items-center").child(tps_gauge),
+            ])
+    );
+
+    let technical_card = card_advanced(
+        "Trading Desk Pro • Bitcoin Perpetual (BTC/USD 5m)",
+        "TradingView Parity Engine: Candlesticks, SMA (20, 50), Bollinger Bands (±2σ), RSI (14), and MACD (12,26,9)",
+        "chart-candlestick",
+        "glass",
+        false,
+        "p-5",
+    )
+    .child(main_chart)
+    .child(
+        div().class("flex items-center justify-between pt-3 mt-3 border-t border-slate-800 text-xs text-slate-400")
+            .children(vec![
+                span().text("Pure Rust Vector SVG Rendering • Dynamic Crosshair Tracking"),
+                button_advanced("⚡ Push Simulated Market Tick", "primary", "xs", false, Some("zap"))
+                    .on_click(|| render_app("charts")),
+            ])
+    );
+
+    let depth_card = card_advanced(
+        "Order Book Market Depth (Bids vs Asks)",
+        "Cumulative liquidity curves with mid-market equilibrium line and spread badge",
+        "chart-bar",
+        "glass",
+        false,
+        "p-5",
+    )
+    .child(depth_svg);
+
+    container()
+        .attr("style", "max-width: 1400px; margin: 0 auto; padding: 2rem 1.5rem; display: flex; flex-direction: column; gap: 24px;")
+        .children(vec![
+            div()
+                .class("pb-2 border-b border-slate-800")
+                .children(vec![
+                    h2().class("text-2xl font-black text-white tracking-tight").text("SVG Vector Financial Charting Suite"),
+                    p().class("text-xs text-slate-400 mt-1")
+                        .text("High-precision quantitative visualizations engineered with zero JavaScript or Canvas overhead."),
+                ]),
+            row().child(col("12").child(sparklines_card)),
+            row().child(col("12 lg-7").child(technical_card)).child(col("12 lg-5").child(depth_card)),
+            row().child(col("12").child(gauges_card)),
+        ])
+}
+
+// =============================================================================
+// 9. APPLICATION SHELL & ROUTER DISPATCH
 // =============================================================================
 
 fn create_command_palette() -> CommandPaletteState {
     let actions = vec![
         CommandAction::new("act-trading", "Go to Trading Desk Pro", "Candlestick chart, indicators, and streaming", "Navigation", "chart-candlestick", Some("G T"), || render_app("trading")),
         CommandAction::new("act-datagrid", "Go to Enterprise DataGrid", "1,000 orders grid, filters, and CSV export", "Navigation", "grid", Some("G D"), || render_app("datagrid")),
+        CommandAction::new("act-components", "Go to UI Elements & Design System", "Interactive buttons, inputs, toggles, and icons", "Navigation", "zap", Some("G C"), || render_app("components")),
+        CommandAction::new("act-charts", "Go to SVG Financial Charting Suite", "Candlesticks, depth curve, gauges, and sparklines", "Navigation", "activity", Some("G H"), || render_app("charts")),
         CommandAction::new("act-form", "Go to Form Validation Wizard", "Multi-step onboarding with strict validation", "Navigation", "file-text", Some("G F"), || render_app("form")),
         CommandAction::new("act-explorer", "Go to Explorer & Overlays", "TreeView, Vector DatePicker, and controls", "Navigation", "folder", Some("G E"), || render_app("explorer")),
         CommandAction::new("act-csv", "Export All Orders to CSV", "Download RFC 4180 generated in Wasm memory", "Quick Actions", "download", Some("E C"), || {
@@ -903,6 +1337,8 @@ pub fn render_app(mode: &str) {
     let body_content = match mode {
         "datagrid" => render_datagrid_tab(),
         "form" => render_form_wizard_tab(),
+        "components" => render_components_catalog_tab(),
+        "charts" => render_charts_gallery_tab(),
         "explorer" => render_explorer_tab(&cmd_palette_state),
         _ => render_trading_desk_tab(),
     };
@@ -923,7 +1359,7 @@ pub fn start() -> Result<(), JsValue> {
     if let Some(win) = window() {
         if let Ok(hash) = win.location().hash() {
             let h = hash.trim_start_matches('#');
-            if h == "datagrid" || h == "form" || h == "explorer" || h == "trading" {
+            if ["datagrid", "form", "explorer", "trading", "components", "charts"].contains(&h) {
                 initial_mode = h.to_string();
             }
         }
@@ -936,6 +1372,8 @@ pub fn start() -> Result<(), JsValue> {
                     let mode = match h {
                         "datagrid" => "datagrid",
                         "form" => "form",
+                        "components" => "components",
+                        "charts" => "charts",
                         "explorer" => "explorer",
                         _ => "trading",
                     };
@@ -958,6 +1396,8 @@ pub fn start() -> Result<(), JsValue> {
                     let mode = match tab {
                         "datagrid" => "datagrid",
                         "form" => "form",
+                        "components" => "components",
+                        "charts" => "charts",
                         "explorer" => "explorer",
                         _ => "trading",
                     };
