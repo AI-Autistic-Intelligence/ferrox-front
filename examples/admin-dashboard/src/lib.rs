@@ -1177,15 +1177,16 @@ fn render_charts_gallery_tab() -> DomBuilder {
     );
 
     // Speedometer Telemetry Gauges
-    let cpu_gauge = gauge_chart("gauge-cpu", 42.5, 0.0, 100.0, "CPU Load", "%", 220, 130);
-    let match_gauge = gauge_chart("gauge-latency", 1.8, 0.0, 10.0, "Engine Latency", "μs", 220, 130);
-    let tps_gauge = gauge_chart("gauge-tps", 940.0, 0.0, 1000.0, "Order Book TPS", "k", 220, 130);
+    // Speedometer Telemetry Gauges
+    let cpu_gauge = gauge_chart("gauge-cpu", 42.5, 0.0, 100.0, "CPU Load", "%", 220, 135);
+    let match_gauge = gauge_chart("gauge-latency", 1.8, 0.0, 10.0, "Engine Latency", "μs", 220, 135);
+    let tps_gauge = gauge_chart("gauge-tps", 940.0, 0.0, 1000.0, "Order Book TPS", "k", 220, 135);
 
-    // Area Sparklines for top assets
-    let btc_spark = sparkline_chart(vec![95200.0, 95800.0, 95400.0, 96300.0, 96800.0, 97050.0], 140, 36, SparklineType::Area, "#10b981");
-    let eth_spark = sparkline_chart(vec![2740.0, 2710.0, 2780.0, 2810.0, 2840.0, 2855.0], 140, 36, SparklineType::Area, "#38bdf8");
-    let sol_spark = sparkline_chart(vec![182.0, 189.0, 185.0, 194.0, 196.0, 198.5], 140, 36, SparklineType::Area, "#a855f7");
-    let ferr_spark = sparkline_chart(vec![12.4, 13.1, 12.9, 14.2, 14.8, 15.6], 140, 36, SparklineType::Area, "#f59e0b");
+    // Area Sparklines for top assets - constrained to prevent card overflow
+    let btc_spark = sparkline_chart(vec![95200.0, 95800.0, 95400.0, 96300.0, 96800.0, 97050.0], 88, 30, SparklineType::Area, "#10b981");
+    let eth_spark = sparkline_chart(vec![2740.0, 2710.0, 2780.0, 2810.0, 2840.0, 2855.0], 88, 30, SparklineType::Area, "#38bdf8");
+    let sol_spark = sparkline_chart(vec![182.0, 189.0, 185.0, 194.0, 196.0, 198.5], 88, 30, SparklineType::Area, "#a855f7");
+    let ferr_spark = sparkline_chart(vec![12.4, 13.1, 12.9, 14.2, 14.8, 15.6], 88, 30, SparklineType::Area, "#f59e0b");
 
     let sparklines_card = card_advanced(
         "Real-Time Multi-Asset Vector Sparklines",
@@ -1198,37 +1199,37 @@ fn render_charts_gallery_tab() -> DomBuilder {
     .child(
         div().class("grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5")
             .children(vec![
-                div().class("p-4 rounded-2xl bg-slate-900/60 border border-slate-800/80 flex items-center justify-between")
+                div().class("p-4 rounded-2xl bg-slate-900/60 border border-slate-800/80 overflow-hidden flex items-center justify-between gap-3 min-w-0")
                     .children(vec![
-                        div().children(vec![
-                            span().class("text-xs text-slate-400 block").text("BTC/USD"),
-                            span().class("text-base font-bold text-white").text("$97,050.00"),
+                        div().class("flex-shrink-0 min-w-0").children(vec![
+                            span().class("text-xs text-slate-400 block font-medium").text("BTC/USD"),
+                            span().class("text-base font-bold text-white tracking-tight").text("$97,050.00"),
                         ]),
-                        btc_spark,
+                        div().class("w-20 sm:w-24 h-8 flex-shrink-0 flex items-center justify-end overflow-hidden").child(btc_spark),
                     ]),
-                div().class("p-4 rounded-2xl bg-slate-900/60 border border-slate-800/80 flex items-center justify-between")
+                div().class("p-4 rounded-2xl bg-slate-900/60 border border-slate-800/80 overflow-hidden flex items-center justify-between gap-3 min-w-0")
                     .children(vec![
-                        div().children(vec![
-                            span().class("text-xs text-slate-400 block").text("ETH/USD"),
-                            span().class("text-base font-bold text-white").text("$2,855.00"),
+                        div().class("flex-shrink-0 min-w-0").children(vec![
+                            span().class("text-xs text-slate-400 block font-medium").text("ETH/USD"),
+                            span().class("text-base font-bold text-white tracking-tight").text("$2,855.00"),
                         ]),
-                        eth_spark,
+                        div().class("w-20 sm:w-24 h-8 flex-shrink-0 flex items-center justify-end overflow-hidden").child(eth_spark),
                     ]),
-                div().class("p-4 rounded-2xl bg-slate-900/60 border border-slate-800/80 flex items-center justify-between")
+                div().class("p-4 rounded-2xl bg-slate-900/60 border border-slate-800/80 overflow-hidden flex items-center justify-between gap-3 min-w-0")
                     .children(vec![
-                        div().children(vec![
-                            span().class("text-xs text-slate-400 block").text("SOL/USD"),
-                            span().class("text-base font-bold text-white").text("$198.50"),
+                        div().class("flex-shrink-0 min-w-0").children(vec![
+                            span().class("text-xs text-slate-400 block font-medium").text("SOL/USD"),
+                            span().class("text-base font-bold text-white tracking-tight").text("$198.50"),
                         ]),
-                        sol_spark,
+                        div().class("w-20 sm:w-24 h-8 flex-shrink-0 flex items-center justify-end overflow-hidden").child(sol_spark),
                     ]),
-                div().class("p-4 rounded-2xl bg-slate-900/60 border border-slate-800/80 flex items-center justify-between")
+                div().class("p-4 rounded-2xl bg-slate-900/60 border border-slate-800/80 overflow-hidden flex items-center justify-between gap-3 min-w-0")
                     .children(vec![
-                        div().children(vec![
-                            span().class("text-xs text-slate-400 block").text("FERR/USD"),
-                            span().class("text-base font-bold text-white").text("$15.60"),
+                        div().class("flex-shrink-0 min-w-0").children(vec![
+                            span().class("text-xs text-slate-400 block font-medium").text("FERR/USD"),
+                            span().class("text-base font-bold text-white tracking-tight").text("$15.60"),
                         ]),
-                        ferr_spark,
+                        div().class("w-20 sm:w-24 h-8 flex-shrink-0 flex items-center justify-end overflow-hidden").child(ferr_spark),
                     ]),
             ])
     );

@@ -1335,28 +1335,29 @@ pub fn gauge_chart(id: &str, value: f64, min: f64, max: f64, label: &str, unit: 
     let w = width as f64;
     let h = height as f64;
     let cx = w / 2.0;
-    let cy = (h * 0.54).round();
-    let radius = ((w / 2.0) - 24.0).min(cy - 12.0).max(40.0);
+    let cy = (h * 0.65).round();
+    let outer_radius = ((w / 2.0) - 28.0).min(cy - 12.0).max(45.0);
+    let hub_radius = (outer_radius * 0.58).round().max(28.0);
 
     let span = (max - min).max(0.001);
     let ratio = ((value - min) / span).clamp(0.0, 1.0);
 
-    // Speedometer arch from 180° (-PI) to 0° (0.0) strictly in the upper half (y <= cy)
+    // Speedometer arch sweeps from 180° (-PI) to 0° (0.0)
     let start_angle = -PI;
     let current_angle = start_angle + ratio * PI;
 
     // Outer Background Track Arc
-    let bg_x1 = cx - radius;
+    let bg_x1 = cx - outer_radius;
     let bg_y1 = cy;
-    let bg_x2 = cx + radius;
+    let bg_x2 = cx + outer_radius;
     let bg_y2 = cy;
-    let bg_d = format!("M {} {} A {} {} 0 0 1 {} {}", bg_x1, bg_y1, radius, radius, bg_x2, bg_y2);
+    let bg_d = format!("M {} {} A {} {} 0 0 1 {} {}", bg_x1, bg_y1, outer_radius, outer_radius, bg_x2, bg_y2);
 
     // Value Arc
-    let val_x2 = cx + radius * current_angle.cos();
-    let val_y2 = cy + radius * current_angle.sin();
+    let val_x2 = cx + outer_radius * current_angle.cos();
+    let val_y2 = cy + outer_radius * current_angle.sin();
     let large_arc = if ratio > 0.5 { "1" } else { "0" };
-    let val_d = format!("M {} {} A {} {} 0 {} 1 {} {}", bg_x1, bg_y1, radius, radius, large_arc, val_x2, val_y2);
+    let val_d = format!("M {} {} A {} {} 0 {} 1 {} {}", bg_x1, bg_y1, outer_radius, outer_radius, large_arc, val_x2, val_y2);
 
     let val_color = if ratio < 0.60 {
         "#10b981" // Emerald
@@ -1371,35 +1372,36 @@ pub fn gauge_chart(id: &str, value: f64, min: f64, max: f64, label: &str, unit: 
         .attr("class", "ferrox-svg-gauge-chart")
         .attr("width", &width.to_string())
         .attr("height", &height.to_string())
-        .attr("viewBox", &format!("0 0 {} {}", width, height));
+        .attr("viewBox", &format!("0 0 {} {}", width, height))
+        .attr("style", "max-width: 100%; height: auto; overflow: visible;");
 
-    // Background Track Arc
+    // 1. Background Track Arc (Dark glass channel)
     svg = svg.child(
         DomBuilder::new_svg("path")
             .attr("d", &bg_d)
             .attr("fill", "none")
-            .attr("stroke", "rgba(148, 163, 184, 0.2)")
-            .attr("stroke-width", "13")
+            .attr("stroke", "rgba(148, 163, 184, 0.16)")
+            .attr("stroke-width", "11")
             .attr("stroke-linecap", "round")
     );
 
-    // Value Fill Arc
+    // 2. Active Value Fill Arc
     if ratio > 0.001 {
         svg = svg.child(
             DomBuilder::new_svg("path")
                 .attr("d", &val_d)
                 .attr("fill", "none")
                 .attr("stroke", val_color)
-                .attr("stroke-width", "13")
+                .attr("stroke-width", "11")
                 .attr("stroke-linecap", "round")
         );
     }
 
-    // Graduated Ticks at 0%, 25%, 50%, 75%, 100%
+    // 3. Graduated Ticks at 0%, 25%, 50%, 75%, 100%
     for step in [0.0, 0.25, 0.50, 0.75, 1.0] {
         let tick_angle = start_angle + step * PI;
-        let r_inner = radius - 14.0;
-        let r_outer = radius + 9.0;
+        let r_inner = outer_radius + 9.0;
+        let r_outer = outer_radius + 15.0;
 
         let x_in = cx + r_inner * tick_angle.cos();
         let y_in = cy + r_inner * tick_angle.sin();
@@ -1414,73 +1416,91 @@ pub fn gauge_chart(id: &str, value: f64, min: f64, max: f64, label: &str, unit: 
                 .attr("y2", &y_out.to_string())
                 .attr("stroke", "rgba(148, 163, 184, 0.35)")
                 .attr("stroke-width", "1.5")
+                .attr("stroke-linecap", "round")
         );
     }
 
-    // Needle Indicator (sweeps strictly in upper semicircle y <= cy)
-    let needle_len = radius - 6.0;
-    let needle_x = cx + needle_len * current_angle.cos();
-    let needle_y = cy + needle_len * current_angle.sin();
+    // 4. Center Cockpit Hub / Digital Pod (Sleek Disc protecting text from needle)
+    svg = svg.child(
+        DomBuilder::new_svg("circle")
+            .attr("cx", &cx.to_string())
+            .attr("cy", &(cy - 2.0).to_string())
+            .attr("r", &hub_radius.to_string())
+            .attr("fill", "rgba(15, 23, 42, 0.65)")
+            .attr("stroke", "rgba(148, 163, 184, 0.22)")
+            .attr("stroke-width", "1.5")
+    );
+
+    // 5. Radial Pointer Hand: Extends from outer edge of hub (hub_radius + 2.0) to arc track (outer_radius)
+    // Never enters the hub disc, so it can NEVER overlap or slice through the numbers or labels!
+    let r_needle_start = hub_radius + 2.0;
+    let r_needle_end = outer_radius + 1.0;
+    let n_x1 = cx + r_needle_start * current_angle.cos();
+    let n_y1 = (cy - 2.0) + r_needle_start * current_angle.sin();
+    let n_x2 = cx + r_needle_end * current_angle.cos();
+    let n_y2 = (cy - 2.0) + r_needle_end * current_angle.sin();
 
     svg = svg.child(
         DomBuilder::new_svg("line")
-            .attr("x1", &cx.to_string())
-            .attr("y1", &cy.to_string())
-            .attr("x2", &needle_x.to_string())
-            .attr("y2", &needle_y.to_string())
-            .attr("stroke", "var(--text-primary, #ffffff)")
-            .attr("stroke-width", "2.5")
+            .attr("x1", &n_x1.to_string())
+            .attr("y1", &n_y1.to_string())
+            .attr("x2", &n_x2.to_string())
+            .attr("y2", &n_y2.to_string())
+            .attr("stroke", "#ffffff")
+            .attr("stroke-width", "3.0")
             .attr("stroke-linecap", "round")
     ).child(
-        // Pivot Circle centered at (cx, cy)
+        // Indicator Bead on the track
         DomBuilder::new_svg("circle")
-            .attr("cx", &cx.to_string())
-            .attr("cy", &cy.to_string())
-            .attr("r", "5.5")
+            .attr("cx", &n_x2.to_string())
+            .attr("cy", &n_y2.to_string())
+            .attr("r", "4.0")
             .attr("fill", val_color)
-            .attr("stroke", "var(--bg-surface, #0f172a)")
-            .attr("stroke-width", "2")
+            .attr("stroke", "#ffffff")
+            .attr("stroke-width", "1.5")
     );
 
-    // Readout Text placed safely below the pivot (no possible needle collision)
+    // 6. Primary Numeric Readout safely centered inside the Hub Disc
     let readout_str = format!("{:.1} {}", value, unit);
     svg = svg.child(
         DomBuilder::new_svg("text")
             .attr("x", &cx.to_string())
-            .attr("y", &(cy + 25.0).to_string())
+            .attr("y", &(cy - 5.0).to_string())
             .attr("text-anchor", "middle")
             .attr("fill", "var(--text-primary, #ffffff)")
-            .attr("font-size", "18")
+            .attr("font-size", "15")
             .attr("font-weight", "800")
             .text(&readout_str)
     ).child(
+        // Secondary Metric Label inside the Hub Disc
         DomBuilder::new_svg("text")
             .attr("x", &cx.to_string())
-            .attr("y", &(cy + 42.0).to_string())
+            .attr("y", &(cy + 9.0).to_string())
             .attr("text-anchor", "middle")
             .attr("fill", "var(--text-secondary, #94a3b8)")
-            .attr("font-size", "11")
-            .attr("font-weight", "600")
-            .text(label)
+            .attr("font-size", "9")
+            .attr("font-weight", "700")
+            .attr("letter-spacing", "0.04em")
+            .text(&label.to_uppercase())
     ).child(
         // Min Label at bottom left of arc
         DomBuilder::new_svg("text")
-            .attr("x", &(cx - radius).to_string())
-            .attr("y", &(cy + 13.0).to_string())
+            .attr("x", &(cx - outer_radius).to_string())
+            .attr("y", &(cy + 17.0).to_string())
             .attr("text-anchor", "middle")
             .attr("fill", "var(--text-secondary, #94a3b8)")
             .attr("font-size", "10")
-            .attr("font-weight", "500")
+            .attr("font-weight", "600")
             .text(&format!("{:.0}", min))
     ).child(
         // Max Label at bottom right of arc
         DomBuilder::new_svg("text")
-            .attr("x", &(cx + radius).to_string())
-            .attr("y", &(cy + 13.0).to_string())
+            .attr("x", &(cx + outer_radius).to_string())
+            .attr("y", &(cy + 17.0).to_string())
             .attr("text-anchor", "middle")
             .attr("fill", "var(--text-secondary, #94a3b8)")
             .attr("font-size", "10")
-            .attr("font-weight", "500")
+            .attr("font-weight", "600")
             .text(&format!("{:.0}", max))
     );
 
@@ -1631,10 +1651,11 @@ pub fn sparkline_chart(data: Vec<f64>, width: u32, height: u32, spark_type: Spar
 
     let mut svg = DomBuilder::new_svg("svg")
         .attr("class", "ferrox-svg-sparkline")
-        .attr("style", "display: inline-block; vertical-align: middle; overflow: visible;")
+        .attr("style", "display: block; width: 100%; height: 100%; overflow: hidden;")
         .attr("width", &width.to_string())
         .attr("height", &height.to_string())
-        .attr("viewBox", &format!("0 0 {} {}", width, height));
+        .attr("viewBox", &format!("0 0 {} {}", width, height))
+        .attr("preserveAspectRatio", "none");
 
     match spark_type {
         SparklineType::Line => {
@@ -1675,13 +1696,15 @@ pub fn sparkline_chart(data: Vec<f64>, width: u32, height: u32, spark_type: Spar
                 scale_x(0),
                 pad + h
             );
-            let grad_id = format!("sparkAreaGrad-{}", (scale_x(0) * 1000.0) as u32);
+            let color_clean: String = color.chars().filter(|c| c.is_alphanumeric()).collect();
+            let sum_hash: i64 = data.iter().map(|v| (*v * 10.0) as i64).sum();
+            let grad_id = format!("sparkGrad_{}_{}_{}", color_clean, width, sum_hash.abs());
             svg = svg.child(
                 DomBuilder::new_svg("defs").child(
                     DomBuilder::new_svg("linearGradient")
                         .attr("id", &grad_id)
                         .attr("x1", "0%").attr("y1", "0%").attr("x2", "0%").attr("y2", "100%")
-                        .child(DomBuilder::new_svg("stop").attr("offset", "0%").attr("stop-color", color).attr("stop-opacity", "0.45"))
+                        .child(DomBuilder::new_svg("stop").attr("offset", "0%").attr("stop-color", color).attr("stop-opacity", "0.40"))
                         .child(DomBuilder::new_svg("stop").attr("offset", "100%").attr("stop-color", color).attr("stop-opacity", "0.0"))
                 )
             ).child(
@@ -1695,6 +1718,7 @@ pub fn sparkline_chart(data: Vec<f64>, width: u32, height: u32, spark_type: Spar
                     .attr("stroke", color)
                     .attr("stroke-width", "2")
                     .attr("stroke-linecap", "round")
+                    .attr("stroke-linejoin", "round")
             );
         }
         SparklineType::Bar => {
@@ -1716,5 +1740,8 @@ pub fn sparkline_chart(data: Vec<f64>, width: u32, height: u32, spark_type: Spar
         }
     }
 
-    div().child(svg)
+    div()
+        .attr("class", "ferrox-sparkline-wrapper")
+        .attr("style", &format!("width: 100%; max-width: {}px; height: {}px; overflow: hidden; display: flex; align-items: center; justify-content: flex-end; flex-shrink: 0;", width, height))
+        .child(svg)
 }
