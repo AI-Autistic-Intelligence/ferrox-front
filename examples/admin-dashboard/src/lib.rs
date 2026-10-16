@@ -18,6 +18,11 @@
 //! - **Real-time Theming**:
 //!   Glassmorphism Dark, Zinc Light, Cyberpunk Neon, and Ocean Breeze.
 
+pub mod theme_studio;
+pub mod chart_studio;
+pub use theme_studio::*;
+pub use chart_studio::*;
+
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
 use web_sys::{window, MessageEvent};
@@ -190,6 +195,12 @@ fn render_top_bar(active_tab: &str, cmd_palette: &CommandPaletteState) -> DomBui
             button_advanced("📈 Charting Suite", "glass", "sm", false, None)
                 .attr("style", if active_tab == "charts" { "background: var(--accent-primary); color: #fff; font-weight: 700; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);" } else { "opacity: 0.8;" })
                 .on_click(|| render_app("charts")),
+            button_advanced("📊 Nivo Chart Studio", "glass", "sm", false, None)
+                .attr("style", if active_tab == "chart-studio" { "background: var(--accent-primary); color: #fff; font-weight: 700; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);" } else { "opacity: 0.8;" })
+                .on_click(|| render_app("chart-studio")),
+            button_advanced("🎨 Theme Studio", "glass", "sm", false, None)
+                .attr("style", if active_tab == "theme-studio" { "background: var(--accent-primary); color: #fff; font-weight: 700; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);" } else { "opacity: 0.8;" })
+                .on_click(|| render_app("theme-studio")),
             button_advanced("📝 Form Wizard", "glass", "sm", false, None)
                 .attr("style", if active_tab == "form" { "background: var(--accent-primary); color: #fff; font-weight: 700; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);" } else { "opacity: 0.8;" })
                 .on_click(|| render_app("form")),
@@ -1305,6 +1316,8 @@ fn create_command_palette() -> CommandPaletteState {
         CommandAction::new("act-datagrid", "Go to Enterprise DataGrid", "1,000 orders grid, filters, and CSV export", "Navigation", "grid", Some("G D"), || render_app("datagrid")),
         CommandAction::new("act-components", "Go to UI Elements & Design System", "Interactive buttons, inputs, toggles, and icons", "Navigation", "zap", Some("G C"), || render_app("components")),
         CommandAction::new("act-charts", "Go to SVG Financial Charting Suite", "Candlesticks, depth curve, gauges, and sparklines", "Navigation", "activity", Some("G H"), || render_app("charts")),
+        CommandAction::new("act-chart-studio", "Go to Nivo Chart Studio", "Interactive SVG vector chart playbook & code generator", "Navigation", "trend-up", Some("G S"), || render_app("chart-studio")),
+        CommandAction::new("act-theme-studio", "Go to Theme Studio & Exporter", "Live color tokens, border radius & CSS export", "Navigation", "palette", Some("G P"), || render_app("theme-studio")),
         CommandAction::new("act-form", "Go to Form Validation Wizard", "Multi-step onboarding with strict validation", "Navigation", "file-text", Some("G F"), || render_app("form")),
         CommandAction::new("act-explorer", "Go to Explorer & Overlays", "TreeView, Vector DatePicker, and controls", "Navigation", "folder", Some("G E"), || render_app("explorer")),
         CommandAction::new("act-csv", "Export All Orders to CSV", "Download RFC 4180 generated in Wasm memory", "Quick Actions", "download", Some("E C"), || {
@@ -1349,6 +1362,8 @@ pub fn render_app(mode: &str) {
         "form" => render_form_wizard_tab(),
         "components" => render_components_catalog_tab(),
         "charts" => render_charts_gallery_tab(),
+        "chart-studio" => render_chart_studio_tab(),
+        "theme-studio" => render_theme_studio_tab(),
         "explorer" => render_explorer_tab(&cmd_palette_state),
         _ => render_trading_desk_tab(),
     };
@@ -1369,7 +1384,7 @@ pub fn start() -> Result<(), JsValue> {
     if let Some(win) = window() {
         if let Ok(hash) = win.location().hash() {
             let h = hash.trim_start_matches('#');
-            if ["datagrid", "form", "explorer", "trading", "components", "charts"].contains(&h) {
+            if ["datagrid", "form", "explorer", "trading", "components", "charts", "chart-studio", "theme-studio"].contains(&h) {
                 initial_mode = h.to_string();
             }
         }
@@ -1384,6 +1399,8 @@ pub fn start() -> Result<(), JsValue> {
                         "form" => "form",
                         "components" => "components",
                         "charts" => "charts",
+                        "chart-studio" => "chart-studio",
+                        "theme-studio" => "theme-studio",
                         "explorer" => "explorer",
                         _ => "trading",
                     };
@@ -1408,6 +1425,8 @@ pub fn start() -> Result<(), JsValue> {
                         "form" => "form",
                         "components" => "components",
                         "charts" => "charts",
+                        "chart-studio" => "chart-studio",
+                        "theme-studio" => "theme-studio",
                         "explorer" => "explorer",
                         _ => "trading",
                     };

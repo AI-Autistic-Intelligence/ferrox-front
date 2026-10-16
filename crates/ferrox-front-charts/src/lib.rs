@@ -325,7 +325,7 @@ pub fn line_chart(id: &str, data: Vec<Point>, width: u32, height: u32, show_axes
                 .attr("r", "5")
                 .attr("fill", "var(--accent-cyan, #06b6d4)")
                 .attr("cursor", "crosshair")
-                .child(DomBuilder::new_svg("title").text(&format!("Valore: {:.3}", point.y)));
+                .child(DomBuilder::new_svg("title").text(&format!("Value: {:.3}", point.y)));
             
             svg = svg.child(circle);
         }
