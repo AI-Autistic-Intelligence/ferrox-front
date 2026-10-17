@@ -11,25 +11,25 @@ pub fn create_polyglot_module() -> CodexModule {
     // 1. Polyglot Overview
     module.register_doc(
         "overview",
-        include_str!("../../../../../ferrox-docs/docs/overview/example-projects.md"),
+        include_str!("../../docs/overview/example-projects.md"),
     );
 
     // 2. Ferrox-PHP Overview
     module.register_doc(
         "php",
-        include_str!("../../../../../ferrox-docs/docs/ferrox-php/overview.md"),
+        include_str!("../../docs/ferrox-php/overview.md"),
     );
 
     // 3. Ferrox-PHP API Reference & Saga
     module.register_doc(
         "php/api-reference",
-        include_str!("../../../../../ferrox-docs/docs/ferrox-php/api-reference.md"),
+        include_str!("../../docs/ferrox-php/api-reference.md"),
     );
 
     // 4. Ferrox-Java (Java 21 Loom, Project Panama Off-Heap, Sentinel)
     module.register_doc(
         "java",
-        include_str!("../../../../../ferrox-java/README.md"),
+        include_str!("../../docs/ferrox-java/README.md"),
     );
 
     module

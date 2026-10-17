@@ -4,6 +4,7 @@
 //! and full-text search index compiled directly into WebAssembly.
 
 use std::collections::HashMap;
+use ferrox_front_core::dom::DomBuilder;
 use ferrox_front_ui::DocNavItem;
 use crate::markdown::{parse_markdown, ParsedDoc};
 
@@ -126,9 +127,37 @@ impl DocRegistry {
         list
     }
 
-    /// Resolves an interactive Wasm view/playground if registered for the route.
+    /// Resolves an in-page interactive Wasm sandbox/playground for the active document.
+    pub fn get_interactive_sandbox(&self, path: &str) -> Option<fn() -> DomBuilder> {
+        let clean = path.trim_start_matches('/').trim_end_matches('/');
+        match clean {
+            "ferrox-front/datagrid" | "front/datagrid" | "datagrid" => {
+                Some(crate::sandboxes::render_datagrid_sandbox)
+            }
+            "ferrox-front/charts" | "front/charts" | "charts" => {
+                Some(crate::sandboxes::render_charts_sandbox)
+            }
+            "ferrox-front/components" | "front/components" | "components" => {
+                Some(crate::sandboxes::render_form_sandbox)
+            }
+            _ => None,
+        }
+    }
+
+    /// Resolves an interactive Wasm full-page view/playground if registered for the route.
     pub fn get_interactive_view(&self, path: &str) -> Option<crate::modules::InteractiveViewFn> {
         let clean = path.trim_start_matches('/').trim_end_matches('/');
+
+        if clean == "sandboxes/datagrid" || clean == "ferrox-front/datagrid/playground" {
+            return Some(std::rc::Rc::new(crate::sandboxes::render_datagrid_sandbox));
+        }
+        if clean == "sandboxes/charts" || clean == "ferrox-front/charts/live" {
+            return Some(std::rc::Rc::new(crate::sandboxes::render_charts_sandbox));
+        }
+        if clean == "sandboxes/form" || clean == "ferrox-front/components/playground" {
+            return Some(std::rc::Rc::new(crate::sandboxes::render_form_sandbox));
+        }
+
         for m in &self.modules {
             if let Some(view) = m.resolve_interactive_view(clean) {
                 return Some(view);
@@ -267,61 +296,61 @@ impl DocRegistry {
         // 1. Overview & Vision
         self.register(
             "overview",
-            include_str!("../../../../ferrox-docs/docs/ferrox-front/overview.md"),
+            include_str!("../docs/ferrox-front/overview.md"),
         );
 
         // 2. Example Projects
         self.register(
             "overview/example-projects",
-            include_str!("../../../../ferrox-docs/docs/overview/example-projects.md"),
+            include_str!("../docs/overview/example-projects.md"),
         );
 
         // 3. Ferrox Front Overview
         self.register(
             "ferrox-front/overview",
-            include_str!("../../../../ferrox-docs/docs/ferrox-front/overview.md"),
+            include_str!("../docs/ferrox-front/overview.md"),
         );
 
         // 4. UI Components Catalog
         self.register(
             "ferrox-front/components",
-            include_str!("../../../../ferrox-docs/docs/ferrox-front/components.md"),
+            include_str!("../docs/ferrox-front/components.md"),
         );
 
         // 5. Enterprise DataGrid
         self.register(
             "ferrox-front/datagrid",
-            include_str!("../../../../ferrox-docs/docs/ferrox-front/datagrid.md"),
+            include_str!("../docs/ferrox-front/datagrid.md"),
         );
 
         // 6. Vector SVG Charts
         self.register(
             "ferrox-front/charts",
-            include_str!("../../../../ferrox-docs/docs/ferrox-front/charts.md"),
+            include_str!("../docs/ferrox-front/charts.md"),
         );
 
         // 7. Trading Desk Pro
         self.register(
             "ferrox-front/trading-desk",
-            include_str!("../../../../ferrox-docs/docs/ferrox-front/trading-desk.md"),
+            include_str!("../docs/ferrox-front/trading-desk.md"),
         );
 
         // 8. Security Audit Report
         self.register(
             "security/audit",
-            include_str!("../../../../ferrox-docs/docs/SECURITY_AUDIT_REPORT.md"),
+            include_str!("../docs/SECURITY_AUDIT_REPORT.md"),
         );
 
         // 9. Ecosystem Showcase Guide
         self.register(
             "ecosystem/showcase-guide",
-            include_str!("../../../../ferrox-docs/docs/ECOSYSTEM_SHOWCASE_GUIDE.md"),
+            include_str!("../docs/ECOSYSTEM_SHOWCASE_GUIDE.md"),
         );
 
         // 10. 1 Million RPS Benchmark
         self.register(
             "benchmarks/1m-rps",
-            include_str!("../../../../ferrox-docs/docs/benchmarks/1m-rps.md"),
+            include_str!("../docs/benchmarks/1m-rps.md"),
         );
 
         // 11. Ingest all 315 ecosystem documentation files from ferrox-docs/docs!

@@ -30,5 +30,9 @@ cd crates\ferrox-front-templates
 cargo publish
 cd ..\..\
 
+cd crates\ferrox-codex
+cargo publish
+cd ..\..\
+
 echo.
 echo Tutti i crate sono stati pubblicati!

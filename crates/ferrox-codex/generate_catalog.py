@@ -1,14 +1,19 @@
 import os
 import glob
 import re
+import shutil
 
 BASE_DIR = r"C:\Users\nn\Desktop\code\ferrox-docs\docs"
+CRATE_DOCS_DIR = r"C:\Users\nn\Desktop\code\ferrox-front\crates\ferrox-codex\docs"
 OUT_FILE = r"C:\Users\nn\Desktop\code\ferrox-front\crates\ferrox-codex\src\generated_ecosystem_docs.rs"
 
 files = glob.glob(os.path.join(BASE_DIR, "**", "*.md"), recursive=True)
 files = sorted(files)
 
 print(f"Discovered {len(files)} markdown files in {BASE_DIR}")
+
+# Ensure destination docs dir exists
+os.makedirs(CRATE_DOCS_DIR, exist_ok=True)
 
 entries = []
 
@@ -18,6 +23,11 @@ for filepath in files:
     if route.endswith(".md"):
         route = route[:-3]
     
+    # Copy markdown file into crates/ferrox-codex/docs
+    dest_path = os.path.join(CRATE_DOCS_DIR, rel.replace("/", os.sep))
+    os.makedirs(os.path.dirname(dest_path), exist_ok=True)
+    shutil.copy2(filepath, dest_path)
+
     # Read file
     with open(filepath, "r", encoding="utf-8", errors="ignore") as f:
         content = f.read()
@@ -49,9 +59,8 @@ for filepath in files:
         base_name = os.path.splitext(os.path.basename(rel))[0]
         title = base_name.replace("-", " ").replace("_", " ").title()
 
-    # Relative path from crates/ferrox-codex to the markdown file
-    # crates/ferrox-codex -> ../../../../ferrox-docs/docs/...
-    include_path = f"../../../../ferrox-docs/docs/{rel}"
+    # Relative path from crates/ferrox-codex/src to crates/ferrox-codex/docs
+    include_path = f"../docs/{rel}"
 
     entries.append({
         "route": route,

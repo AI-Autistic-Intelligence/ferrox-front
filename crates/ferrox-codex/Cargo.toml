@@ -1,15 +1,17 @@
 [package]
 name = "ferrox-codex"
 version = "0.1.0"
+authors = ["Ferrox Architecture Group <dev@ferrox-rust.dev>"]
 edition = "2021"
-description = "Native WebAssembly documentation engine & generator for the Ferrox ecosystem, powered by ferrox-front."
-license = "MIT"
+description = "High-performance zero-JavaScript WebAssembly documentation platform and static site generator"
+license = "MIT OR Apache-2.0"
 repository = "https://github.com/AI-Autistic-Intelligence/ferrox-front"
-homepage = "https://ferrox-front.dev"
-documentation = "https://docs.ferrox-rust.dev"
+homepage = "https://ferrox-rust.dev"
+documentation = "https://docs.rs/ferrox-codex"
 readme = "README.md"
-keywords = ["wasm", "documentation", "markdown", "docusaurus-alternative", "webassembly"]
-categories = ["wasm", "development-tools::documentation"]
+keywords = ["wasm", "documentation", "ssg", "zero-js", "ferrox"]
+categories = ["web-programming", "development-tools"]
+exclude = ["dist", "spa_server.py"]
 
 [lib]
 crate-type = ["cdylib", "rlib"]
@@ -51,5 +53,7 @@ features = [
   "ScrollBehavior",
   "DomRect",
   "Navigator",
-  "Clipboard"
+  "Clipboard",
+  "HtmlInputElement",
+  "HtmlTextAreaElement"
 ]

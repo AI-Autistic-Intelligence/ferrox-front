@@ -11,23 +11,23 @@ pub fn create_node_module() -> CodexModule {
     // 1. Ferrox Node Overview
     module.register_doc(
         "overview",
-        include_str!("../../../../../ferrox-docs/docs/ferrox-node/overview.md"),
+        include_str!("../../docs/ferrox-node/overview.md"),
     );
 
     // 2. Node-Yalc Core Transports & Abstractions
     module.register_doc(
         "yalc",
-        include_str!("../../../../../ferrox-docs/docs/node-yalc/overview.md"),
+        include_str!("../../docs/node-yalc/overview.md"),
     );
     module.register_doc(
         "node-yalc",
-        include_str!("../../../../../ferrox-docs/docs/node-yalc/overview.md"),
+        include_str!("../../docs/node-yalc/overview.md"),
     );
 
     // 3. NestJS-Yalc Enterprise Architecture
     module.register_doc(
         "nestjs-yalc",
-        include_str!("../../../../../ferrox-docs/docs/nestjs-yalc/overview.md"),
+        include_str!("../../docs/nestjs-yalc/overview.md"),
     );
 
     module

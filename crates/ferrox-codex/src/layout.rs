@@ -247,10 +247,17 @@ pub fn render_doc_layout(
     let pagination = render_pagination(prev, next, router);
     let footer = render_footer();
 
-    // Center Column Assembly
+    // Center Column Assembly (embeds live Wasm interactive sandboxes)
+    let mut center_children = vec![breadcrumbs, content];
+    if let Some(sandbox_fn) = registry.get_interactive_sandbox(current_path) {
+        center_children.push(sandbox_fn());
+    }
+    center_children.push(pagination);
+    center_children.push(footer);
+
     let main_content = div()
         .class("flex-1 min-w-0 max-w-4xl xl:max-w-5xl 2xl:max-w-6xl py-8 px-6 sm:px-10 lg:px-14")
-        .children(vec![breadcrumbs, content, pagination, footer]);
+        .children(center_children);
 
     // Left Sidebar Assembly
     let sidebar_items = registry.build_sidebar();

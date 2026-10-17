@@ -837,3 +837,101 @@ pub fn language_selector(
         .child(select_el)
 }
 
+// =============================================================================
+// 9. WASM INTERACTIVE SANDBOX PRIMITIVES
+// =============================================================================
+
+/// Renders a responsive glassmorphic sandbox frame for live WebAssembly playgrounds.
+pub fn sandbox_container(
+    title: &str,
+    badge: &str,
+    icon_name: &str,
+    description: &str,
+    content: DomBuilder,
+) -> DomBuilder {
+    let header = div()
+        .class("flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-5 border-b border-slate-800/80 bg-slate-900/60 backdrop-blur-xl rounded-t-2xl")
+        .children(vec![
+            div().class("flex items-center gap-3").children(vec![
+                div()
+                    .class("w-9 h-9 rounded-xl flex items-center justify-center bg-indigo-500/20 text-indigo-400 border border-indigo-500/30")
+                    .child(Icon::render(icon_name, 18, "#818cf8")),
+                div().children(vec![
+                    div().class("flex items-center gap-2").children(vec![
+                        h3().class("text-base font-bold text-white tracking-tight").text(title),
+                        span().class("px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30").text(badge),
+                    ]),
+                    p().class("text-xs text-slate-400 mt-0.5").text(description),
+                ]),
+            ]),
+            div().class("flex items-center gap-2").children(vec![
+                span().class("flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-mono font-medium bg-slate-800/80 text-indigo-300 border border-slate-700/60").children(vec![
+                    span().class("w-2 h-2 rounded-full bg-emerald-400 animate-pulse"),
+                    span().text("LIVE WASM ENGINE"),
+                ]),
+            ]),
+        ]);
+
+    div()
+        .class("ferrox-sandbox-frame my-10 rounded-2xl border border-indigo-500/30 bg-slate-950/80 shadow-2xl shadow-indigo-950/40 overflow-hidden")
+        .children(vec![header, div().class("p-5 sm:p-6").child(content)])
+}
+
+/// Renders a dynamic password strength gauge bar with colored gradient fill.
+pub fn password_strength_bar(entropy_percent: f64) -> DomBuilder {
+    let clamped = entropy_percent.clamp(0.0, 100.0);
+    let (label, color_class, width_style) = if clamped < 25.0 {
+        ("Weak (Low Entropy)", "bg-rose-500 shadow-rose-500/50", "25%")
+    } else if clamped < 50.0 {
+        ("Fair (Basic)", "bg-amber-500 shadow-amber-500/50", "50%")
+    } else if clamped < 75.0 {
+        ("Strong (Recommended)", "bg-cyan-500 shadow-cyan-500/50", "75%")
+    } else {
+        ("Cyber-Secured (High Entropy)", "bg-emerald-500 shadow-emerald-500/50", "100%")
+    };
+
+    div()
+        .class("flex flex-col gap-1.5 w-full mt-2")
+        .children(vec![
+            div().class("flex justify-between items-center text-xs font-mono font-semibold").children(vec![
+                span().class("text-slate-400").text("Strength:"),
+                span().class("text-slate-200").text(label),
+            ]),
+            div()
+                .class("w-full h-2 rounded-full bg-slate-800 overflow-hidden")
+                .child(
+                    div()
+                        .class(&format!("h-full rounded-full transition-all duration-300 shadow-sm {}", color_class))
+                        .attr("style", &format!("width: {};", width_style))
+                ),
+        ])
+}
+
+/// Renders a telemetry metric card with title, big counter, delta, and icon.
+pub fn telemetry_metric_card(
+    label: &str,
+    value: &str,
+    change: Option<&str>,
+    icon_name: &str,
+    color_hex: &str,
+) -> DomBuilder {
+    let mut val_col = div().children(vec![
+        span().class("text-xs font-bold uppercase tracking-wider text-slate-400").text(label),
+        div().class("text-2xl font-black text-white font-mono mt-1").text(value),
+    ]);
+
+    if let Some(ch) = change {
+        val_col = val_col.child(span().class("text-xs font-semibold text-emerald-400").text(ch));
+    }
+
+    div()
+        .class("p-4 rounded-xl bg-slate-900/70 border border-slate-800/80 flex items-center justify-between shadow-lg")
+        .children(vec![
+            val_col,
+            div()
+                .class("w-10 h-10 rounded-xl flex items-center justify-center bg-slate-800/80 border border-slate-700/50")
+                .child(Icon::render(icon_name, 20, color_hex)),
+        ])
+}
+
+

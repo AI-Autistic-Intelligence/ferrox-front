@@ -20,6 +20,7 @@ const PUBLISH_ORDER = [
   'crates/ferrox-front-router',
   'crates/ferrox-front-ui',
   'crates/ferrox-front-templates',
+  'crates/ferrox-codex',
 ];
 
 const isDryRun = process.argv.includes('--dry-run');
@@ -35,8 +36,8 @@ for (const cratePath of PUBLISH_ORDER) {
   console.log(`📦 Publishing [${crateName}] from ${cratePath}...`);
 
   const cmd = isDryRun
-    ? `cargo publish --dry-run --no-verify -p ${crateName}`
-    : `cargo publish --no-verify -p ${crateName}`;
+    ? `cargo publish --dry-run --no-verify --allow-dirty -p ${crateName}`
+    : `cargo publish --no-verify --allow-dirty -p ${crateName}`;
 
   let published = false;
   let attempts = 0;

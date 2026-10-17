@@ -14,6 +14,8 @@ pub mod sync;
 pub mod ssg;
 pub mod i18n;
 pub mod app;
+pub mod cli;
+pub mod sandboxes;
 pub mod generated_ecosystem_docs;
 
 pub use highlighter::*;
@@ -27,6 +29,7 @@ pub use sync::*;
 pub use ssg::*;
 pub use i18n::*;
 pub use app::*;
+pub use sandboxes::*;
 
 use wasm_bindgen::prelude::*;
 

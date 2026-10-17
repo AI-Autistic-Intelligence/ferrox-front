@@ -11,7 +11,7 @@ pub fn create_python_module() -> CodexModule {
     // 1. Python Root Overview
     main_module.register_doc(
         "overview",
-        include_str!("../../../../../ferrox-docs/docs/ferrox-py/overview.md"),
+        include_str!("../../docs/ferrox-py/overview.md"),
     );
 
     // 2. Auth Submodule (/py/auth)
@@ -21,23 +21,23 @@ pub fn create_python_module() -> CodexModule {
 
     auth_sub.register_doc(
         "overview",
-        include_str!("../../../../../ferrox-docs/docs/ferrox-py/auth/overview.md"),
+        include_str!("../../docs/ferrox-py/auth/overview.md"),
     );
     auth_sub.register_doc(
         "auth_service",
-        include_str!("../../../../../ferrox-docs/docs/ferrox-py/auth/auth_service.md"),
+        include_str!("../../docs/ferrox-py/auth/auth_service.md"),
     );
     auth_sub.register_doc(
         "gdpr_service",
-        include_str!("../../../../../ferrox-docs/docs/ferrox-py/auth/gdpr_service.md"),
+        include_str!("../../docs/ferrox-py/auth/gdpr_service.md"),
     );
     auth_sub.register_doc(
         "models",
-        include_str!("../../../../../ferrox-docs/docs/ferrox-py/auth/models.md"),
+        include_str!("../../docs/ferrox-py/auth/models.md"),
     );
     auth_sub.register_doc(
         "rbac",
-        include_str!("../../../../../ferrox-docs/docs/ferrox-py/auth/rbac.md"),
+        include_str!("../../docs/ferrox-py/auth/rbac.md"),
     );
 
     // 3. Commerce Submodule (/py/commerce)
@@ -47,23 +47,23 @@ pub fn create_python_module() -> CodexModule {
 
     commerce_sub.register_doc(
         "overview",
-        include_str!("../../../../../ferrox-docs/docs/ferrox-py/commerce/overview.md"),
+        include_str!("../../docs/ferrox-py/commerce/overview.md"),
     );
     commerce_sub.register_doc(
         "controllers",
-        include_str!("../../../../../ferrox-docs/docs/ferrox-py/commerce/controllers.md"),
+        include_str!("../../docs/ferrox-py/commerce/controllers.md"),
     );
     commerce_sub.register_doc(
         "gateways",
-        include_str!("../../../../../ferrox-docs/docs/ferrox-py/commerce/gateways.md"),
+        include_str!("../../docs/ferrox-py/commerce/gateways.md"),
     );
     commerce_sub.register_doc(
         "transaction_state",
-        include_str!("../../../../../ferrox-docs/docs/ferrox-py/commerce/transaction_state.md"),
+        include_str!("../../docs/ferrox-py/commerce/transaction_state.md"),
     );
     commerce_sub.register_doc(
         "webhooks",
-        include_str!("../../../../../ferrox-docs/docs/ferrox-py/commerce/webhooks.md"),
+        include_str!("../../docs/ferrox-py/commerce/webhooks.md"),
     );
 
     // 4. Utils Submodule (/py/utils)
@@ -73,19 +73,19 @@ pub fn create_python_module() -> CodexModule {
 
     utils_sub.register_doc(
         "overview",
-        include_str!("../../../../../ferrox-docs/docs/ferrox-py/utils/overview.md"),
+        include_str!("../../docs/ferrox-py/utils/overview.md"),
     );
     utils_sub.register_doc(
         "connectors",
-        include_str!("../../../../../ferrox-docs/docs/ferrox-py/utils/connectors.md"),
+        include_str!("../../docs/ferrox-py/utils/connectors.md"),
     );
     utils_sub.register_doc(
         "pipelines",
-        include_str!("../../../../../ferrox-docs/docs/ferrox-py/utils/pipelines.md"),
+        include_str!("../../docs/ferrox-py/utils/pipelines.md"),
     );
     utils_sub.register_doc(
         "schemas",
-        include_str!("../../../../../ferrox-docs/docs/ferrox-py/utils/schemas.md"),
+        include_str!("../../docs/ferrox-py/utils/schemas.md"),
     );
 
     // Attach recursive submodules

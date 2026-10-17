@@ -3,9 +3,10 @@
 > **Native WebAssembly Documentation Engine & Microfrontend Platform for the Ferrox Ecosystem**  
 > *Zero Node.js • Zero Virtual DOM • Vector SVG Mermaid • Plug-and-Play Microfrontends • AI-Native (`llms.txt`)*
 
-[![Crates.io](https://img.shields.io/badge/crates.io-v0.1.0-orange.svg)](https://crates.io)
-[![Documentation](https://img.shields.io/badge/docs-ferrox--rust.dev-indigo.svg)](https://ferrox-rust.dev)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Crates.io](https://img.shields.io/crates/v/ferrox-codex.svg)](https://crates.io/crates/ferrox-codex)
+[![Documentation](https://docs.rs/ferrox-codex/badge.svg)](https://docs.rs/ferrox-codex)
+[![Ecosystem](https://img.shields.io/badge/docs-ferrox--rust.dev-indigo.svg)](https://ferrox-rust.dev)
+[![License: MIT OR Apache-2.0](https://img.shields.io/badge/License-MIT%20OR%20Apache--2.0-blue.svg)](LICENSE)
 
 ---
 
@@ -23,6 +24,10 @@ It is dogfooded across the entire [Ferrox ecosystem](https://ferrox-rust.dev) to
   - **Vector SVG Mermaid**: Native SVG rendering of Sequence Diagrams, Flowcharts, State Diagrams, and Class Diagrams styled with the dark glassmorphic `ferrox-cyber` palette.
   - **Interactive TabGroup**: Reactive multi-panel switcher for multi-language installation guides (Cargo / npm / pip / composer).
   - **Glassmorphic Admonitions**: Modern callouts for `[!NOTE]`, `[!TIP]`, `[!WARNING]`, `[!DANGER]`, `[!CAUTION]`, and `[!INFO]`.
+- **🧪 Live WebAssembly Sandboxes & Playgrounds**:
+  - **1,000,000-Row Virtualized DataGrid**: 60 FPS real-time rendering, instant column sorting, and full-text filter.
+  - **Streaming Financial Charts**: Vector SVG Candlestick & Order Book Depth chart fed by a high-frequency Wasm tick stream simulator (up to 1 kHz).
+  - **Reactive Form Validation Engine**: Real-time email RFC validation, JSON schema linting, and password entropy meter.
 - **🧩 Plug-and-Play Microfrontend Architecture (`CodexModule`)**:
   - Independent, encapsulated documentation modules for every repository (`core`, `front`, `node`, `py`, `polyglot`).
   - Recursive nested submodules (e.g. `ferrox-py` -> `auth`, `commerce`, `utils`).
@@ -41,7 +46,7 @@ It is dogfooded across the entire [Ferrox ecosystem](https://ferrox-rust.dev) to
 
 ## 📦 Installation & CLI Usage
 
-Install the native documentation CLI:
+Install the native documentation CLI from crates.io:
 
 ```bash
 cargo install ferrox-codex
@@ -50,6 +55,9 @@ cargo install ferrox-codex
 ### CLI Commands
 
 ```bash
+# Initialize a new documentation starter project
+ferrox-codex init [project-name]
+
 # Build release WebAssembly bundle and AI SSG artifacts
 ferrox-codex build [--out-dir <dir>]
 
