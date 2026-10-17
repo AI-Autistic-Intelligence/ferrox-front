@@ -16,6 +16,7 @@ ferrox-front-core = { path = "../ferrox-front-core", version = "0.3.2" }
 ferrox-front-charts = { path = "../ferrox-front-charts", version = "0.3.2" }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
-web-sys = { version = "0.3.105", features = ["Event", "DragEvent", "DataTransfer", "Storage", "Window", "Location", "HtmlElement", "HtmlCollection", "HtmlAudioElement", "ResizeObserver", "ResizeObserverEntry", "DomRectReadOnly", "MouseEvent", "Blob", "BlobPropertyBag", "Url", "HtmlAnchorElement", "HtmlInputElement", "KeyboardEvent"] }
+web-sys = { version = "0.3.105", features = ["Event", "DragEvent", "DataTransfer", "Storage", "Window", "Document", "Element", "Node", "Location", "History", "HtmlElement", "HtmlCollection", "HtmlAudioElement", "ResizeObserver", "ResizeObserverEntry", "DomRectReadOnly", "MouseEvent", "Blob", "BlobPropertyBag", "Url", "HtmlAnchorElement", "HtmlInputElement", "HtmlSelectElement", "KeyboardEvent", "Navigator", "Clipboard", "ScrollIntoViewOptions", "ScrollBehavior"] }
 wasm-bindgen = "0.2.128"
 js-sys = "0.3.105"
+

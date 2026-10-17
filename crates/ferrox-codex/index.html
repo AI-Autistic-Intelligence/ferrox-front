@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="ferrox-cyber">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚡ Ferrox Codex • Native WebAssembly Documentation Engine</title>
+    <meta name="description" content="Native WebAssembly documentation engine & static generator for the Ferrox ecosystem. Replaces Docusaurus with pure Rust WebAssembly dogfooding.">
+    <!-- SEO & Social OpenGraph Meta Tags -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Ferrox Codex">
+    <meta property="og:title" content="⚡ Ferrox Codex • Native WebAssembly Documentation Engine">
+    <meta property="og:description" content="Next-gen WebAssembly documentation platform for the Ferrox ecosystem: zero Node.js, vector Mermaid SVG, responsive microfrontends, and 1M row live Wasm DataGrid.">
+    <meta property="og:url" content="https://ferrox-rust.dev">
+    <meta property="og:image" content="https://ferrox-rust.dev/img/og-preview.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@ferrox_rust">
+    <meta name="twitter:title" content="⚡ Ferrox Codex • Native Wasm Documentation Platform">
+    <meta name="twitter:description" content="Next-gen WebAssembly documentation platform for the Ferrox ecosystem: zero Node.js, vector Mermaid SVG, and interactive Wasm sandboxes.">
+    <meta name="twitter:image" content="https://ferrox-rust.dev/img/og-preview.png">
+    <meta name="keywords" content="ferrox, rust, wasm, webassembly, docusaurus-alternative, documentation, mermaid, microfrontend">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link data-trunk rel="css" href="styles.css">
+    <link data-trunk rel="rust" href="Cargo.toml" data-target-name="ferrox_codex" data-wasm-opt="z">
+    <!-- Mermaid.js Vector Diagram Engine with Ferrox Dark Theme -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        if (window.mermaid) {
+            mermaid.initialize({
+                startOnLoad: false,
+                theme: 'dark',
+                securityLevel: 'loose',
+                themeVariables: {
+                    darkMode: true,
+                    background: 'transparent',
+                    mainBkg: '#090d16',
+                    nodeBorder: '#6366f1',
+                    primaryColor: '#1e1b4b',
+                    primaryTextColor: '#f8fafc',
+                    primaryBorderColor: '#6366f1',
+                    lineColor: '#818cf8',
+                    secondaryColor: '#0e7490',
+                    tertiaryColor: '#1e293b',
+                    fontFamily: 'JetBrains Mono, Inter, monospace'
+                }
+            });
+        }
+        window.renderFerroxMermaid = function() {
+            if (window.mermaid) {
+                try {
+                    mermaid.run({
+                        querySelector: '.ferrox-mermaid-raw'
+                    });
+                } catch (e) {
+                    console.warn('[FerroxCodex] Mermaid render notice:', e);
+                }
+            }
+        };
+    </script>
+</head>
+<body data-theme="ferrox-cyber" class="bg-slate-950 text-slate-100 min-h-screen">
+    <div id="root">
+        <!-- Initial Glassmorphic Wasm Loader -->
+        <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; background: #030712; color: #94a3b8; font-family: 'Inter', system-ui, sans-serif; gap: 20px;">
+            <div style="position: relative; width: 64px; height: 64px;">
+                <div style="position: absolute; inset: 0; border: 3px solid rgba(99, 102, 241, 0.15); border-top-color: #6366f1; border-radius: 50%; animation: ferrox-loader-spin 0.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;"></div>
+                <div style="position: absolute; inset: 6px; border: 3px solid rgba(6, 182, 212, 0.15); border-bottom-color: #06b6d4; border-radius: 50%; animation: ferrox-loader-spin 1.2s cubic-bezier(0.4, 0, 0.2, 1) infinite reverse;"></div>
+            </div>
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 6px;">
+                <div style="font-size: 1.15rem; font-weight: 800; letter-spacing: -0.02em; color: #ffffff; display: flex; align-items: center; gap: 8px;">
+                    <span>FERROX</span>
+                    <span style="color: #818cf8; font-weight: 300;">CODEX</span>
+                </div>
+                <div style="font-size: 0.8rem; color: #64748b; font-family: 'JetBrains Mono', monospace;">Initializing Native Rust WebAssembly Engine...</div>
+            </div>
+            <div style="font-size: 0.72rem; color: #475569; max-width: 320px; text-align: center;">Zero JavaScript Overhead • Viewport Virtualization • O(1) Signal Reactivity</div>
+        </div>
+        <style>
+            @keyframes ferrox-loader-spin {
+                to { transform: rotate(360deg); }
+            }
+        </style>
+    </div>
+</body>
+</html>

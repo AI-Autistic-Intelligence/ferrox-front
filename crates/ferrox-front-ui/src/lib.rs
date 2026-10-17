@@ -16,9 +16,11 @@ pub mod ferrox_security_dashboard;
 pub mod json_dashboard_builder;
 pub mod form_engine;
 pub mod overlays;
+pub mod doc_components;
 
 pub use components::*;
 pub use icons::*;
+pub use doc_components::*;
 pub use ferrox_datagrid::{
     EnterpriseDataGrid, EnterpriseDataGridState, ColumnDef, SortDirection,
     PinnedPosition, TextAlign, trigger_csv_download, generate_rfc4180_csv,

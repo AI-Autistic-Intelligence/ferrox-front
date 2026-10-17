@@ -9,7 +9,7 @@ use std::collections::HashMap;
 use std::rc::Rc;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
-use web_sys::{window, Event, PopStateEvent};
+use web_sys::{window, Event};
 use ferrox_front_core::dom::{div, a, p, h2, DomBuilder};
 use ferrox_front_core::reactivity::Signal;
 use ferrox_front_security::SealedToken;
@@ -243,6 +243,7 @@ pub struct Router {
     pub auth_token: Signal<Option<SealedToken>>,
     routes: Rc<RefCell<Vec<RouteDef>>>,
     fallback: Rc<RefCell<Option<Rc<dyn Fn(&str) -> DomBuilder>>>>,
+    listeners: Rc<RefCell<Vec<Rc<dyn Fn(&str)>>>>,
 }
 
 impl Router {
@@ -264,12 +265,26 @@ impl Router {
             auth_token: Signal::new(None),
             routes: Rc::new(RefCell::new(Vec::new())),
             fallback: Rc::new(RefCell::new(None)),
+            listeners: Rc::new(RefCell::new(Vec::new())),
         };
 
         // Attach popstate listener for browser Back/Forward navigation
         router.listen_popstate();
 
         router
+    }
+
+    /// Registers a listener callback invoked whenever the active route path changes.
+    pub fn on_route_change(&self, listener: impl Fn(&str) + 'static) {
+        self.listeners.borrow_mut().push(Rc::new(listener));
+    }
+
+    /// Broadcasts route updates to all registered listeners.
+    fn notify_listeners(&self, path: &str) {
+        let listeners = self.listeners.borrow().clone();
+        for l in listeners {
+            l(path);
+        }
     }
 
     /// Registers a standard public route.
@@ -326,11 +341,15 @@ impl Router {
             if let Ok(history) = win.history() {
                 let _ = history.push_state_with_url(&JsValue::NULL, "", Some(url));
             }
+            if let Ok(event) = web_sys::Event::new("popstate") {
+                let _ = win.dispatch_event(&event);
+            }
         }
 
         self.current_path.set(path.to_string());
         self.current_query.set(query);
         self.re_evaluate();
+        self.notify_listeners(path);
     }
 
     /// Replaces the current state in browser History API without pushing a new entry.
@@ -342,11 +361,15 @@ impl Router {
             if let Ok(history) = win.history() {
                 let _ = history.replace_state_with_url(&JsValue::NULL, "", Some(url));
             }
+            if let Ok(event) = web_sys::Event::new("popstate") {
+                let _ = win.dispatch_event(&event);
+            }
         }
 
         self.current_path.set(path.to_string());
         self.current_query.set(query);
         self.re_evaluate();
+        self.notify_listeners(path);
     }
 
     /// Re-evaluates routes against current path, enforcing guards and updating `active_match`.
@@ -384,20 +407,21 @@ impl Router {
         self.active_match.set(None);
     }
 
-    /// Subscribes to the native `popstate` window event for back/forward browser button sync.
+    /// Subscribes to the native or synthetic `popstate` window event for back/forward and SPA navigation.
     fn listen_popstate(&self) {
         if let Some(win) = window() {
             let self_clone = self.clone();
-            let closure = Closure::wrap(Box::new(move |_: PopStateEvent| {
+            let closure = Closure::wrap(Box::new(move |_: Event| {
                 if let Some(w) = window() {
                     let loc = w.location();
                     let path = loc.pathname().unwrap_or_else(|_| "/".to_string());
                     let search = loc.search().unwrap_or_default();
-                    self_clone.current_path.set(path);
+                    self_clone.current_path.set(path.clone());
                     self_clone.current_query.set(QueryParams::parse(&search));
                     self_clone.re_evaluate();
+                    self_clone.notify_listeners(&path);
                 }
-            }) as Box<dyn FnMut(PopStateEvent)>);
+            }) as Box<dyn FnMut(Event)>);
 
             let _ = win.add_event_listener_with_callback("popstate", closure.as_ref().unchecked_ref());
             closure.forget();

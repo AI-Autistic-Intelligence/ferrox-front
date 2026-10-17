@@ -1,0 +1,162 @@
+/* =============================================================================
+   FERROX CODEX: Enterprise Glassmorphic Design System & Theming
+   Zero JavaScript • Pure Rust WebAssembly Dogfooding of ferrox-front
+   ============================================================================= */
+
+:root, [data-theme="ferrox-cyber"] {
+    --bg-base: #030712;
+    --bg-surface: rgba(15, 23, 42, 0.75);
+    --bg-surface-hover: rgba(30, 41, 59, 0.85);
+    --bg-glass: rgba(255, 255, 255, 0.04);
+    --border-glass: 1px solid rgba(255, 255, 255, 0.08);
+    --border-glass-hover: 1px solid rgba(99, 102, 241, 0.4);
+    --accent-primary: #6366f1;
+    --accent-primary-hover: #4f46e5;
+    --accent-cyan: #06b6d4;
+    --accent-emerald: #10b981;
+    --accent-rose: #f43f5e;
+    --accent-amber: #f59e0b;
+    --text-primary: #f8fafc;
+    --text-secondary: #94a3b8;
+    --text-muted: #64748b;
+    --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+}
+
+[data-theme="ocean-breeze"] {
+    --bg-base: #021a28;
+    --bg-surface: rgba(4, 38, 59, 0.8);
+    --bg-surface-hover: rgba(8, 52, 80, 0.9);
+    --bg-glass: rgba(6, 182, 212, 0.06);
+    --border-glass: 1px solid rgba(6, 182, 212, 0.15);
+    --border-glass-hover: 1px solid rgba(6, 182, 212, 0.5);
+    --accent-primary: #06b6d4;
+    --accent-primary-hover: #0891b2;
+    --text-primary: #f0fdfa;
+    --text-secondary: #99f6e4;
+    --text-muted: #5eead4;
+}
+
+[data-theme="midnight-forest"] {
+    --bg-base: #031c12;
+    --bg-surface: rgba(5, 41, 26, 0.8);
+    --bg-surface-hover: rgba(9, 56, 36, 0.9);
+    --bg-glass: rgba(16, 185, 129, 0.06);
+    --border-glass: 1px solid rgba(16, 185, 129, 0.15);
+    --border-glass-hover: 1px solid rgba(16, 185, 129, 0.5);
+    --accent-primary: #10b981;
+    --accent-primary-hover: #059669;
+    --text-primary: #ecfdf5;
+    --text-secondary: #a7f3d0;
+    --text-muted: #6ee7b7;
+}
+
+[data-theme="sunset-gold"] {
+    --bg-base: #1a0b02;
+    --bg-surface: rgba(43, 20, 7, 0.8);
+    --bg-surface-hover: rgba(61, 29, 10, 0.9);
+    --bg-glass: rgba(245, 158, 11, 0.06);
+    --border-glass: 1px solid rgba(245, 158, 11, 0.15);
+    --border-glass-hover: 1px solid rgba(245, 158, 11, 0.5);
+    --accent-primary: #f59e0b;
+    --accent-primary-hover: #d97706;
+    --text-primary: #fffbeb;
+    --text-secondary: #fde68a;
+    --text-muted: #fcd34d;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background-color: var(--bg-base);
+    color: var(--text-primary);
+    font-family: var(--font-sans);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom Sleek Scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.12);
+    border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.25);
+}
+
+/* Code Block Scrollbars */
+.ferrox-code-block ::-webkit-scrollbar {
+    height: 5px;
+}
+
+.ferrox-code-block ::-webkit-scrollbar-thumb {
+    background: rgba(99, 102, 241, 0.3);
+}
+
+.ferrox-code-block ::-webkit-scrollbar-thumb:hover {
+    background: rgba(99, 102, 241, 0.6);
+}
+
+/* Micro-animations */
+@keyframes ferrox-fade-in {
+    from {
+        opacity: 0;
+        transform: translateY(4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes ferrox-pulse-glow {
+    0%, 100% {
+        box-shadow: 0 0 15px rgba(99, 102, 241, 0.2);
+    }
+    50% {
+        box-shadow: 0 0 25px rgba(99, 102, 241, 0.4);
+    }
+}
+
+.ferrox-doc-content {
+    animation: ferrox-fade-in 0.25s ease-out;
+}
+
+/* Typography styles inside documentation */
+.ferrox-doc-content h1 {
+    line-height: 1.2;
+}
+
+.ferrox-doc-content h2,
+.ferrox-doc-content h3 {
+    scroll-margin-top: 5rem;
+}
+
+.ferrox-doc-content p {
+    color: var(--text-secondary);
+}
+
+.ferrox-doc-content strong {
+    color: var(--text-primary);
+}
+
+.ferrox-doc-content hr {
+    border: none;
+    border-top: var(--border-glass);
+    margin: 2.5rem 0;
+}

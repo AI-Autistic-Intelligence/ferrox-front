@@ -6,6 +6,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [2.1.0] - 2026-10-17
+
+### 🚀 1. Ferrox Codex & Documentation Design System Primitives (`ferrox-front-ui`)
+- **`ferrox-front-ui::doc_components`**:
+  - Implemented `Admonition` component with glassmorphism styling, chromatic glow, and vector icons for `Note`, `Tip`, `Warning`, `Danger`, `Caution`, and `Info` callouts.
+  - Implemented interactive `CodeBlock` featuring language badges (Rust, Python, Bash, TypeScript, JSON, SQL, etc.), optional filename/title, and instantaneous copy-to-clipboard via the browser's native `navigator.clipboard` API with visual feedback ("Copied!" state).
+  - Implemented reactive `TabGroup` and `TabPanelDef` with signal-driven tab switching for multi-language installation snippets (Cargo, npm, pip, composer) and code previews.
+  - Implemented dynamic `TableOfContents` (TOC) with scrollspy heading tracking and smooth anchor scrolling.
+  - Implemented `DocSidebar` and `DocNavItem` hierarchical collapsible navigation tree with search filtering, expanding/collapsing categories, active route highlighting, and badge indicators.
+- **`crates/ferrox-codex`**:
+  - Initialized native WebAssembly documentation engine replacing Docusaurus/Node.js with complete dogfooding of `ferrox-front`.
+
+---
+
 ## [2.0.0] - 2026-10-15
 
 ### ⚡ 1. Live Trading Desk & Matching Engine Decoupling (DRY Core)
