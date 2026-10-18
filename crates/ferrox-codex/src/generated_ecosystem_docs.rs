@@ -325,6 +325,7 @@ pub fn register_all_ecosystem_docs(registry: &mut DocRegistry) {
     registry.register("node-yalc/security/sentinel", include_str!("../docs/node-yalc/security/sentinel.md"));
     registry.register("node-yalc/transports/http-client", include_str!("../docs/node-yalc/transports/http-client.md"));
     registry.register("overview/example-projects", include_str!("../docs/overview/example-projects.md"));
+    registry.register("overview/polyglot-mesh-showcase", include_str!("../docs/overview/polyglot-mesh-showcase.md"));
 }
 
 pub fn build_complete_ecosystem_sidebar() -> Vec<DocNavItem> {
@@ -337,6 +338,12 @@ pub fn build_complete_ecosystem_sidebar() -> Vec<DocNavItem> {
                     .with_children(vec![
                         DocNavItem::new("nav-overview-example-projects", "Official Example Projects")
                             .with_href("/overview/example-projects"),
+                    ]),
+                DocNavItem::new("sub-overview-polyglot-mesh-showcase", "Polyglot Mesh Showcase")
+                    .with_icon("folder")
+                    .with_children(vec![
+                        DocNavItem::new("nav-overview-polyglot-mesh-showcase", "Polyglot Super-Showcase 2.0 (Real-Time Mesh)")
+                            .with_href("/overview/polyglot-mesh-showcase"),
                     ]),
             ]),
         DocNavItem::new("cat-ferrox", "🦀 Ferrox (Core Server Framework)")

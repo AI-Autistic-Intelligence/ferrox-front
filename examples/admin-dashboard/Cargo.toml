@@ -17,6 +17,7 @@ ferrox-front-templates = { path = "../../crates/ferrox-front-templates", version
 ferrox-front-security = { path = "../../crates/ferrox-front-security", version = "0.3.1" }
 ferrox-engine = { path = "../../../ferrox-match/packages/ferrox-engine", version = "0.1.0", default-features = false }
 web-sys = { version = "0.3", features = ["Window", "Document", "Element", "HtmlElement", "CssStyleDeclaration", "Navigator", "Clipboard", "Node", "MessageEvent"] }
+js-sys = "0.3"
 
 [lib]
 crate-type = ["cdylib"]

@@ -15,6 +15,7 @@ dependencies = [
  "ferrox-front-templates",
  "ferrox-front-ui",
  "ferrox-front-ws",
+ "js-sys",
  "wasm-bindgen",
  "web-sys",
 ]

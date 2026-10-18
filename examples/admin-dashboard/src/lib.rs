@@ -20,8 +20,10 @@
 
 pub mod theme_studio;
 pub mod chart_studio;
+pub mod polyglot_mesh;
 pub use theme_studio::*;
 pub use chart_studio::*;
+pub use polyglot_mesh::*;
 
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
@@ -183,6 +185,9 @@ fn render_top_bar(active_tab: &str, cmd_palette: &CommandPaletteState) -> DomBui
         .attr("class", "ferrox-tab-switcher flex flex-wrap items-center gap-2 p-1.5 rounded-2xl shadow-md")
         .attr("style", "background: var(--bg-surface-hover); border: var(--border-glass);")
         .children(vec![
+            button_advanced("🌐 Polyglot Mesh Hub", "glass", "sm", false, None)
+                .attr("style", if active_tab == "mesh" { "background: linear-gradient(135deg, #a855f7, #3b82f6); color: #fff; font-weight: 700; box-shadow: 0 4px 12px rgba(168, 85, 247, 0.4);" } else { "opacity: 0.9;" })
+                .on_click(|| render_app("mesh")),
             button_advanced("⚡ Trading Desk Pro", "glass", "sm", false, None)
                 .attr("style", if active_tab == "trading" { "background: var(--accent-primary); color: #fff; font-weight: 700; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);" } else { "opacity: 0.8;" })
                 .on_click(|| render_app("trading")),
@@ -1358,6 +1363,7 @@ pub fn render_app(mode: &str) {
     let top_bar = render_top_bar(mode, &cmd_palette_state);
 
     let body_content = match mode {
+        "mesh" => render_polyglot_mesh_tab(),
         "datagrid" => render_datagrid_tab(),
         "form" => render_form_wizard_tab(),
         "components" => render_components_catalog_tab(),
@@ -1384,7 +1390,7 @@ pub fn start() -> Result<(), JsValue> {
     if let Some(win) = window() {
         if let Ok(hash) = win.location().hash() {
             let h = hash.trim_start_matches('#');
-            if ["datagrid", "form", "explorer", "trading", "components", "charts", "chart-studio", "theme-studio"].contains(&h) {
+            if ["mesh", "datagrid", "form", "explorer", "trading", "components", "charts", "chart-studio", "theme-studio"].contains(&h) {
                 initial_mode = h.to_string();
             }
         }
@@ -1395,6 +1401,7 @@ pub fn start() -> Result<(), JsValue> {
                 if let Ok(hash) = win.location().hash() {
                     let h = hash.trim_start_matches('#');
                     let mode = match h {
+                        "mesh" => "mesh",
                         "datagrid" => "datagrid",
                         "form" => "form",
                         "components" => "components",
@@ -1421,6 +1428,7 @@ pub fn start() -> Result<(), JsValue> {
                 if msg_str.starts_with("ferrox-set-tab:") {
                     let tab = msg_str.trim_start_matches("ferrox-set-tab:");
                     let mode = match tab {
+                        "mesh" => "mesh",
                         "datagrid" => "datagrid",
                         "form" => "form",
                         "components" => "components",
