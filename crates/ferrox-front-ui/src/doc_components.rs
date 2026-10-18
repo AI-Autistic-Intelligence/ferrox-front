@@ -704,27 +704,73 @@ pub fn doc_sidebar(
 // 6. MERMAID DIAGRAM CONTAINER
 // =============================================================================
 
-/// Renders a dedicated Mermaid vector SVG container with dark cyberpunk glassmorphism.
+/// Renders a dedicated interactive Mermaid vector SVG container with pan, zoom, and fullscreen capabilities.
 pub fn mermaid_container(raw_code: &str, title: Option<&str>) -> DomBuilder {
     let title_str = title.unwrap_or("Mermaid SVG Vector Diagram");
 
     div()
-        .class("ferrox-mermaid my-6 flex flex-col items-center justify-center overflow-x-auto p-5 rounded-2xl bg-slate-900/60 border border-slate-800/80 shadow-xl backdrop-blur-xl transition-all duration-200")
+        .class("ferrox-mermaid group relative my-6 flex flex-col items-center justify-center p-4 md:p-5 rounded-2xl bg-slate-900/70 border border-slate-800/90 shadow-2xl backdrop-blur-xl transition-all duration-200")
         .children(vec![
+            // Header with title and interactive toolbar controls
             div()
-                .class("w-full flex items-center justify-between pb-3 mb-4 border-b border-slate-800/80 text-xs font-mono text-indigo-400 font-semibold")
+                .class("w-full flex flex-wrap items-center justify-between pb-3 mb-3 border-b border-slate-800/80 text-xs font-mono text-indigo-400 font-semibold gap-2")
                 .children(vec![
                     span().class("flex items-center gap-1.5").children(vec![
                         span().text("⚡"),
                         span().text(title_str),
                     ]),
-                    span()
-                        .class("px-2 py-0.5 rounded text-[10px] bg-slate-800 text-indigo-300 border border-indigo-500/20")
-                        .text("Vector SVG"),
+                    div().class("flex items-center gap-1.5 flex-wrap").children(vec![
+                        // Zoom percentage badge
+                        span()
+                            .class("ferrox-mermaid-zoom-badge px-2 py-0.5 rounded text-[10px] bg-slate-950/80 text-cyan-300 border border-cyan-500/30 font-mono shadow-inner")
+                            .text("100%"),
+                        // Zoom in button
+                        button()
+                            .class("ferrox-mermaid-btn ferrox-mermaid-zoom-in px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-200 border border-slate-700/80 text-xs font-bold transition-all cursor-pointer shadow-sm")
+                            .attr("title", "Zoom In (+25%)")
+                            .attr("aria-label", "Zoom In")
+                            .text("+"),
+                        // Zoom out button
+                        button()
+                            .class("ferrox-mermaid-btn ferrox-mermaid-zoom-out px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-200 border border-slate-700/80 text-xs font-bold transition-all cursor-pointer shadow-sm")
+                            .attr("title", "Zoom Out (-25%)")
+                            .attr("aria-label", "Zoom Out")
+                            .text("-"),
+                        // Reset button
+                        button()
+                            .class("ferrox-mermaid-btn ferrox-mermaid-reset px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-200 border border-slate-700/80 text-xs transition-all cursor-pointer shadow-sm flex items-center gap-1")
+                            .attr("title", "Reset Zoom & Pan")
+                            .attr("aria-label", "Reset Zoom and Pan")
+                            .text("↺ Reset"),
+                        // Fullscreen toggle button
+                        button()
+                            .class("ferrox-mermaid-btn ferrox-mermaid-fullscreen px-2.5 py-1 rounded-lg bg-indigo-950/60 hover:bg-indigo-900/80 active:scale-95 text-indigo-300 border border-indigo-500/40 text-xs transition-all cursor-pointer shadow-sm flex items-center gap-1")
+                            .attr("title", "Toggle Fullscreen View")
+                            .attr("aria-label", "Toggle Fullscreen View")
+                            .text("⛶ Expand"),
+                        span()
+                            .class("hidden sm:inline-block px-2 py-0.5 rounded text-[10px] bg-slate-800/80 text-indigo-300 border border-indigo-500/20")
+                            .text("Vector SVG"),
+                    ]),
                 ]),
+            // Interactive Viewport with Pan & Zoom Canvas
             div()
-                .class("ferrox-mermaid-raw text-slate-200 text-sm font-mono w-full flex justify-center")
-                .text(raw_code),
+                .class("ferrox-mermaid-viewport relative w-full overflow-hidden rounded-xl bg-slate-950/60 border border-slate-800/60 flex items-center justify-center min-h-[240px] select-none")
+                .attr("style", "touch-action: none; cursor: grab;")
+                .children(vec![
+                    div()
+                        .class("ferrox-mermaid-canvas w-full flex items-center justify-center p-2")
+                        .attr("style", "transform-origin: center center; will-change: transform;")
+                        .children(vec![
+                            div()
+                                .class("ferrox-mermaid-raw text-slate-200 text-sm font-mono w-full flex justify-center")
+                                .text(raw_code),
+                        ]),
+                    // Interactive navigation hint overlay
+                    div()
+                        .class("ferrox-mermaid-hint absolute bottom-2 right-2 text-[10px] font-mono text-slate-400 bg-slate-900/90 px-2.5 py-1 rounded-md border border-slate-800 pointer-events-none opacity-50 group-hover:opacity-100 transition-opacity backdrop-blur-sm")
+                        .text("Drag to pan • Scroll to zoom"),
+                ]),
         ])
 }
 

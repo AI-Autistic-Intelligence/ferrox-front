@@ -3,7 +3,7 @@ import socketserver
 import os
 import sys
 
-PORT = 8080
+PORT = int(sys.argv[2]) if len(sys.argv) > 2 else int(os.environ.get("PORT", 8089))
 DIRECTORY = sys.argv[1] if len(sys.argv) > 1 else "."
 
 class SPAHandler(http.server.SimpleHTTPRequestHandler):

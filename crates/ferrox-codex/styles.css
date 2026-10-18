@@ -160,3 +160,62 @@ body {
     border-top: var(--border-glass);
     margin: 2.5rem 0;
 }
+
+/* =============================================================================
+   FERROX MERMAID INTERACTIVE PAN & ZOOM STYLING
+   ============================================================================= */
+
+.ferrox-mermaid-viewport {
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.ferrox-mermaid-viewport:active {
+    cursor: grabbing !important;
+}
+
+.ferrox-mermaid-canvas {
+    transform-origin: center center;
+    transition: transform 0.15s cubic-bezier(0.2, 0, 0, 1);
+}
+
+.ferrox-mermaid-canvas svg {
+    max-width: none !important;
+    height: auto !important;
+    pointer-events: none;
+    user-select: none;
+}
+
+.ferrox-mermaid-btn {
+    user-select: none;
+    touch-action: manipulation;
+}
+
+.ferrox-mermaid-btn:hover {
+    box-shadow: 0 0 10px rgba(99, 102, 241, 0.35);
+}
+
+/* Fullscreen / Modal Mode */
+.ferrox-mermaid.ferrox-mermaid-fullscreen-mode {
+    position: fixed !important;
+    inset: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    max-width: 100vw !important;
+    max-height: 100vh !important;
+    z-index: 99999 !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
+    background: rgba(3, 7, 18, 0.97) !important;
+    backdrop-filter: blur(24px) !important;
+    padding: 1.25rem 1.5rem !important;
+    box-shadow: 0 0 60px rgba(0, 0, 0, 0.95) !important;
+}
+
+.ferrox-mermaid.ferrox-mermaid-fullscreen-mode .ferrox-mermaid-viewport {
+    height: calc(100vh - 80px) !important;
+    min-height: calc(100vh - 80px) !important;
+    max-height: calc(100vh - 80px) !important;
+    border-color: rgba(99, 102, 241, 0.3) !important;
+}
+
