@@ -343,6 +343,27 @@ pub fn init_living_mesh_ws() {
                     });
                     LIVE_WS_CONNECTED.with(|c| *c.borrow_mut() = true);
                 }
+                WsMarketEvent::MeshTelemetry {
+                    rust_matching_latency_ns,
+                    python_feed_latency_ms,
+                    java_loom_settled_per_sec,
+                    java_loom_latency_micros,
+                    php_saga_active_count,
+                    php_saga_success_rate,
+                    redpanda_throughput_eps,
+                    ..
+                } => {
+                    polyglot_mesh::update_mesh_telemetry_dom(
+                        *rust_matching_latency_ns,
+                        *python_feed_latency_ms,
+                        *java_loom_settled_per_sec,
+                        *java_loom_latency_micros,
+                        *php_saga_active_count,
+                        *php_saga_success_rate,
+                        *redpanda_throughput_eps,
+                    );
+                    LIVE_WS_CONNECTED.with(|c| *c.borrow_mut() = true);
+                }
                 _ => {}
             }
         });

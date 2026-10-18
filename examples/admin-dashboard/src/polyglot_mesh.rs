@@ -12,6 +12,7 @@ use web_sys::window;
 use crate::card_advanced;
 
 pub struct ServiceNodeInfo {
+    pub id: &'static str,
     pub name: &'static str,
     pub runtime: &'static str,
     pub role: &'static str,
@@ -28,6 +29,7 @@ pub struct ServiceNodeInfo {
 pub fn get_mesh_nodes() -> Vec<ServiceNodeInfo> {
     vec![
         ServiceNodeInfo {
+            id: "match",
             name: "Ferrox-Match Core",
             runtime: "Rust 1.80+ (Native Engine)",
             role: "Sub-Microsecond Order Matching & LOB",
@@ -41,6 +43,7 @@ pub fn get_mesh_nodes() -> Vec<ServiceNodeInfo> {
             features: &["Zero-Alloc Fast-Path", "Price-Time Priority", "Node-API & Axum Sockets"],
         },
         ServiceNodeInfo {
+            id: "py",
             name: "Ferrox-Py FastData",
             runtime: "Python 3.12+ (Polars / PyO3)",
             role: "High-Frequency Market Feeds & Ticks",
@@ -54,6 +57,7 @@ pub fn get_mesh_nodes() -> Vec<ServiceNodeInfo> {
             features: &["Polars Vectorized Series", "Binance Live Ingestion", "CloudEvents Emitter"],
         },
         ServiceNodeInfo {
+            id: "java",
             name: "Ferrox-Java Loom",
             runtime: "Java 21 (Project Loom & Panama)",
             role: "High-Concurrency Ledger Settlement",
@@ -67,6 +71,7 @@ pub fn get_mesh_nodes() -> Vec<ServiceNodeInfo> {
             features: &["65,536 Virtual Threads", "Off-Heap Panama FFI", "ACID Double-Entry Ledger"],
         },
         ServiceNodeInfo {
+            id: "php",
             name: "Ferrox-PHP FrankenPHP",
             runtime: "PHP 8.3+ (Worker Mode)",
             role: "Distributed E-Shop Saga Coordinator",
@@ -80,6 +85,7 @@ pub fn get_mesh_nodes() -> Vec<ServiceNodeInfo> {
             features: &["FrankenPHP Worker State", "PostgreSQL Outbox", "Compensating Sagas"],
         },
         ServiceNodeInfo {
+            id: "node",
             name: "Ferrox-Node & YALC",
             runtime: "Node.js 20 (Fastify 5 / NestJS)",
             role: "Central API Gateway & CQRS Command",
@@ -93,6 +99,7 @@ pub fn get_mesh_nodes() -> Vec<ServiceNodeInfo> {
             features: &["PASETO v4 Auth Guard", "CQRS Command Bus", "Fastify Zero-Overhead HTTP"],
         },
         ServiceNodeInfo {
+            id: "redpanda",
             name: "Redpanda Event Stream",
             runtime: "Native C++ (Kafka API v24.1)",
             role: "Sub-Millisecond Event Streaming",
@@ -106,6 +113,7 @@ pub fn get_mesh_nodes() -> Vec<ServiceNodeInfo> {
             features: &["Zero JVM Overhead", "CloudEvents Streaming", "Raft Consensus Log"],
         },
         ServiceNodeInfo {
+            id: "redis",
             name: "Redis Redlock Cluster",
             runtime: "Redis 7 Alpine",
             role: "Distributed Mutex & Token Caching",
@@ -119,6 +127,7 @@ pub fn get_mesh_nodes() -> Vec<ServiceNodeInfo> {
             features: &["Redlock Distributed Mutex", "Shannon Entropy Filter", "Singleflight Guard"],
         },
         ServiceNodeInfo {
+            id: "wasm",
             name: "Ferrox-Front Wasm",
             runtime: "Rust WebAssembly (Zero-JS)",
             role: "Reactive Presentation & Charting Hub",
@@ -132,6 +141,39 @@ pub fn get_mesh_nodes() -> Vec<ServiceNodeInfo> {
             features: &["Signal<T> Reactivity", "Pure Vector SVG Charts", "Direct Memory Zero-JS"],
         },
     ]
+}
+
+pub fn update_mesh_telemetry_dom(
+    rust_matching_latency_ns: u64,
+    python_feed_latency_ms: f64,
+    java_loom_settled_per_sec: u64,
+    java_loom_latency_micros: u64,
+    php_saga_active_count: u32,
+    php_saga_success_rate: f64,
+    redpanda_throughput_eps: u64,
+) {
+    if let Some(win) = window() {
+        if let Some(doc) = win.document() {
+            if let Some(el) = doc.get_element_by_id("mesh-latency-match") {
+                el.set_text_content(Some(&format!("{} ns", rust_matching_latency_ns)));
+            }
+            if let Some(el) = doc.get_element_by_id("mesh-latency-py") {
+                el.set_text_content(Some(&format!("{:.1} ms", python_feed_latency_ms)));
+            }
+            if let Some(el) = doc.get_element_by_id("mesh-latency-java") {
+                el.set_text_content(Some(&format!("{:.2} ms", java_loom_latency_micros as f64 / 1000.0)));
+            }
+            if let Some(el) = doc.get_element_by_id("mesh-metric-java") {
+                el.set_text_content(Some(&format!("{} trades/s", java_loom_settled_per_sec)));
+            }
+            if let Some(el) = doc.get_element_by_id("mesh-latency-php") {
+                el.set_text_content(Some(&format!("Active: {} ({:.1}%)", php_saga_active_count, php_saga_success_rate)));
+            }
+            if let Some(el) = doc.get_element_by_id("mesh-metric-redpanda") {
+                el.set_text_content(Some(&format!("{} ev/s", redpanda_throughput_eps)));
+            }
+        }
+    }
 }
 
 pub fn render_polyglot_mesh_tab() -> DomBuilder {
@@ -216,7 +258,7 @@ pub fn render_polyglot_mesh_tab() -> DomBuilder {
                                         span().class("text-[10px] text-slate-400 font-mono").text(node.runtime),
                                     ]),
                                 ]),
-                                badge(node.status, node.status_badge),
+                                badge(node.status, node.status_badge).id(&format!("mesh-status-{}", node.id)),
                             ]),
                         p().class("text-xs text-slate-300 mb-4 min-h-[32px] leading-relaxed").text(node.role),
                         div().class("grid grid-cols-2 gap-2 p-2.5 rounded-xl bg-slate-950/40 border border-slate-800/60 mb-3 font-mono text-[11px]")
@@ -227,11 +269,11 @@ pub fn render_polyglot_mesh_tab() -> DomBuilder {
                                 ]),
                                 div().children(vec![
                                     span().class("text-slate-500 block text-[9px] uppercase").text("Latency / Speed"),
-                                    span().class("text-emerald-400 font-bold").text(node.latency),
+                                    span().id(&format!("mesh-latency-{}", node.id)).class("text-emerald-400 font-bold").text(node.latency),
                                 ]),
                                 div().children(vec![
-                                    span().class("text-slate-500 block text-[9px] uppercase").text("Memory Footprint"),
-                                    span().class("text-slate-300").text(node.memory),
+                                    span().class("text-slate-500 block text-[9px] uppercase").text("Metrics / Footprint"),
+                                    span().id(&format!("mesh-metric-{}", node.id)).class("text-slate-300").text(node.memory),
                                 ]),
                                 div().children(vec![
                                     span().class("text-slate-500 block text-[9px] uppercase").text("Telemetry Guard"),

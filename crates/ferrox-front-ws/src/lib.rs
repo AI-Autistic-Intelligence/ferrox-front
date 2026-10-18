@@ -70,6 +70,16 @@ pub enum WsMarketEvent {
         high_24h: f64,
         low_24h: f64,
     },
+    MeshTelemetry {
+        rust_matching_latency_ns: u64,
+        python_feed_latency_ms: f64,
+        java_loom_settled_per_sec: u64,
+        java_loom_latency_micros: u64,
+        php_saga_active_count: u32,
+        php_saga_success_rate: f64,
+        redpanda_throughput_eps: u64,
+        timestamp: u64,
+    },
     Raw(String),
 }
 
