@@ -47,12 +47,13 @@ use ferrox_front_ui::overlays::{
     DatePickerState, date_picker,
     TreeNode, tree_view,
 };
+use std::cell::RefCell;
 use ferrox_front_charts::{
     CandleDatum, TechnicalChartOptions, financial_technical_chart,
     depth_chart, CandleAggregator, TradeTick, Timeframe,
-    gauge_chart, sparkline_chart, SparklineType,
+    gauge_chart, sparkline_chart, SparklineType, format_timestamp_to_time,
 };
-use ferrox_front_ws::{ReconnectingWs, WsStatus};
+use ferrox_front_ws::{ReconnectingWs, WsMarketEvent};
 use ferrox_engine::{OrderBook, Side as EngineSide};
 use ferrox_front_security::SealedToken;
 
@@ -249,44 +250,156 @@ fn render_top_bar(active_tab: &str, cmd_palette: &CommandPaletteState) -> DomBui
 }
 
 // =============================================================================
-// 3. TAB 1: TRADING DESK PRO (TradingView Parity)
+// 3. TAB 1: TRADING DESK PRO (The Living Mesh Real-Time Engine)
 // =============================================================================
 
-fn render_trading_desk_tab() -> DomBuilder {
-    let candle_data = mock_candlestick_data();
+thread_local! {
+    static LIVE_AGGREGATOR: RefCell<CandleAggregator> = {
+        let mut agg = CandleAggregator::new(Timeframe::Min5, 50);
+        let candle_data = mock_candlestick_data();
+        for (idx, c) in candle_data.iter().enumerate() {
+            let ts = 1760518800000 + (idx as u64 * 300_000);
+            agg.process_tick(TradeTick::new(c.close, c.volume, ts));
+        }
+        RefCell::new(agg)
+    };
 
-    // 1. Setup CandleRingBuffer and CandleAggregator
-    let mut aggregator = CandleAggregator::new(Timeframe::Min5, 50);
-    for (idx, c) in candle_data.iter().enumerate() {
-        let ts = 1760518800000 + (idx as u64 * 300_000);
-        aggregator.process_tick(TradeTick::new(c.close, c.volume, ts));
-    }
-    let chart_candles = aggregator.get_candles_with_active();
+    static LIVE_ORDERBOOK: RefCell<OrderBook> = {
+        let mut ob = OrderBook::new("BTC/USD");
+        ob.submit_order("seed-bid-1".into(), EngineSide::Buy, 67440.0, 2.5);
+        ob.submit_order("seed-bid-2".into(), EngineSide::Buy, 67430.0, 5.0);
+        ob.submit_order("seed-bid-3".into(), EngineSide::Buy, 67410.0, 8.2);
+        ob.submit_order("seed-bid-4".into(), EngineSide::Buy, 67390.0, 12.0);
+        ob.submit_order("seed-bid-5".into(), EngineSide::Buy, 67350.0, 20.0);
+        ob.submit_order("seed-ask-1".into(), EngineSide::Sell, 67460.0, 2.0);
+        ob.submit_order("seed-ask-2".into(), EngineSide::Sell, 67475.0, 4.8);
+        ob.submit_order("seed-ask-3".into(), EngineSide::Sell, 67490.0, 7.5);
+        ob.submit_order("seed-ask-4".into(), EngineSide::Sell, 67510.0, 11.2);
+        ob.submit_order("seed-ask-5".into(), EngineSide::Sell, 67550.0, 18.5);
+        RefCell::new(ob)
+    };
+
+    static LIVE_TRADES: RefCell<Vec<(String, bool, f64, f64)>> = RefCell::new(vec![
+        ("18:29:42".to_string(), true, 67450.0, 0.820),
+        ("18:29:30".to_string(), false, 67445.0, 2.500),
+        ("18:29:15".to_string(), true, 67448.0, 0.310),
+    ]);
+
+    static LIVE_TICKER: RefCell<(f64, f64, f64)> = RefCell::new((67450.0, 3820.5, 2.14));
+    static LIVE_WS_CLIENT: RefCell<Option<ReconnectingWs>> = RefCell::new(None);
+    static LIVE_WS_CONNECTED: RefCell<bool> = RefCell::new(false);
+}
+
+pub fn init_living_mesh_ws() {
+    LIVE_WS_CLIENT.with(|cell| {
+        if cell.borrow().is_some() {
+            return;
+        }
+
+        let ws = ReconnectingWs::new("ws://localhost:8086/ws/stream");
+
+        ws.on_event(|evt| {
+            match evt {
+                WsMarketEvent::Trades { trades, .. } => {
+                    for t in trades {
+                        let is_buy = t.is_buy;
+                        let price = t.price;
+                        let amount = t.amount;
+                        let ts = t.timestamp;
+
+                        LIVE_AGGREGATOR.with(|agg| {
+                            agg.borrow_mut().process_tick(TradeTick::new(price, amount, ts));
+                        });
+
+                        LIVE_TRADES.with(|tr| {
+                            let mut list = tr.borrow_mut();
+                            let time_str = format_timestamp_to_time(ts);
+                            list.insert(0, (time_str, is_buy, price, amount));
+                            if list.len() > 10 {
+                                list.truncate(10);
+                            }
+                        });
+
+                        LIVE_TICKER.with(|tk| {
+                            let mut curr = tk.borrow_mut();
+                            curr.0 = price;
+                        });
+
+                        LIVE_ORDERBOOK.with(|ob| {
+                            let mut book = ob.borrow_mut();
+                            let side = if is_buy { EngineSide::Buy } else { EngineSide::Sell };
+                            let order_id = format!("ws-{}", ts);
+                            book.submit_order(order_id, side, price, amount);
+                        });
+                    }
+                    LIVE_WS_CONNECTED.with(|c| *c.borrow_mut() = true);
+                }
+                WsMarketEvent::OrderBookDepth { .. } => {
+                    LIVE_WS_CONNECTED.with(|c| *c.borrow_mut() = true);
+                }
+                WsMarketEvent::Ticker { last_price, volume_24h, change_24h, .. } => {
+                    LIVE_TICKER.with(|tk| {
+                        *tk.borrow_mut() = (*last_price, *volume_24h, *change_24h);
+                    });
+                    LIVE_WS_CONNECTED.with(|c| *c.borrow_mut() = true);
+                }
+                _ => {}
+            }
+        });
+
+        *cell.borrow_mut() = Some(ws);
+    });
+}
+
+fn simulate_live_market_tick() {
+    let now = js_sys::Date::now() as u64;
+    let (curr_p, _, _) = LIVE_TICKER.with(|tk| *tk.borrow());
+    let delta = ((now % 19) as f64 - 9.0) * 0.75;
+    let new_p = (curr_p + delta).max(60000.0).min(80000.0);
+    let qty = 0.15 + ((now % 7) as f64 * 0.08);
+    let is_buy = delta >= 0.0;
+
+    LIVE_AGGREGATOR.with(|agg| {
+        agg.borrow_mut().process_tick(TradeTick::new(new_p, qty, now));
+    });
+
+    LIVE_TRADES.with(|tr| {
+        let mut list = tr.borrow_mut();
+        let time_str = format_timestamp_to_time(now);
+        list.insert(0, (time_str, is_buy, new_p, qty));
+        if list.len() > 10 {
+            list.truncate(10);
+        }
+    });
+
+    LIVE_ORDERBOOK.with(|ob| {
+        let mut book = ob.borrow_mut();
+        let side = if is_buy { EngineSide::Buy } else { EngineSide::Sell };
+        book.submit_order(format!("sim-{}", now), side, new_p, qty);
+    });
+
+    LIVE_TICKER.with(|tk| {
+        tk.borrow_mut().0 = new_p;
+    });
+}
+
+fn render_trading_desk_tab() -> DomBuilder {
+    init_living_mesh_ws();
+
+    // 1. Live Candles from CandleAggregator
+    let chart_candles = LIVE_AGGREGATOR.with(|agg| agg.borrow().get_candles_with_active());
 
     let chart_opts = TechnicalChartOptions::default();
     let main_chart = financial_technical_chart(
         "pro-trading-chart",
-        if chart_candles.is_empty() { &candle_data } else { &chart_candles },
+        &chart_candles,
         &chart_opts,
         860,
         480,
     );
 
-    // 2. Setup ferrox-engine OrderBook
-    let mut order_book = OrderBook::new("BTC/USD");
-    // Seed initial resting liquidity
-    order_book.submit_order("seed-bid-1".into(), EngineSide::Buy, 97040.0, 1.25);
-    order_book.submit_order("seed-bid-2".into(), EngineSide::Buy, 97020.0, 3.40);
-    order_book.submit_order("seed-bid-3".into(), EngineSide::Buy, 97000.0, 6.80);
-    order_book.submit_order("seed-bid-4".into(), EngineSide::Buy, 96980.0, 10.50);
-    order_book.submit_order("seed-bid-5".into(), EngineSide::Buy, 96950.0, 15.20);
-    order_book.submit_order("seed-ask-1".into(), EngineSide::Sell, 97060.0, 0.95);
-    order_book.submit_order("seed-ask-2".into(), EngineSide::Sell, 97080.0, 2.80);
-    order_book.submit_order("seed-ask-3".into(), EngineSide::Sell, 97100.0, 5.90);
-    order_book.submit_order("seed-ask-4".into(), EngineSide::Sell, 97120.0, 9.40);
-    order_book.submit_order("seed-ask-5".into(), EngineSide::Sell, 97150.0, 14.10);
-
-    let (bids_levels, asks_levels) = order_book.get_depth(10);
+    // 2. Read Depth from Live OrderBook
+    let (bids_levels, asks_levels) = LIVE_ORDERBOOK.with(|ob| ob.borrow().get_depth(10));
     let bids_tuples: Vec<(f64, f64)> = bids_levels.iter().map(|l| (l.price, l.volume)).collect();
     let asks_tuples: Vec<(f64, f64)> = asks_levels.iter().map(|l| (l.price, l.volume)).collect();
 
@@ -300,13 +413,16 @@ fn render_trading_desk_tab() -> DomBuilder {
     );
 
     // 4. Order Entry Form via form_engine
+    let (curr_live_p, _, _) = LIVE_TICKER.with(|tk| *tk.borrow());
+    let price_str = format!("{:.2}", curr_live_p);
+
     let field_price = FormField::new(
         "trade-price",
         "price",
         "Limit Price (USD)",
-        "97050.00".to_string(),
+        price_str.clone(),
         RuleBuilder::new().required("Price is required").numeric_range(100.0, 1000000.0, "Invalid price").build(),
-    ).with_placeholder("97050.00");
+    ).with_placeholder(&price_str);
 
     let field_amount = FormField::new(
         "trade-amount",
@@ -339,14 +455,13 @@ fn render_trading_desk_tab() -> DomBuilder {
                 div().class("flex items-center justify-between text-xs text-slate-400 py-1 border-t border-slate-800")
                     .children(vec![
                         span().text("Estimated Value:"),
-                        span().class("font-mono font-bold text-white").text("$24,262.50 USD"),
+                        span().class("font-mono font-bold text-white").text(&format!("${:.2} USD", curr_live_p * 0.25)),
                     ]),
                 button_advanced("⚡ Submit Order (Wasm Match Engine)", "primary", "md", false, Some("zap"))
                     .attr("style", "width: 100%;")
                     .on_click(move || {
-                        if let Some(win) = window() {
-                            let _ = win.alert_with_message("✅ Order submitted and executed instantly in ferrox-engine matching engine!");
-                        }
+                        simulate_live_market_tick();
+                        render_app("trading");
                     }),
             ])
     );
@@ -364,11 +479,15 @@ fn render_trading_desk_tab() -> DomBuilder {
         );
     }
     // Mid / Spread bar
+    let best_bid = bids_levels.first().map(|b| b.price).unwrap_or(curr_live_p - 1.0);
+    let best_ask = asks_levels.first().map(|a| a.price).unwrap_or(curr_live_p + 1.0);
+    let mid_price = (best_bid + best_ask) / 2.0;
+    let spread = (best_ask - best_bid).abs();
     ladder_rows.push(
         div().class("flex items-center justify-between py-1 my-1 px-2 rounded bg-slate-800/80 text-[11px] font-mono text-indigo-300")
             .children(vec![
-                span().text("Mid: $97,050.00"),
-                span().text("Spread: $10.00 (0.01%)"),
+                span().text(&format!("Mid: ${:.2}", mid_price)),
+                span().text(&format!("Spread: ${:.2}", spread)),
             ])
     );
     // Bids (descending top 5)
@@ -390,24 +509,26 @@ fn render_trading_desk_tab() -> DomBuilder {
         false,
         "p-4",
     )
-    .child(div().class("space-y-0.5").children(ladder_rows));
+    .child(
+        div().class("space-y-0.5")
+            .children(vec![
+                div().class("flex items-center justify-between text-[11px] font-semibold text-slate-400 pb-1 border-b border-slate-800")
+                    .children(vec![
+                        span().text("Price (USD)"),
+                        span().text("Size (BTC)"),
+                    ]),
+                div().class("space-y-0.5").children(ladder_rows),
+            ])
+    );
 
     // 6. Recent Executed Trades
-    let recent_trades = vec![
-        ("18:30:14", true, 97050.0, 0.450),
-        ("18:30:08", false, 97048.5, 1.200),
-        ("18:29:55", true, 97052.0, 0.150),
-        ("18:29:42", true, 97050.0, 0.820),
-        ("18:29:30", false, 97045.0, 2.500),
-        ("18:29:15", true, 97048.0, 0.310),
-    ];
-
+    let recent_trades = LIVE_TRADES.with(|tr| tr.borrow().clone());
     let mut trade_rows = Vec::new();
     for (time, is_buy, price, amount) in recent_trades {
         trade_rows.push(
             div().class("flex items-center justify-between py-1 text-xs font-mono border-b border-slate-800/50")
                 .children(vec![
-                    span().class("text-slate-400 text-[11px]").text(time),
+                    span().class("text-slate-400 text-[11px]").text(&time),
                     span().class(if is_buy { "text-emerald-400 font-semibold" } else { "text-rose-400 font-semibold" })
                         .text(&format!("${:.1}", price)),
                     span().class("text-slate-200").text(&format!("{:.3}", amount)),
@@ -425,17 +546,20 @@ fn render_trading_desk_tab() -> DomBuilder {
     )
     .child(div().class("space-y-0.5").children(trade_rows));
 
-    // 7. Stat Cards Bar
+    // 7. Stat Cards Bar with Live Ticker Values
+    let (live_price, live_vol, live_change) = LIVE_TICKER.with(|tk| *tk.borrow());
+    let is_connected = LIVE_WS_CONNECTED.with(|c| *c.borrow());
+
     let stat_cards = row()
         .child(col("12 md-3").child(
             card_advanced("BTC/USD Perpetual", "Market Price", "trend-up", "primary", false, "p-4")
-                .child(div().class("text-2xl font-bold text-white mb-1").text("$97,050.00"))
-                .child(span().class("text-xs text-emerald-400 font-semibold").text("+4.85% (+$4,450.00 24h)"))
+                .child(div().class("text-2xl font-bold text-white mb-1").text(&format!("${:.2}", live_price)))
+                .child(span().class("text-xs text-emerald-400 font-semibold").text(&format!("+{}% 24h", live_change)))
         ))
         .child(col("12 md-3").child(
-            card_advanced("24h Spot Vol", "Total Wasm Volume", "activity", "glass", false, "p-4")
-                .child(div().class("text-2xl font-bold text-white mb-1").text("6,840.5 BTC"))
-                .child(span().class("text-xs text-indigo-400 font-semibold").text("$664.2M equivalent"))
+            card_advanced("24h Spot Vol", "Total Mesh Volume", "activity", "glass", false, "p-4")
+                .child(div().class("text-2xl font-bold text-white mb-1").text(&format!("{:.1} BTC", live_vol)))
+                .child(span().class("text-xs text-indigo-400 font-semibold").text(&format!("${:.1}M equivalent", live_vol * live_price / 1_000_000.0)))
         ))
         .child(col("12 md-3").child(
             card_advanced("Matching Latency", "ferrox-engine", "cpu", "glass", false, "p-4")
@@ -443,14 +567,14 @@ fn render_trading_desk_tab() -> DomBuilder {
                 .child(span().class("text-xs text-slate-400").text("In-Memory BTreeMap Match"))
         ))
         .child(col("12 md-3").child(
-            card_advanced("ReconnectingWs", "WebAssembly Stream", "activity", "glass", false, "p-4")
+            card_advanced("ReconnectingWs", "The Living Mesh", "activity", "glass", false, "p-4")
                 .child(div().class("text-base font-bold text-emerald-400 mb-1 flex items-center gap-1.5")
                     .children(vec![
-                        Icon::render("check", 14, "#10b981"),
-                        span().text(&format!("{}", WsStatus::Connected)),
+                        Icon::render(if is_connected { "check" } else { "activity" }, 14, "#10b981"),
+                        span().text(if is_connected { "Connected (ws://localhost:8086)" } else { "Listening on :8086" }),
                     ])
                 )
-                .child(span().class("text-xs text-indigo-300").text("Auto-Reconnection + Backoff Active"))
+                .child(span().class("text-xs text-indigo-300").text("60 FPS Fast-Path WebSocket Active"))
         ));
 
     // 8. Main Chart and Order Entry Row
@@ -468,15 +592,19 @@ fn render_trading_desk_tab() -> DomBuilder {
             .child(
                 div().class("flex items-center justify-between pt-4 mt-4 border-t border-slate-800/80 text-xs text-slate-400")
                     .children(vec![
-                        span().text("CandleAggregator (5m) • Active Crosshair & Dynamic Data Reader"),
+                        span().text("CandleAggregator (5m) • Live Stream & Active Tick Reader"),
                         div().class("flex items-center gap-3")
                             .children(vec![
                                 button_advanced("🔌 Connect WS Feed", "outline", "xs", false, Some("activity"))
                                     .on_click(|| {
-                                        let _ = ReconnectingWs::new("wss://stream.ferrox.exchange/ws/v1");
+                                        init_living_mesh_ws();
+                                        render_app("trading");
                                     }),
                                 button_advanced("⚡ Simulate Live Tick", "primary", "xs", false, Some("zap"))
-                                    .on_click(|| render_app("trading")),
+                                    .on_click(|| {
+                                        simulate_live_market_tick();
+                                        render_app("trading");
+                                    }),
                             ]),
                     ])
             )
