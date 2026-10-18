@@ -11,18 +11,23 @@ pub fn register_all_ecosystem_docs(registry: &mut DocRegistry) {
     registry.register("enterprise-modules/cloud-iac", include_str!("../docs/enterprise-modules/cloud-iac.md"));
     registry.register("enterprise-modules/kyc", include_str!("../docs/enterprise-modules/kyc.md"));
     registry.register("enterprise-modules/oauth", include_str!("../docs/enterprise-modules/oauth.md"));
+    registry.register("ferrox-agent-toolkit/agents-roster", include_str!("../docs/ferrox-agent-toolkit/agents-roster.md"));
+    registry.register("ferrox-agent-toolkit/agile-scrum", include_str!("../docs/ferrox-agent-toolkit/agile-scrum.md"));
+    registry.register("ferrox-agent-toolkit/architecture", include_str!("../docs/ferrox-agent-toolkit/architecture.md"));
+    registry.register("ferrox-agent-toolkit/ddd-and-cqrs", include_str!("../docs/ferrox-agent-toolkit/ddd-and-cqrs.md"));
+    registry.register("ferrox-agent-toolkit/devops-iac", include_str!("../docs/ferrox-agent-toolkit/devops-iac.md"));
+    registry.register("ferrox-agent-toolkit/e2e-chaos-and-sagas", include_str!("../docs/ferrox-agent-toolkit/e2e-chaos-and-sagas.md"));
+    registry.register("ferrox-agent-toolkit/git-forge-governance", include_str!("../docs/ferrox-agent-toolkit/git-forge-governance.md"));
+    registry.register("ferrox-agent-toolkit/installation-and-usage", include_str!("../docs/ferrox-agent-toolkit/installation-and-usage.md"));
+    registry.register("ferrox-agent-toolkit/overview", include_str!("../docs/ferrox-agent-toolkit/overview.md"));
+    registry.register("ferrox-agent-toolkit/polyglot-runtimes", include_str!("../docs/ferrox-agent-toolkit/polyglot-runtimes.md"));
+    registry.register("ferrox-agent-toolkit/security-sentinel", include_str!("../docs/ferrox-agent-toolkit/security-sentinel.md"));
+    registry.register("ferrox-agent-toolkit/skills-reference", include_str!("../docs/ferrox-agent-toolkit/skills-reference.md"));
+    registry.register("ferrox-agent-toolkit/strict-tdd-and-quality", include_str!("../docs/ferrox-agent-toolkit/strict-tdd-and-quality.md"));
     registry.register("ferrox-front/architectures/architecture", include_str!("../docs/ferrox-front/architectures/architecture.md"));
     registry.register("ferrox-front/charts", include_str!("../docs/ferrox-front/charts.md"));
-    registry.register("ferrox-front/charts/chart-studio", include_str!("../docs/ferrox-front/charts/chart-studio.md"));
     registry.register("ferrox-front/components", include_str!("../docs/ferrox-front/components.md"));
-    registry.register("ferrox-front/components/buttons", include_str!("../docs/ferrox-front/components/buttons.md"));
-    registry.register("ferrox-front/components/form-controls", include_str!("../docs/ferrox-front/components/form-controls.md"));
-    registry.register("ferrox-front/components/icons", include_str!("../docs/ferrox-front/components/icons.md"));
-    registry.register("ferrox-front/components/overlays", include_str!("../docs/ferrox-front/components/overlays.md"));
-    registry.register("ferrox-front/components/surfaces", include_str!("../docs/ferrox-front/components/surfaces.md"));
     registry.register("ferrox-front/datagrid", include_str!("../docs/ferrox-front/datagrid.md"));
-    registry.register("ferrox-front/design-system/theme-studio", include_str!("../docs/ferrox-front/design-system/theme-studio.md"));
-    registry.register("ferrox-front/design-system/tokens", include_str!("../docs/ferrox-front/design-system/tokens.md"));
     registry.register("ferrox-front/fundamentals/core", include_str!("../docs/ferrox-front/fundamentals/core.md"));
     registry.register("ferrox-front/fundamentals/macros", include_str!("../docs/ferrox-front/fundamentals/macros.md"));
     registry.register("ferrox-front/fundamentals/reactivity", include_str!("../docs/ferrox-front/fundamentals/reactivity.md"));
@@ -540,40 +545,20 @@ pub fn build_complete_ecosystem_sidebar() -> Vec<DocNavItem> {
                 DocNavItem::new("sub-ferrox-front-charts", "Charts")
                     .with_icon("folder")
                     .with_children(vec![
-                        DocNavItem::new("nav-ferrox-front-charts-chart-studio", "Nivo-Style Chart Studio & Playbook")
-                            .with_href("/ferrox-front/charts/chart-studio"),
                         DocNavItem::new("nav-ferrox-front-charts", "SVG Vector Financial Charting Engine")
                             .with_href("/ferrox-front/charts"),
                     ]),
                 DocNavItem::new("sub-ferrox-front-components", "Components")
                     .with_icon("folder")
                     .with_children(vec![
-                        DocNavItem::new("nav-ferrox-front-components-buttons", "Buttons, Action Controls & Spinners")
-                            .with_href("/ferrox-front/components/buttons"),
                         DocNavItem::new("nav-ferrox-front-components", "Enterprise UI Component Catalog")
                             .with_href("/ferrox-front/components"),
-                        DocNavItem::new("nav-ferrox-front-components-form-controls", "Form Controls, Reactive Inputs & Validation")
-                            .with_href("/ferrox-front/components/form-controls"),
-                        DocNavItem::new("nav-ferrox-front-components-surfaces", "Surfaces, Cards, Badges & Alerts")
-                            .with_href("/ferrox-front/components/surfaces"),
-                        DocNavItem::new("nav-ferrox-front-components-overlays", "Overlays, Modals, DatePicker & Command Palette (⌘K)")
-                            .with_href("/ferrox-front/components/overlays"),
-                        DocNavItem::new("nav-ferrox-front-components-icons", "Pure Rust 60+ SVG Vector Icon Engine")
-                            .with_href("/ferrox-front/components/icons"),
                     ]),
                 DocNavItem::new("sub-ferrox-front-datagrid", "Datagrid")
                     .with_icon("folder")
                     .with_children(vec![
                         DocNavItem::new("nav-ferrox-front-datagrid", "Enterprise DataGrid (1M Rows & CSV Export)")
                             .with_href("/ferrox-front/datagrid"),
-                    ]),
-                DocNavItem::new("sub-ferrox-front-design-system", "Design System")
-                    .with_icon("folder")
-                    .with_children(vec![
-                        DocNavItem::new("nav-ferrox-front-design-system-tokens", "Design System Tokens & Aesthetics")
-                            .with_href("/ferrox-front/design-system/tokens"),
-                        DocNavItem::new("nav-ferrox-front-design-system-theme-studio", "Theme Studio & Token Exporter")
-                            .with_href("/ferrox-front/design-system/theme-studio"),
                     ]),
                 DocNavItem::new("sub-ferrox-front-fundamentals", "Fundamentals")
                     .with_icon("folder")
@@ -622,6 +607,85 @@ pub fn build_complete_ecosystem_sidebar() -> Vec<DocNavItem> {
                             .with_href("/ferrox-front/ui/ui-components"),
                         DocNavItem::new("nav-ferrox-front-ui-components", "Component Library & Interactive Playground")
                             .with_href("/ferrox-front/ui/components"),
+                    ]),
+            ]),
+        DocNavItem::new("cat-ferrox-agent-toolkit", "🤖 Ferrox Agent Toolkit")
+            .with_icon("cpu")
+            .with_children(vec![
+                DocNavItem::new("nav-ferrox-agent-toolkit-overview", "Ferrox Agent Toolkit Overview")
+                    .with_href("/ferrox-agent-toolkit/overview")
+                    .with_icon("file-text"),
+                DocNavItem::new("sub-ferrox-agent-toolkit-agents-roster", "Agents Roster")
+                    .with_icon("folder")
+                    .with_children(vec![
+                        DocNavItem::new("nav-ferrox-agent-toolkit-agents-roster", "Specialized AI Agents Roster")
+                            .with_href("/ferrox-agent-toolkit/agents-roster"),
+                    ]),
+                DocNavItem::new("sub-ferrox-agent-toolkit-agile-scrum", "Agile Scrum")
+                    .with_icon("folder")
+                    .with_children(vec![
+                        DocNavItem::new("nav-ferrox-agent-toolkit-agile-scrum", "Autonomous Agile Scrum Lifecycle")
+                            .with_href("/ferrox-agent-toolkit/agile-scrum"),
+                    ]),
+                DocNavItem::new("sub-ferrox-agent-toolkit-architecture", "Architecture")
+                    .with_icon("folder")
+                    .with_children(vec![
+                        DocNavItem::new("nav-ferrox-agent-toolkit-architecture", "Dual-Layer Engineering Architecture")
+                            .with_href("/ferrox-agent-toolkit/architecture"),
+                    ]),
+                DocNavItem::new("sub-ferrox-agent-toolkit-ddd-and-cqrs", "Ddd And Cqrs")
+                    .with_icon("folder")
+                    .with_children(vec![
+                        DocNavItem::new("nav-ferrox-agent-toolkit-ddd-and-cqrs", "Pure Domain-Driven Design & CQRS Architecture")
+                            .with_href("/ferrox-agent-toolkit/ddd-and-cqrs"),
+                    ]),
+                DocNavItem::new("sub-ferrox-agent-toolkit-devops-iac", "Devops Iac")
+                    .with_icon("folder")
+                    .with_children(vec![
+                        DocNavItem::new("nav-ferrox-agent-toolkit-devops-iac", "Production DevOps & Infrastructure-as-Code (IaC)")
+                            .with_href("/ferrox-agent-toolkit/devops-iac"),
+                    ]),
+                DocNavItem::new("sub-ferrox-agent-toolkit-e2e-chaos-and-sagas", "E2E Chaos And Sagas")
+                    .with_icon("folder")
+                    .with_children(vec![
+                        DocNavItem::new("nav-ferrox-agent-toolkit-e2e-chaos-and-sagas", "E2E Chaos Engineering & Distributed Sagas")
+                            .with_href("/ferrox-agent-toolkit/e2e-chaos-and-sagas"),
+                    ]),
+                DocNavItem::new("sub-ferrox-agent-toolkit-git-forge-governance", "Git Forge Governance")
+                    .with_icon("folder")
+                    .with_children(vec![
+                        DocNavItem::new("nav-ferrox-agent-toolkit-git-forge-governance", "Git Forge Governance & Pull Request Automation")
+                            .with_href("/ferrox-agent-toolkit/git-forge-governance"),
+                    ]),
+                DocNavItem::new("sub-ferrox-agent-toolkit-installation-and-usage", "Installation And Usage")
+                    .with_icon("folder")
+                    .with_children(vec![
+                        DocNavItem::new("nav-ferrox-agent-toolkit-installation-and-usage", "Installation, Workspace Setup & Validation")
+                            .with_href("/ferrox-agent-toolkit/installation-and-usage"),
+                    ]),
+                DocNavItem::new("sub-ferrox-agent-toolkit-polyglot-runtimes", "Polyglot Runtimes")
+                    .with_icon("folder")
+                    .with_children(vec![
+                        DocNavItem::new("nav-ferrox-agent-toolkit-polyglot-runtimes", "Polyglot Runtimes & Zero-Copy Connectors")
+                            .with_href("/ferrox-agent-toolkit/polyglot-runtimes"),
+                    ]),
+                DocNavItem::new("sub-ferrox-agent-toolkit-security-sentinel", "Security Sentinel")
+                    .with_icon("folder")
+                    .with_children(vec![
+                        DocNavItem::new("nav-ferrox-agent-toolkit-security-sentinel", "OWASP WSTG Sentinel Security Architecture")
+                            .with_href("/ferrox-agent-toolkit/security-sentinel"),
+                    ]),
+                DocNavItem::new("sub-ferrox-agent-toolkit-skills-reference", "Skills Reference")
+                    .with_icon("folder")
+                    .with_children(vec![
+                        DocNavItem::new("nav-ferrox-agent-toolkit-skills-reference", "Specialized Skills Catalog & Automation Scripts")
+                            .with_href("/ferrox-agent-toolkit/skills-reference"),
+                    ]),
+                DocNavItem::new("sub-ferrox-agent-toolkit-strict-tdd-and-quality", "Strict Tdd And Quality")
+                    .with_icon("folder")
+                    .with_children(vec![
+                        DocNavItem::new("nav-ferrox-agent-toolkit-strict-tdd-and-quality", "Strict 100% TDD & Quality Gate Enforcement")
+                            .with_href("/ferrox-agent-toolkit/strict-tdd-and-quality"),
                     ]),
             ]),
         DocNavItem::new("cat-ferrox-node", "🟢 Ferrox Node")

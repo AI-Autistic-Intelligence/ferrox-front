@@ -107,6 +107,7 @@ ordered_sections = [
     ("overview", "🚀 Getting Started & Overview", "zap"),
     ("ferrox", "🦀 Ferrox (Core Server Framework)", "cpu"),
     ("ferrox-front", "🎨 Ferrox Front (Wasm UI)", "layout"),
+    ("ferrox-agent-toolkit", "🤖 Ferrox Agent Toolkit", "cpu"),
     ("ferrox-node", "🟢 Ferrox Node", "server"),
     ("ferrox-py", "🐍 Ferrox Py", "code"),
     ("ferrox-php", "🐘 Ferrox PHP", "globe"),
@@ -121,6 +122,7 @@ ordered_sections = [
 section_icons = {
     "ferrox": "cpu",
     "ferrox-front": "layout",
+    "ferrox-agent-toolkit": "cpu",
     "ferrox-node": "server",
     "ferrox-py": "code",
     "ferrox-php": "globe",

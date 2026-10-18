@@ -68,6 +68,7 @@ pub mod scanner {
             ("node", root_dir.join("node-yalc/docs")),
             ("node", root_dir.join("nestjs-yalc/docs")),
             ("python", root_dir.join("ferrox-py/docs")),
+            ("toolkit", root_dir.join("ferrox-agent-toolkit/docs")),
             ("docs", root_dir.join("ferrox-docs/docs")),
             ("docs", root_dir.to_path_buf()),
         ];

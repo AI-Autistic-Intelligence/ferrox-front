@@ -14,12 +14,12 @@ You can edit JSON datasets live in real-time, adjust dynamic sliders (stroke wid
 
 ## 🎮 Live Interactive Playground
 
-import FerroxWasmPlayground from '@site/src/components/FerroxWasmPlayground';
+import useBaseUrl from '@docusaurus/useBaseUrl';
 
-<FerroxWasmPlayground 
-  initialTab="components" 
-  height="980px" 
-  title="Ferrox Front • Design System & UI Component Library Playground" 
+<iframe 
+    src={useBaseUrl('/playground.html')} 
+    style={{width: '100%', height: '880px', border: '1px solid var(--border-glass, #333)', borderRadius: '12px', boxShadow: '0 8px 32px rgba(0,0,0,0.4)'}} 
+    title="Ferrox Front Interactive Component Playground"
 />
 
 ---
