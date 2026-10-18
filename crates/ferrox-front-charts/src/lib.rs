@@ -196,14 +196,115 @@ pub struct ScatterDatum {
     pub color: String,
 }
 
+/// Interpolation curve type for vector line and area charts.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum LineCurve {
+    Linear,
+    Monotone,
+    Stepped,
+}
+
+impl Default for LineCurve {
+    fn default() -> Self {
+        Self::Linear
+    }
+}
+
+/// Configuration options for customizable line charts.
+#[derive(Debug, Clone)]
+pub struct LineChartOptions {
+    pub curve: LineCurve,
+    pub stroke_width: f64,
+    pub show_axes: bool,
+    pub show_dots: bool,
+    pub stroke_color: Option<String>,
+    pub gradient_start: Option<String>,
+    pub gradient_end: Option<String>,
+}
+
+impl Default for LineChartOptions {
+    fn default() -> Self {
+        Self {
+            curve: LineCurve::Linear,
+            stroke_width: 3.0,
+            show_axes: true,
+            show_dots: true,
+            stroke_color: None,
+            gradient_start: None,
+            gradient_end: None,
+        }
+    }
+}
+
+/// Configuration options for customizable area charts.
+#[derive(Debug, Clone)]
+pub struct AreaChartOptions {
+    pub curve: LineCurve,
+    pub stroke_width: f64,
+    pub fill_opacity: f64,
+    pub stroke_color: Option<String>,
+    pub fill_color: Option<String>,
+    pub gradient_start: Option<String>,
+    pub gradient_end: Option<String>,
+}
+
+impl Default for AreaChartOptions {
+    fn default() -> Self {
+        Self {
+            curve: LineCurve::Monotone,
+            stroke_width: 3.0,
+            fill_opacity: 0.35,
+            stroke_color: None,
+            fill_color: None,
+            gradient_start: None,
+            gradient_end: None,
+        }
+    }
+}
+
+/// Configuration options for customizable bar charts.
+#[derive(Debug, Clone)]
+pub struct BarChartOptions {
+    pub show_axes: bool,
+    pub rounded_corners: bool,
+    pub corner_radius: f64,
+    pub show_values: bool,
+    pub bar_padding: f64,
+}
+
+impl Default for BarChartOptions {
+    fn default() -> Self {
+        Self {
+            show_axes: true,
+            rounded_corners: true,
+            corner_radius: 6.0,
+            show_values: true,
+            bar_padding: 20.0,
+        }
+    }
+}
+
 /// Renders a high-performance Vector SVG Line Chart with gradient strokes.
 pub fn line_chart(id: &str, data: Vec<Point>, width: u32, height: u32, show_axes: bool) -> DomBuilder {
+    let mut opts = LineChartOptions::default();
+    opts.show_axes = show_axes;
+    line_chart_styled(id, data, width, height, &opts)
+}
+
+/// Renders a fully customizable Vector SVG Line Chart with configurable curve, stroke, and markers.
+pub fn line_chart_styled(
+    id: &str,
+    data: Vec<Point>,
+    width: u32,
+    height: u32,
+    options: &LineChartOptions,
+) -> DomBuilder {
     let mut path_d = String::new();
     
-    let pl = if show_axes { 60.0 } else { 20.0 };
+    let pl = if options.show_axes { 60.0 } else { 20.0 };
     let pr = 20.0;
     let pt = 20.0;
-    let pb = if show_axes { 40.0 } else { 20.0 };
+    let pb = if options.show_axes { 40.0 } else { 20.0 };
 
     let mut min_x = 0.0;
     let mut max_x = 1.0;
@@ -227,13 +328,38 @@ pub fn line_chart(id: &str, data: Vec<Point>, width: u32, height: u32, show_axes
     let scale_y = |y: f64| -> f64 { (height as f64 - pb) - ((y - min_y) / range_y) * inner_h };
 
     if !data.is_empty() {
-        path_d.push_str(&format!("M {} {}", scale_x(data[0].x), scale_y(data[0].y)));
-        for point in data.iter().skip(1) {
-            path_d.push_str(&format!(" L {} {}", scale_x(point.x), scale_y(point.y)));
+        let p0 = (scale_x(data[0].x), scale_y(data[0].y));
+        path_d.push_str(&format!("M {:.2} {:.2}", p0.0, p0.1));
+
+        match options.curve {
+            LineCurve::Linear => {
+                for point in data.iter().skip(1) {
+                    path_d.push_str(&format!(" L {:.2} {:.2}", scale_x(point.x), scale_y(point.y)));
+                }
+            },
+            LineCurve::Stepped => {
+                for point in data.iter().skip(1) {
+                    let cx = scale_x(point.x);
+                    let cy = scale_y(point.y);
+                    path_d.push_str(&format!(" H {:.2} V {:.2}", cx, cy));
+                }
+            },
+            LineCurve::Monotone => {
+                for i in 0..data.len().saturating_sub(1) {
+                    let x0 = scale_x(data[i].x);
+                    let y0 = scale_y(data[i].y);
+                    let x1 = scale_x(data[i + 1].x);
+                    let y1 = scale_y(data[i + 1].y);
+                    let dx = (x1 - x0) / 2.0;
+                    path_d.push_str(&format!(" C {:.2} {:.2}, {:.2} {:.2}, {:.2} {:.2}", x0 + dx, y0, x0 + dx, y1, x1, y1));
+                }
+            },
         }
     }
 
     let grad_id = format!("lineChartGrad-{}", id);
+    let grad_start = options.gradient_start.as_deref().unwrap_or("var(--accent-glow, #9333ea)");
+    let grad_end = options.gradient_end.as_deref().unwrap_or("var(--accent-cyan, #06b6d4)");
     
     let mut svg = DomBuilder::new_svg("svg")
         .attr("class", "ferrox-svg-chart")
@@ -246,13 +372,13 @@ pub fn line_chart(id: &str, data: Vec<Point>, width: u32, height: u32, show_axes
                 DomBuilder::new_svg("linearGradient")
                     .attr("id", &grad_id)
                     .attr("x1", "0%").attr("y1", "0%").attr("x2", "100%").attr("y2", "0%")
-                    .child(DomBuilder::new_svg("stop").attr("offset", "0%").attr("stop-color", "var(--accent-glow, #9333ea)"))
-                    .child(DomBuilder::new_svg("stop").attr("offset", "100%").attr("stop-color", "var(--accent-cyan, #06b6d4)"))
+                    .child(DomBuilder::new_svg("stop").attr("offset", "0%").attr("stop-color", grad_start))
+                    .child(DomBuilder::new_svg("stop").attr("offset", "100%").attr("stop-color", grad_end))
             )
         );
 
     // Draw Grid and Axes if enabled
-    if show_axes {
+    if options.show_axes {
         let grid_color = "rgba(255,255,255,0.1)";
         let text_color = "rgba(255,255,255,0.5)";
         
@@ -264,14 +390,14 @@ pub fn line_chart(id: &str, data: Vec<Point>, width: u32, height: u32, show_axes
                 DomBuilder::new_svg("line")
                     .attr("x1", &pl.to_string())
                     .attr("x2", &(width as f64 - pr).to_string())
-                    .attr("y1", &y_pos.to_string())
-                    .attr("y2", &y_pos.to_string())
+                    .attr("y1", &format!("{:.2}", y_pos))
+                    .attr("y2", &format!("{:.2}", y_pos))
                     .attr("stroke", grid_color)
                     .attr("stroke-width", "1")
             ).child(
                 DomBuilder::new_svg("text")
                     .attr("x", &(pl - 10.0).to_string())
-                    .attr("y", &(y_pos + 4.0).to_string())
+                    .attr("y", &format!("{:.2}", y_pos + 4.0))
                     .attr("fill", text_color)
                     .attr("font-size", "12")
                     .attr("font-family", "sans-serif")
@@ -286,15 +412,15 @@ pub fn line_chart(id: &str, data: Vec<Point>, width: u32, height: u32, show_axes
             
             svg = svg.child(
                 DomBuilder::new_svg("line")
-                    .attr("x1", &x_pos.to_string())
-                    .attr("x2", &x_pos.to_string())
+                    .attr("x1", &format!("{:.2}", x_pos))
+                    .attr("x2", &format!("{:.2}", x_pos))
                     .attr("y1", &pt.to_string())
                     .attr("y2", &(height as f64 - pb).to_string())
                     .attr("stroke", grid_color)
                     .attr("stroke-width", "1")
             ).child(
                 DomBuilder::new_svg("text")
-                    .attr("x", &x_pos.to_string())
+                    .attr("x", &format!("{:.2}", x_pos))
                     .attr("y", &(height as f64 - pb + 20.0).to_string())
                     .attr("fill", text_color)
                     .attr("font-size", "12")
@@ -305,25 +431,33 @@ pub fn line_chart(id: &str, data: Vec<Point>, width: u32, height: u32, show_axes
         }
     }
 
+    let stroke_val = if let Some(ref c) = options.stroke_color {
+        c.as_str()
+    } else {
+        &format!("url(#{})", grad_id)
+    };
+
     svg = svg.child(
         DomBuilder::new_svg("path")
             .attr("d", &path_d)
             .attr("fill", "none")
-            .attr("stroke", &format!("url(#{})", grad_id))
-            .attr("stroke-width", "4")
+            .attr("stroke", stroke_val)
+            .attr("stroke-width", &format!("{:.1}", options.stroke_width))
             .attr("stroke-linecap", "round")
             .attr("stroke-linejoin", "round")
     );
 
-    if !data.is_empty() {
+    if options.show_dots && !data.is_empty() {
         for point in &data {
             let cx = scale_x(point.x);
             let cy = scale_y(point.y);
             let circle = DomBuilder::new_svg("circle")
-                .attr("cx", &cx.to_string())
-                .attr("cy", &cy.to_string())
+                .attr("cx", &format!("{:.2}", cx))
+                .attr("cy", &format!("{:.2}", cy))
                 .attr("r", "5")
-                .attr("fill", "var(--accent-cyan, #06b6d4)")
+                .attr("fill", grad_end)
+                .attr("stroke", "var(--bg-primary, #0a0a16)")
+                .attr("stroke-width", "1.5")
                 .attr("cursor", "crosshair")
                 .child(DomBuilder::new_svg("title").text(&format!("Value: {:.3}", point.y)));
             
@@ -336,21 +470,56 @@ pub fn line_chart(id: &str, data: Vec<Point>, width: u32, height: u32, show_axes
 
 /// Renders a high-performance Gradient Area Chart with filled baseline opacity.
 pub fn area_chart(data: Vec<Point>, width: u32, height: u32) -> DomBuilder {
+    area_chart_styled(data, width, height, &AreaChartOptions::default())
+}
+
+/// Renders a fully customizable Gradient Area Chart with configurable curve and fill opacity.
+pub fn area_chart_styled(
+    data: Vec<Point>,
+    width: u32,
+    height: u32,
+    options: &AreaChartOptions,
+) -> DomBuilder {
     let mut line_d = String::new();
     if !data.is_empty() {
-        line_d.push_str(&format!("M {} {}", data[0].x, data[0].y));
-        for pt in data.iter().skip(1) {
-            line_d.push_str(&format!(" L {} {}", pt.x, pt.y));
+        line_d.push_str(&format!("M {:.2} {:.2}", data[0].x, data[0].y));
+
+        match options.curve {
+            LineCurve::Linear => {
+                for pt in data.iter().skip(1) {
+                    line_d.push_str(&format!(" L {:.2} {:.2}", pt.x, pt.y));
+                }
+            },
+            LineCurve::Stepped => {
+                for pt in data.iter().skip(1) {
+                    line_d.push_str(&format!(" H {:.2} V {:.2}", pt.x, pt.y));
+                }
+            },
+            LineCurve::Monotone => {
+                for i in 0..data.len().saturating_sub(1) {
+                    let x0 = data[i].x;
+                    let y0 = data[i].y;
+                    let x1 = data[i + 1].x;
+                    let y1 = data[i + 1].y;
+                    let dx = (x1 - x0) / 2.0;
+                    line_d.push_str(&format!(" C {:.2} {:.2}, {:.2} {:.2}, {:.2} {:.2}", x0 + dx, y0, x0 + dx, y1, x1, y1));
+                }
+            }
         }
     }
 
     let area_d = if !data.is_empty() {
         let last = data.last().unwrap();
         let first = data.first().unwrap();
-        format!("{} L {} {} L {} {} Z", line_d, last.x, height, first.x, height)
+        format!("{} L {:.2} {} L {:.2} {} Z", line_d, last.x, height, first.x, height)
     } else {
         String::new()
     };
+
+    let stroke_c = options.stroke_color.as_deref().unwrap_or("var(--accent-cyan, #06b6d4)");
+    let fill_c = options.fill_color.as_deref().unwrap_or(stroke_c);
+    let grad_id = "areaFillGrad-dynamic";
+    let start_op = format!("{:.2}", options.fill_opacity);
 
     div().child(
         DomBuilder::new_svg("svg")
@@ -362,18 +531,30 @@ pub fn area_chart(data: Vec<Point>, width: u32, height: u32) -> DomBuilder {
             .child(
                 DomBuilder::new_svg("defs").child(
                     DomBuilder::new_svg("linearGradient")
-                        .attr("id", "areaFillGrad")
+                        .attr("id", grad_id)
                         .attr("x1", "0%").attr("y1", "0%").attr("x2", "0%").attr("y2", "100%")
-                        .child(DomBuilder::new_svg("stop").attr("offset", "0%").attr("stop-color", "var(--accent-cyan, #06b6d4)").attr("stop-opacity", "0.4"))
-                        .child(DomBuilder::new_svg("stop").attr("offset", "100%").attr("stop-color", "var(--accent-cyan, #06b6d4)").attr("stop-opacity", "0.0"))
+                        .child(DomBuilder::new_svg("stop").attr("offset", "0%").attr("stop-color", fill_c).attr("stop-opacity", &start_op))
+                        .child(DomBuilder::new_svg("stop").attr("offset", "100%").attr("stop-color", fill_c).attr("stop-opacity", "0.0"))
                 )
             )
-            .child(DomBuilder::new_svg("path").attr("d", &area_d).attr("fill", "url(#areaFillGrad)"))
-            .child(DomBuilder::new_svg("path").attr("d", &line_d).attr("fill", "none").attr("stroke", "var(--accent-cyan, #06b6d4)").attr("stroke-width", "3"))
+            .child(DomBuilder::new_svg("path").attr("d", &area_d).attr("fill", &format!("url(#{})", grad_id)))
+            .child(DomBuilder::new_svg("path").attr("d", &line_d).attr("fill", "none").attr("stroke", stroke_c).attr("stroke-width", &format!("{:.1}", options.stroke_width)))
     )
 }
 
 pub fn bar_chart(id: &str, data: Vec<BarDatum>, width: u32, height: u32, show_axes: bool) -> DomBuilder {
+    let mut opts = BarChartOptions::default();
+    opts.show_axes = show_axes;
+    bar_chart_styled(id, data, width, height, &opts)
+}
+
+pub fn bar_chart_styled(
+    id: &str,
+    data: Vec<BarDatum>,
+    width: u32,
+    height: u32,
+    options: &BarChartOptions,
+) -> DomBuilder {
     let mut svg = DomBuilder::new_svg("svg")
         .attr("id", id)
         .attr("class", "ferrox-svg-bar-chart")
@@ -385,13 +566,13 @@ pub fn bar_chart(id: &str, data: Vec<BarDatum>, width: u32, height: u32, show_ax
     let max_val = data.iter().map(|d| d.value).fold(0.001, f64::max);
     let bar_count = data.len();
     
-    let pl = if show_axes { 60.0 } else { 0.0 };
+    let pl = if options.show_axes { 60.0 } else { 0.0 };
     let pr = 20.0;
     let pt = 20.0;
-    let pb = if show_axes { 40.0 } else { 30.0 };
+    let pb = if options.show_axes { 40.0 } else { 30.0 };
     let inner_h = height as f64 - pt - pb;
 
-    if show_axes {
+    if options.show_axes {
         let grid_color = "rgba(255,255,255,0.1)";
         let text_color = "rgba(255,255,255,0.5)";
         
@@ -403,14 +584,14 @@ pub fn bar_chart(id: &str, data: Vec<BarDatum>, width: u32, height: u32, show_ax
                 DomBuilder::new_svg("line")
                     .attr("x1", &pl.to_string())
                     .attr("x2", &(width as f64 - pr).to_string())
-                    .attr("y1", &y_pos.to_string())
-                    .attr("y2", &y_pos.to_string())
+                    .attr("y1", &format!("{:.2}", y_pos))
+                    .attr("y2", &format!("{:.2}", y_pos))
                     .attr("stroke", grid_color)
                     .attr("stroke-width", "1")
             ).child(
                 DomBuilder::new_svg("text")
                     .attr("x", &(pl - 10.0).to_string())
-                    .attr("y", &(y_pos + 4.0).to_string())
+                    .attr("y", &format!("{:.2}", y_pos + 4.0))
                     .attr("fill", text_color)
                     .attr("font-size", "12")
                     .attr("font-family", "sans-serif")
@@ -420,9 +601,9 @@ pub fn bar_chart(id: &str, data: Vec<BarDatum>, width: u32, height: u32, show_ax
         }
     }
 
-    let padding = 20.0;
+    let padding = options.bar_padding;
     let available_w = (width as f64 - pl - pr) - (padding * (bar_count as f64 + 1.0));
-    let bar_w = (available_w / bar_count as f64).clamp(10.0, 60.0);
+    let bar_w = (available_w / bar_count as f64).clamp(10.0, 70.0);
     
     let actual_total_w = (bar_w * bar_count as f64) + (padding * (bar_count as f64 - 1.0));
     let start_x = pl + ((width as f64 - pl - pr) - actual_total_w) / 2.0;

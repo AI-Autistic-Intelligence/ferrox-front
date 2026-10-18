@@ -21,9 +21,11 @@
 pub mod theme_studio;
 pub mod chart_studio;
 pub mod polyglot_mesh;
+pub mod data_generators;
 pub use theme_studio::*;
 pub use chart_studio::*;
 pub use polyglot_mesh::*;
+pub use data_generators::*;
 
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;

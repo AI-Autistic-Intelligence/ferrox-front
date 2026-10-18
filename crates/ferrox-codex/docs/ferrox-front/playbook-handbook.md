@@ -1,28 +1,46 @@
 ---
 id: playbook-handbook
-title: Interactive Component Playbook & Design System Handbook
+title: Interactive Component Playbook & High-Density Workbench
 sidebar_position: 1
 ---
 
 import FerroxWasmPlayground from '@site/src/components/FerroxWasmPlayground';
 
-# 📘 Interactive Component Playbook & Design System Handbook
+# 📘 Interactive Component Playbook & High-Density Workbench
 
-`ferrox-front` is a production-grade WebAssembly frontend ecosystem engineered in **100% pure Rust** with **zero external JavaScript dependencies**. It couples an ultra-fast vector SVG charting engine (`ferrox-front-charts`) with an enterprise Glassmorphism Design System (`ferrox-front-ui`).
+`ferrox-front` provides a production-grade WebAssembly frontend ecosystem engineered in **100% pure Rust** with **zero external JavaScript dependencies**. It couples an ultra-fast vector SVG charting engine (`ferrox-front-charts`) with an enterprise Glassmorphism Design System (`ferrox-front-ui`).
 
-This handbook documents the design patterns, mathematical foundations, component APIs, and interactive customization capabilities available across the suite.
-
----
-
-## 🕹️ Live Interactive Playbook Studio
-
-Interact directly with the WebAssembly microfrontend below to test vector charts, customize theme tokens, and copy synchronized Rust code:
-
-<FerroxWasmPlayground initialTab="chart-studio" height="880px" title="Ferrox Front • Interactive Component Playbook" />
+The **Component Playbook** is a professional, high-density engineering workbench ("Playbook & Live Knobs Inspector") providing typed domain architectures per component, real-time reactive knobs inspection, a pervasive color engine, mathematical data generators, and live synchronized Rust code generation.
 
 ---
 
-## 1. Mathematical Rigor: GaugeMeter Concentric Geometry
+## 🕹️ Live Interactive Workbench 2.0
+
+Interact directly with the WebAssembly microfrontend below to test vector charts, customize theme tokens, inspect props in real-time, and copy synchronized Rust code:
+
+<FerroxWasmPlayground initialTab="chart-studio" height="880px" title="Ferrox Front • High-Density Component Workbench" />
+
+---
+
+## 1. Typed Component Data Architectures
+
+Rather than flattening data into a single generic float vector, each component in `ferrox-front` is governed by a dedicated domain data structure tailored to its geometry and operational domain:
+
+| Component | Dedicated Configuration Model | Core Parameters & Invariants |
+| :--- | :--- | :--- |
+| **Line Chart** | `LineConfig` | `points: Vec<(f64, f64)>`, `curve: LineCurve` (Linear, Monotone, Stepped), `stroke_width: f64`, `show_dots: bool`, `show_axes: bool` |
+| **Area Chart** | `AreaConfig` | `points: Vec<(f64, f64)>`, `curve: LineCurve`, `stroke_width: f64`, `fill_opacity: f64` (gradient stops to 0%), `show_axes: bool` |
+| **Bar Chart** | `BarConfig` | `items: Vec<BarItem>` (`label`, `value`, `color`), `padding: f64`, `rounded_corners: bool`, `show_axes: bool` |
+| **Donut / Pie** | `DonutConfig` | `segments: Vec<DonutItem>` (`label`, `value`, `color`), `inner_radius_pct: f64` (0% solid pie $\to$ 85% slim ring), `pad_angle: f64` |
+| **Radar Spider** | `RadarConfig` | `dimensions: Vec<RadarAxis>` (`label`, `value`), `ring_count: usize` (3 to 6 polygonal grids), `fill_opacity: f64` |
+| **Gauge Meter** | `GaugeConfig` | `value: f64`, `min: f64`, `max: f64`, `target: f64`, `unit: String`, `show_ticks: bool`, `warning_thresh: f64`, `critical_thresh: f64` |
+| **Sparkline** | `SparklineConfig` | `ticks: Vec<f64>`, `spark_type: SparklineType` (Area, Line, Bar), `show_trend: bool` with trend velocity calculation |
+
+All configurations are encapsulated inside the reactive `PlaybookState`, ensuring zero-latency updates upon any knob mutation.
+
+---
+
+## 2. Mathematical Rigor: GaugeMeter Concentric Geometry
 
 The semi-circular Speedometer/GaugeMeter (`gauge_chart_styled`) visualizes telemetry and KPI metrics along a $180^\circ$ semicircle sweeping clockwise from $-\pi$ ($180^\circ$) to $0$ ($0^\circ$).
 
@@ -45,85 +63,117 @@ use ferrox_front_charts::{gauge_chart_styled, GaugeChartOptions};
 
 let mut options = GaugeChartOptions::default();
 options.warning_threshold = 0.60;
-options.critical_threshold = 0.82;
-options.custom_color = Some("#6366f1".into());
+options.critical_threshold = 0.85;
+options.custom_color = Some("#ec4899".into());
 
 let gauge = gauge_chart_styled(
     "telemetry-gauge",
-    78.4,
+    73.5,
     0.0,
     100.0,
-    "CPU Utilization",
+    "Telemetry Speedometer",
     "%",
-    320,
-    180,
+    340,
+    190,
     &options,
 );
 ```
 
 ---
 
-## 2. Segmented Glass Pill Bar
+## 3. Real-Time Props & Knobs Inspector
 
-The component toolbar replaces legacy compressed buttons with a **Segmented Glass Pill Bar** providing unmistakable state contrast and full accessibility compliance (WCAG 2.1 AA):
+The lateral inspector column gives developers interactive control over every visual and geometric parameter:
 
-- **Active State:**
-  - High-contrast gradient: `linear-gradient(135deg, var(--accent-primary), var(--accent-secondary))`
-  - Luminescent border: `1px solid rgba(255, 255, 255, 0.35)`
-  - Accent box shadow: `0 4px 18px rgba(99, 102, 241, 0.45)`
-  - Status badge: `● ACTIVE` pill indicating the currently selected mode
-- **Inactive State:**
-  - Vitrified glass background: `rgba(15, 23, 42, 0.6)`
-  - Smooth hover transitions and clear focus rings.
-
----
-
-## 3. Interactive Data & Color Engine
-
-Developers can interactively manipulate datasets in real-time without writing boilerplate:
-
-### Point-by-Point Inspector
-Each coordinate in the dataset can be inspected and edited:
-- Direct numeric increment (`+5`) and decrement (`-5`).
-- Individual point removal (`×`).
-- Targeted point insertion with dynamic boundary clamping.
-- Array operations: Sort Ascending, Sort Descending, Reverse, and preset trajectories (Bullish Trend, Volatility Wave).
-
-### Color Themes & Custom Tints
-- **Cyber Indigo:** `#6366f1` / `#06b6d4`
-- **Emerald Surge:** `#10b981` / `#34d399`
-- **Amber Sunset:** `#f59e0b` / `#ef4444`
-- **Neon Fuchsia:** `#d946ef` / `#8b5cf6`
-- **Zinc Mono:** `#e2e8f0` / `#94a3b8`
-- Plus direct hex tint selectors for custom brand styling.
+- **Line & Area Knobs:**
+  - *Interpolation Curve:* Toggle dynamically between `Linear`, `Monotone` (cubic Bezier with smooth tangents), and `Stepped` (horizontal/vertical orthogonal transitions).
+  - *Stroke Width:* Instant scalar selection from `1.5px` to `7.0px`.
+  - *Fill Opacity:* Adjust gradient area density from `15%` to `90%`.
+  - *Visual Aids:* Toggles for data point dots and coordinate grid axes.
+- **Bar Knobs:**
+  - *Bar Spacing / Padding:* Fine-tune inter-column gap from `10px` to `36px`.
+  - *Rounded Corners:* Toggle SVG rounded caps (`rx = 6`).
+- **Donut Knobs:**
+  - *Cutout Radius:* Seamlessly morph from solid pie (`0%`) to standard donut (`62%`) up to ultra-slim ring (`85%`).
+- **Radar Knobs:**
+  - *Polygonal Rings:* Select between 3, 4, 5, or 6 concentric spider grid polygons.
+  - *Area Fill Opacity:* Adjust polygon background translucency.
+- **Gauge Knobs:**
+  - *Live Speedometer Value:* Increment/decrement telemetry values with boundary clamping.
+  - *Threshold Zones:* Adjust Warning and Critical transition limits.
+- **Sparkline Knobs:**
+  - *Representation Variants:* Switch instantly between `Area`, `Line`, and `Bar` sparklines.
+  - *Trend Velocity:* Displays percentage rate-of-change ($\Delta\% = \frac{v_{\text{last}} - v_{\text{first}}}{v_{\text{first}}} \times 100$) with directional indicators (`▲ +` / `▼ -`).
 
 ---
 
-## 4. Design System Studio & Token Inspector
+## 4. Pervasive Color Engine
 
-In `theme_studio.rs`, developers have full control over the visual design tokens:
+The workbench features a **Pervasive Color Engine** providing 6 curated harmonic palettes that cascade instantaneously across all component types:
 
-| Token | Range | Description |
-| :--- | :--- | :--- |
-| `--border-radius` | `0px` to `32px` | Controls rounding across cards, buttons, badges, and modals. |
-| `--backdrop-blur` | `0px` to `40px` | Controls frosted glass blur intensity. |
-| `--glass-opacity` | `15%` to `90%` | Controls surface translucency against background canvases. |
-| `--accent-primary` | Hex / HSL | Primary brand accent for actions, strokes, and highlights. |
-| `--accent-secondary`| Hex / HSL | Secondary gradient accent and companion fills. |
+1. **Cyber Neon:** `#ec4899` (Pink) • `#06b6d4` (Cyan) • `#a855f7` (Purple)
+2. **Emerald Flow:** `#10b981` (Mint) • `#059669` (Emerald) • `#14b8a6` (Teal)
+3. **Amber Solar:** `#f59e0b` (Gold) • `#f97316` (Orange) • `#ef4444` (Crimson)
+4. **Deep Ocean:** `#0284c7` (Azure) • `#38bdf8` (Sky) • `#6366f1` (Indigo)
+5. **Zinc Mono:** `#94a3b8` (Slate) • `#71717a` (Zinc) • `#f8fafc` (White)
+6. **Synthwave Violet:** `#8b5cf6` (Violet) • `#d946ef` (Fuchsia) • `#6366f1` (Indigo)
 
-### Component Showcase with Knobs
-Test UI primitives interactively with size and variant knobs:
-- **Buttons:** Sizes `xs`, `sm`, `md`, `lg` in `primary`, `glass`, `outline`, and `danger` variants.
-- **Badges:** Semantically colored status pills (`primary`, `success`, `warning`, `danger`, `info`).
-- **Form Controls:** Text inputs with prefix/suffix icons, reactive switch toggles, and range sliders.
-- **Virtual DataGrid Mini:** High-performance tabular data with custom column alignments.
-- **Overlays:** Hierarchical TreeViews and vector DatePickers.
+Direct tint selectors and custom hex overrides provide instant brand harmonization.
 
 ---
 
-## 5. Synchronized Code Export
+## 5. Algorithmic Data Generators
 
-Every adjustment in the Chart Studio or Theme Studio is instantly reflected in copy-ready snippets:
-1. **CSS Custom Properties (`:root`):** Instant drop-in for `styles.css`.
-2. **Rust `ThemeConfig`:** Strongly-typed configuration for native Rust backends and Wasm apps.
-3. **Rust `DomBuilder`:** Pure Rust WebAssembly component creation code with zero JavaScript dependencies.
+To eliminate static mock arrays, `data_generators.rs` implements mathematical stochastic generators using a zero-dependency deterministic `FastRng` (SplitMix64 / Box-Muller transform) executing identically in native Rust and WebAssembly:
+
+- 🎲 **Brownian Motion:** Simulates financial random walk trajectories with volatility and directional drift:
+  $$S_t = S_{t-1} + \mu + \sigma Z_t, \quad Z_t \sim \mathcal{N}(0, 1)$$
+- 🌊 **Harmonic Wave:** Generates multi-frequency sinusoidal waveforms combined with Gaussian noise to emulate periodic sensor telemetry:
+  $$y(t) = y_0 + A_1 \sin\left(\frac{2\pi t}{T_1}\right) + A_2 \cos\left(\frac{2\pi t}{T_2}\right) + \epsilon$$
+- ⚡ **Traffic Spikes:** Simulates stochastic server ingress with exponential burst spikes and gradual recovery.
+- 📊 **Normal Bell:** Generates Gaussian bell distributions centered symmetrically across the discrete steps:
+  $$f(x) = H \cdot \exp\left(-\frac{(x - \mu)^2}{2\sigma^2}\right)$$
+
+---
+
+## 6. Interactive Data Table Editor
+
+Located in the center column beneath the SVG preview canvas, the **Data Table Editor** allows granular control over active datasets:
+- **Direct Point Modification:** Quick numeric increment (`+5`) and decrement (`-5`) buttons per item.
+- **Individual Point Deletion:** Deletion (`×`) with minimum record safeguarding.
+- **Dynamic Point Addition:** `[➕ Add Next Point]` button that calculates appropriate next steps according to component domain rules.
+
+---
+
+## 7. Segmented Glass Pill Bar & 3-Zone Layout
+
+The layout follows a professional **3-Zone High-Density Workbench** architecture:
+
+```text
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                       SEGMENTED GLASS PILL BAR                              │
+│ [Line] [Area] [Bar] [Donut / Pie] [Radar Spider] [Gauge Meter] [Sparkline]  │
+└─────────────────────────────────────────────────────────────────────────────┘
+┌───────────────────┬───────────────────────────────┬─────────────────────────┐
+│  ZONE 1: KNOBS    │     ZONE 2: CANVAS & TABLE    │   ZONE 3: RUST CODE     │
+│  (Col 3 / 12)     │         (Col 6 / 12)          │      (Col 3 / 12)       │
+├───────────────────┼───────────────────────────────┼─────────────────────────┤
+│ • Props Inspector │ • Interactive Vector SVG      │ • Strongly-typed        │
+│   (Curve, Stroke, │   Preview Canvas (60 FPS)     │   Rust DomBuilder       │
+│   Cutout, Opacity)│ • Algorithmic Generators      │   Code Generator        │
+│ • Color Engine    │   (Brownian, Wave, Spikes)    │ • 1-Click Clipboard     │
+│   (6 Palettes &   │ • Interactive Data Table      │   Copy with Toast       │
+│   Direct Tints)   │   Point Editor (+5, -5, ×)    │                         │
+└───────────────────┴───────────────────────────────┴─────────────────────────┘
+```
+
+The **Segmented Glass Pill Bar** uses:
+- Vitrified dark-glass container (`rgba(15, 23, 42, 0.8)` with `backdrop-filter: blur(20px)`).
+- Luminescent active state (`linear-gradient(135deg, #6366f1, #a855f7)` with glowing border `rgba(255, 255, 255, 0.4)` and a distinct `● ACTIVE` badge).
+- Inactive pills with soft hover states.
+
+---
+
+## 8. Synchronized Pure Rust Code Generation
+
+Every adjustment in the inspector is dynamically reflected in copy-ready Rust code using `ferrox-front-charts` and `DomBuilder`. A single click on **"📋 Copy Snippet"** delivers an idiomatic, strongly-typed code snippet directly to the clipboard, completely ready for production deployment.
