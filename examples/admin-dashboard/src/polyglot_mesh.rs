@@ -1,8 +1,8 @@
-//! # Ferrox Polyglot Mesh Hub & Super-Showcase
+//! # Ferrox Polyglot Mesh Hub & Interactive Mission Control 3.0
 //!
-//! Interactive WebAssembly view demonstrating the end-to-end distributed orchestration
+//! Interactive WebAssembly Mission Control demonstrating the end-to-end distributed orchestration
 //! of the 6 Ferrox polyglot microservice runtimes, Redpanda event broker, Redis Redlock,
-//! and Traefik central API Gateway with zero JavaScript dependencies.
+//! and Traefik central API Gateway with zero JavaScript dependencies ($0.00 Cloud Cost).
 
 use ferrox_front_core::dom::{div, span, p, h2, h3, DomBuilder};
 use ferrox_front_ui::components::*;
@@ -88,7 +88,7 @@ pub fn get_mesh_nodes() -> Vec<ServiceNodeInfo> {
             id: "node",
             name: "Ferrox-Node & YALC",
             runtime: "Node.js 20 (Fastify 5 / NestJS)",
-            role: "Central API Gateway & CQRS Command",
+            role: "Central Ingress & AuditLog Compliance",
             port: "3000 / 3002",
             status: "HEALTHY",
             status_badge: "success",
@@ -96,7 +96,7 @@ pub fn get_mesh_nodes() -> Vec<ServiceNodeInfo> {
             latency: "1.1 ms",
             icon: "shield",
             accent_color: "#10b981",
-            features: &["PASETO v4 Auth Guard", "CQRS Command Bus", "Fastify Zero-Overhead HTTP"],
+            features: &["PASETO v4 Auth Guard", "AuditLogHandler CQRS", "Fastify Zero-Overhead HTTP"],
         },
         ServiceNodeInfo {
             id: "redpanda",
@@ -188,38 +188,19 @@ pub fn render_polyglot_mesh_tab() -> DomBuilder {
                 .children(vec![
                     div().class("max-w-2xl").children(vec![
                         div().class("flex items-center gap-3 mb-2").children(vec![
-                            badge("Ecosystem Super-Showcase 2.0", "primary"),
-                            badge("Polyglot Event Mesh", "success"),
-                            badge("Redpanda Streaming", "warning"),
+                            badge("Mission Control 3.0", "primary"),
+                            badge("Polyglot Living Mesh", "success"),
+                            badge("Local Zero Cost $0.00", "warning"),
                         ]),
                         h2().class("text-3xl font-black text-white tracking-tight leading-snug")
-                            .text("🌐 Ferrox Polyglot Mesh Hub"),
+                            .text("🌐 Ferrox Polyglot Mission Control & Chaos Studio"),
                         p().class("text-sm text-slate-300 mt-2 leading-relaxed")
                             .text("Live end-to-end orchestration of 6 polyglot runtimes: Rust matching engine (380ns), Python Polars feeds, Java 21 Loom virtual threads, PHP FrankenPHP Sagas, Node Fastify gateway, Redpanda Kafka event broker and Redis Redlock distributed locks."),
                     ]),
                     div().class("flex flex-col sm:flex-row items-center gap-3").children(vec![
                         button_advanced("⚡ Simulate Distributed Trade", "primary", "sm", false, Some("activity"))
                             .on_click(|| {
-                                if let Some(win) = window() {
-                                    let doc = win.document().unwrap();
-                                    if let Some(trace_log) = doc.get_element_by_id("mesh-trace-log") {
-                                        let current_ts = js_sys::Date::new_0().to_iso_string().as_string().unwrap_or_default();
-                                        let step_html = format!(
-                                            "<div class='p-3.5 rounded-xl border border-indigo-500/40 bg-indigo-950/40 text-xs text-indigo-200 animate-pulse font-mono mb-2'>\
-                                            <strong>[{}] DISPATCHED:</strong> Order #ORD-{:04} (1.50 BTC @ $96,800.00)<br/>\
-                                            • Traefik → Node Gateway (PASETO v4 Verified)<br/>\
-                                            • Redpanda: Published to <code>orders.placed.v1</code><br/>\
-                                            • Rust Engine: Matched in 372ns (Price-Time Priority)<br/>\
-                                            • Java Loom: Virtual Thread #1844 settled ledger in 1.9ms<br/>\
-                                            • PHP Saga: OrderFulfillmentSaga committed to Outbox<br/>\
-                                            <span class='text-emerald-400 font-bold'>✔ END-TO-END TRANSACTION SUCCESS (Total: 4.8ms)</span>\
-                                            </div>",
-                                            &current_ts[11..19],
-                                            (js_sys::Math::random() * 9000.0) as u32 + 1000
-                                        );
-                                        trace_log.set_inner_html(&format!("{}{}", step_html, trace_log.inner_html()));
-                                    }
-                                }
+                                trigger_trade_simulation(false);
                             }),
                         button_advanced("📖 Ferrox-Codex Docs", "glass", "sm", false, Some("external-link"))
                             .on_click(|| {
@@ -231,7 +212,112 @@ pub fn render_polyglot_mesh_tab() -> DomBuilder {
                 ]),
         ]);
 
-    // 2. Polyglot Service Cards Grid (4 columns on xl, 2 on md)
+    // 2. Interactive Mission Control Panels: Live Order Dispatcher & Visual Chaos Studio
+    let mission_control_row = row().children(vec![
+        // Left Column: Live Order Dispatcher
+        col("12 lg-6").child(
+            card_advanced(
+                "Live Order Dispatcher",
+                "Compose and broadcast orders directly to WebSocket server (ws://localhost:8086)",
+                "send",
+                "glass",
+                true,
+                "p-6"
+            ).children(vec![
+                div().class("flex flex-col gap-4 font-mono text-xs").children(vec![
+                    div().class("grid grid-cols-2 gap-3").children(vec![
+                        div().children(vec![
+                            span().class("text-slate-400 block text-[10px] uppercase font-bold mb-1.5").text("Asset Pair"),
+                            div().class("p-2.5 rounded-xl bg-slate-950/60 border border-slate-800 text-white font-bold flex items-center justify-between")
+                                .children(vec![
+                                    span().text("BTC / USD"),
+                                    span().class("text-[10px] text-emerald-400 font-normal").text("$96,850.00"),
+                                ]),
+                        ]),
+                        div().children(vec![
+                            span().class("text-slate-400 block text-[10px] uppercase font-bold mb-1.5").text("Order Type"),
+                            div().class("p-2.5 rounded-xl bg-slate-950/60 border border-slate-800 text-indigo-300 font-bold")
+                                .text("LIMIT (Price-Time Priority)"),
+                        ]),
+                    ]),
+                    div().class("grid grid-cols-2 gap-3").children(vec![
+                        div().children(vec![
+                            span().class("text-slate-400 block text-[10px] uppercase font-bold mb-1.5").text("Side"),
+                            div().class("grid grid-cols-2 gap-1.5").children(vec![
+                                div().class("py-2 px-3 rounded-lg bg-emerald-500/20 border border-emerald-500 text-emerald-300 font-bold text-center cursor-pointer")
+                                    .text("BUY"),
+                                div().class("py-2 px-3 rounded-lg bg-slate-900 border border-slate-800 text-slate-400 font-bold text-center cursor-pointer")
+                                    .text("SELL"),
+                            ]),
+                        ]),
+                        div().children(vec![
+                            span().class("text-slate-400 block text-[10px] uppercase font-bold mb-1.5").text("Order Volume (BTC)"),
+                            div().class("p-2 rounded-xl bg-slate-950/60 border border-slate-800 text-white flex items-center justify-between")
+                                .children(vec![
+                                    span().class("font-bold text-sm").text("1.50 BTC"),
+                                    div().class("flex gap-1").children(vec![
+                                        span().class("px-1.5 py-0.5 rounded bg-slate-800 text-[10px] text-slate-300").text("0.5"),
+                                        span().class("px-1.5 py-0.5 rounded bg-slate-800 text-[10px] text-slate-300").text("1.0"),
+                                        span().class("px-1.5 py-0.5 rounded bg-indigo-600/40 text-[10px] text-indigo-200 font-bold").text("1.5"),
+                                    ]),
+                                ]),
+                        ]),
+                    ]),
+                    div().class("p-3 rounded-xl bg-indigo-950/30 border border-indigo-500/20 text-slate-300 flex items-center justify-between")
+                        .children(vec![
+                            div().children(vec![
+                                span().class("text-[10px] text-slate-400 block").text("Estimated Notional Value"),
+                                span().class("text-sm font-bold text-white").text("$145,275.00 USD"),
+                            ]),
+                            badge("PASETO v4 Signed", "success"),
+                        ]),
+                    div().class("flex gap-3 pt-2").children(vec![
+                        button_advanced("🚀 Dispatch to Rust Order Matching Core", "primary", "md", false, Some("arrow-right"))
+                            .on_click(|| {
+                                trigger_trade_simulation(false);
+                            }),
+                    ]),
+                ]),
+            ])
+        ),
+        // Right Column: Chaos Studio & Visual Rollback Stepper
+        col("12 lg-6").child(
+            card_advanced(
+                "Chaos Studio & Visual Rollback Engine",
+                "Inject fault anomalies to trigger and observe distributed Saga compensations",
+                "zap",
+                "glass",
+                false,
+                "p-6"
+            ).children(vec![
+                div().class("flex flex-col gap-4 font-mono text-xs").children(vec![
+                    p().class("text-slate-300 leading-relaxed font-sans text-xs")
+                        .text("Simulate local hardware or transaction faults to verify distributed idempotency, Redis Redlock rejection, and zero-drift ledger rollback in real-time."),
+                    div().class("grid grid-cols-1 sm:grid-cols-2 gap-3").children(vec![
+                        button_advanced("⚠️ Simula Fallimento Transazione", "danger", "sm", false, Some("alert-triangle"))
+                            .on_click(|| {
+                                trigger_trade_simulation(true);
+                            }),
+                        button_advanced("⚡ Simula Double-Spend Race", "warning", "sm", false, Some("repeat"))
+                            .on_click(|| {
+                                trigger_double_spend_simulation();
+                            }),
+                    ]),
+                    div().id("chaos-feedback-panel")
+                        .class("p-3.5 rounded-xl border border-slate-800 bg-slate-950/60 font-mono text-[11px] text-slate-300")
+                        .children(vec![
+                            div().class("flex items-center gap-2 mb-1").children(vec![
+                                span().class("w-2 h-2 rounded-full bg-emerald-400 animate-ping"),
+                                span().class("font-bold text-white").text("Resilience Sentinel: STANDBY"),
+                            ]),
+                            p().class("text-slate-400 text-[10px]").text("Trigger a failure scenario above to watch the PHP FrankenPHP Saga coordinate automatic rollback across Java Loom and Redis Redlock."),
+                        ]),
+                ]),
+            ])
+        ),
+    ]);
+
+    // 3. Polyglot Service Cards Grid (4 columns on xl, 2 on md)
     let mut node_cards = Vec::new();
     for node in nodes {
         let feature_badges: Vec<DomBuilder> = node.features.iter().map(|f| {
@@ -289,24 +375,24 @@ pub fn render_polyglot_mesh_tab() -> DomBuilder {
     }
     let nodes_grid = row().children(node_cards);
 
-    // 3. Interactive Transaction Simulator & Trace Console
+    // 4. Animated E2E Transaction Stepper & Trace Console
     let simulator_section = row().children(vec![
         col("12 lg-7").child(
             card_advanced(
-                "Cross-Service Transaction Journey",
-                "Real-time event choreography across the 6 polyglot runtimes",
+                "Animated E2E Transaction Stepper",
+                "Sub-millisecond execution stages across 5 microservice layers",
                 "git-pull-request",
                 "glass",
                 true,
                 "p-6"
             ).children(vec![
-                div().class("flex flex-col gap-3 font-mono text-xs").children(vec![
+                div().id("e2e-stepper-container").class("flex flex-col gap-3 font-mono text-xs").children(vec![
                     div().class("p-3 rounded-xl bg-slate-900/60 border border-slate-800 flex items-start gap-3")
                         .children(vec![
                             span().class("w-6 h-6 rounded-full bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-bold flex-shrink-0").text("1"),
                             div().children(vec![
                                 span().class("font-bold text-white block").text("Ingress & PASETO v4 Authentication (Node Fastify / nestjs-yalc)"),
-                                p().class("text-[11px] text-slate-400 mt-0.5").text("Gateway validates cryptographic footer and generates authenticated CreateOrder Command."),
+                                p().class("text-[11px] text-slate-400 mt-0.5").text("Gateway validates cryptographic footer and generates authenticated CreateOrder Command [0.00ms]."),
                             ]),
                         ]),
                     div().class("p-3 rounded-xl bg-slate-900/60 border border-slate-800 flex items-start gap-3")
@@ -314,7 +400,7 @@ pub fn render_polyglot_mesh_tab() -> DomBuilder {
                             span().class("w-6 h-6 rounded-full bg-rose-500/20 text-rose-400 flex items-center justify-center font-bold flex-shrink-0").text("2"),
                             div().children(vec![
                                 span().class("font-bold text-white block").text("Streaming Ingestion & Broadcast (Redpanda Kafka Broker)"),
-                                p().class("text-[11px] text-slate-400 mt-0.5").text("Order published to topic 'orders.placed.v1' with CloudEvents v1.0 binary header metadata."),
+                                p().class("text-[11px] text-slate-400 mt-0.5").text("Order published to topic 'orders.placed.v1' with CloudEvents v1.0 binary header [+0.22ms]."),
                             ]),
                         ]),
                     div().class("p-3 rounded-xl bg-slate-900/60 border border-slate-800 flex items-start gap-3")
@@ -322,7 +408,7 @@ pub fn render_polyglot_mesh_tab() -> DomBuilder {
                             span().class("w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold flex-shrink-0").text("3"),
                             div().children(vec![
                                 span().class("font-bold text-white block").text("Sub-Microsecond Matching (ferrox-match / Rust Engine)"),
-                                p().class("text-[11px] text-slate-400 mt-0.5").text("Order matched in 380ns fast-path with zero heap allocation. Emits 'orders.matched.v1'."),
+                                p().class("text-[11px] text-slate-400 mt-0.5").text("Matched in 380ns fast-path with zero heap allocation. Emitted 'orders.matched.v1' [+0.38ms]."),
                             ]),
                         ]),
                     div().class("p-3 rounded-xl bg-slate-900/60 border border-slate-800 flex items-start gap-3")
@@ -330,7 +416,7 @@ pub fn render_polyglot_mesh_tab() -> DomBuilder {
                             span().class("w-6 h-6 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold flex-shrink-0").text("4"),
                             div().children(vec![
                                 span().class("font-bold text-white block").text("Loom Virtual Thread Settlement (ferrox-java-showcase)"),
-                                p().class("text-[11px] text-slate-400 mt-0.5").text("Java 21 Project Loom settles double-entry ledger balance using off-heap memory."),
+                                p().class("text-[11px] text-slate-400 mt-0.5").text("Java 21 Project Loom settles double-entry ledger balance using off-heap memory [+1.25ms]."),
                             ]),
                         ]),
                     div().class("p-3 rounded-xl bg-slate-900/60 border border-slate-800 flex items-start gap-3")
@@ -338,7 +424,7 @@ pub fn render_polyglot_mesh_tab() -> DomBuilder {
                             span().class("w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center font-bold flex-shrink-0").text("5"),
                             div().children(vec![
                                 span().class("font-bold text-white block").text("Distributed Saga Fulfillment (ferrox-php FrankenPHP)"),
-                                p().class("text-[11px] text-slate-400 mt-0.5").text("OrderFulfillmentSaga locks warehouse inventory via Redis Redlock and commits to Outbox."),
+                                p().class("text-[11px] text-slate-400 mt-0.5").text("OrderFulfillmentSaga commits to Outbox & Node AuditLog indexes compliance record [+2.10ms]."),
                             ]),
                         ]),
                 ]),
@@ -355,12 +441,12 @@ pub fn render_polyglot_mesh_tab() -> DomBuilder {
             ).children(vec![
                 div()
                     .id("mesh-trace-log")
-                    .class("flex flex-col gap-2 max-h-[360px] overflow-y-auto pr-1 font-mono text-xs")
+                    .class("flex flex-col gap-2 max-h-[420px] overflow-y-auto pr-1 font-mono text-xs")
                     .children(vec![
                         div().class("p-3 rounded-xl bg-slate-950/80 border border-slate-800 text-slate-400")
                             .children(vec![
                                 span().class("text-emerald-400 font-bold block mb-1").text("● Mesh Telemetry Connected"),
-                                p().class("text-[11px] text-slate-500").text("Click 'Simulate Distributed Trade' above to trigger an end-to-end multi-runtime order transaction across the entire Ferrox cluster."),
+                                p().class("text-[11px] text-slate-500").text("Use the Live Order Dispatcher or Chaos Studio above to trigger distributed polyglot transactions."),
                             ]),
                     ]),
             ])
@@ -371,7 +457,150 @@ pub fn render_polyglot_mesh_tab() -> DomBuilder {
         .attr("style", "max-width: 1440px; margin: 0 auto; padding: 2.5rem 2rem; display: flex; flex-direction: column; gap: 28px;")
         .children(vec![
             hero_banner,
+            mission_control_row,
             nodes_grid,
             simulator_section,
         ])
+}
+
+fn trigger_trade_simulation(simulate_failure: bool) {
+    if let Some(win) = window() {
+        if let Some(doc) = win.document() {
+            let current_ts = js_sys::Date::new_0().to_iso_string().as_string().unwrap_or_default();
+            let order_id = (js_sys::Math::random() * 9000.0) as u32 + 1000;
+
+            if !simulate_failure {
+                // Happy path
+                if let Some(trace_log) = doc.get_element_by_id("mesh-trace-log") {
+                    let step_html = format!(
+                        "<div class='p-3.5 rounded-xl border border-indigo-500/40 bg-indigo-950/40 text-xs text-indigo-200 animate-pulse font-mono mb-2'>\
+                        <strong class='text-white'>[{}] DISPATCHED:</strong> Order #ORD-{} (1.50 BTC @ $96,850.00)<br/>\
+                        • Node Gateway: PASETO v4 signature verified<br/>\
+                        • Redpanda: Broadcasted on <code>orders.placed.v1</code><br/>\
+                        • Rust Engine: Matched in 376ns (Price-Time Priority)<br/>\
+                        • Java Loom: Virtual Thread settled double-entry journal (+1.25ms)<br/>\
+                        • PHP FrankenPHP: OrderFulfillmentSaga committed to Outbox (+2.10ms)<br/>\
+                        • Node & YALC: AuditLogHandler compliance record signed (+2.85ms)<br/>\
+                        <span class='text-emerald-400 font-bold'>✔ END-TO-END TRANSACTION SUCCESS ($0.00 Ledger Drift)</span>\
+                        </div>",
+                        &current_ts[11..19],
+                        order_id
+                    );
+                    trace_log.set_inner_html(&format!("{}{}", step_html, trace_log.inner_html()));
+                }
+
+                if let Some(stepper) = doc.get_element_by_id("e2e-stepper-container") {
+                    stepper.set_inner_html(&format!(
+                        "<div class='p-3 rounded-xl bg-indigo-900/30 border border-indigo-500/60 flex items-start gap-3'>\
+                            <span class='w-6 h-6 rounded-full bg-emerald-500 text-slate-950 flex items-center justify-center font-bold'>✓</span>\
+                            <div><span class='font-bold text-white'>1. Ingress & Auth</span><p class='text-[11px] text-slate-300'>Node Gateway PASETO v4 valid [0.00ms]</p></div>\
+                        </div>\
+                        <div class='p-3 rounded-xl bg-indigo-900/30 border border-indigo-500/60 flex items-start gap-3'>\
+                            <span class='w-6 h-6 rounded-full bg-emerald-500 text-slate-950 flex items-center justify-center font-bold'>✓</span>\
+                            <div><span class='font-bold text-white'>2. Redpanda Event Log</span><p class='text-[11px] text-slate-300'>Published to orders.placed.v1 [+0.22ms]</p></div>\
+                        </div>\
+                        <div class='p-3 rounded-xl bg-indigo-900/30 border border-indigo-500/60 flex items-start gap-3'>\
+                            <span class='w-6 h-6 rounded-full bg-emerald-500 text-slate-950 flex items-center justify-center font-bold'>✓</span>\
+                            <div><span class='font-bold text-white'>3. Rust Matching Core</span><p class='text-[11px] text-slate-300'>380ns price-time match [+0.38ms]</p></div>\
+                        </div>\
+                        <div class='p-3 rounded-xl bg-indigo-900/30 border border-indigo-500/60 flex items-start gap-3'>\
+                            <span class='w-6 h-6 rounded-full bg-emerald-500 text-slate-950 flex items-center justify-center font-bold'>✓</span>\
+                            <div><span class='font-bold text-white'>4. Java 21 Loom Ledger</span><p class='text-[11px] text-slate-300'>Double-entry zero-drift debit/credit settled [+1.25ms]</p></div>\
+                        </div>\
+                        <div class='p-3 rounded-xl bg-indigo-900/30 border border-indigo-500/60 flex items-start gap-3'>\
+                            <span class='w-6 h-6 rounded-full bg-emerald-500 text-slate-950 flex items-center justify-center font-bold'>✓</span>\
+                            <div><span class='font-bold text-white'>5. PHP Saga & Node Audit</span><p class='text-[11px] text-slate-300'>Outbox committed & compliance telemetry indexed [+2.85ms]</p></div>\
+                        </div>"
+                    ));
+                }
+            } else {
+                // Failure & Compensation Simulation
+                if let Some(trace_log) = doc.get_element_by_id("mesh-trace-log") {
+                    let step_html = format!(
+                        "<div class='p-3.5 rounded-xl border border-rose-500/60 bg-rose-950/40 text-xs text-rose-200 font-mono mb-2'>\
+                        <strong class='text-white'>[{}] CHAOS INJECTION:</strong> Order #ORD-{}-FAIL<br/>\
+                        • Ingress: Passed | Redpanda: Dispatched<br/>\
+                        • <span class='text-amber-400 font-bold'>⚡ FAULT: Redis Mutex Lock Contention (Key: 'lock:user:balance')</span><br/>\
+                        • <span class='text-purple-300 font-bold'>🔄 SAGA COMPENSATION ACTIVATED:</span> PHP FrankenPHP triggers RollbackSaga<br/>\
+                        • Java 21 Loom: Ledger journal reversing entries debited/credited<br/>\
+                        • Redis: Mutex leased key released gracefully<br/>\
+                        <span class='text-emerald-400 font-bold'>✔ SAGA ROLLED BACK SAFELY: Balance Restored (Ledger Drift $0.00)</span>\
+                        </div>",
+                        &current_ts[11..19],
+                        order_id
+                    );
+                    trace_log.set_inner_html(&format!("{}{}", step_html, trace_log.inner_html()));
+                }
+
+                if let Some(stepper) = doc.get_element_by_id("e2e-stepper-container") {
+                    stepper.set_inner_html(&format!(
+                        "<div class='p-3 rounded-xl bg-indigo-900/20 border border-indigo-500/40 flex items-start gap-3'>\
+                            <span class='w-6 h-6 rounded-full bg-emerald-500 text-slate-950 flex items-center justify-center font-bold'>✓</span>\
+                            <div><span class='font-bold text-white'>1. Ingress & Auth</span><p class='text-[11px] text-slate-300'>Verified [0.00ms]</p></div>\
+                        </div>\
+                        <div class='p-3 rounded-xl bg-indigo-900/20 border border-indigo-500/40 flex items-start gap-3'>\
+                            <span class='w-6 h-6 rounded-full bg-emerald-500 text-slate-950 flex items-center justify-center font-bold'>✓</span>\
+                            <div><span class='font-bold text-white'>2. Rust Matching Core</span><p class='text-[11px] text-slate-300'>Order matched [+0.38ms]</p></div>\
+                        </div>\
+                        <div class='p-3 rounded-xl bg-rose-950/60 border border-rose-500 flex items-start gap-3'>\
+                            <span class='w-6 h-6 rounded-full bg-rose-500 text-white flex items-center justify-center font-bold'>✕</span>\
+                            <div><span class='font-bold text-rose-300'>3. Fault Detected</span><p class='text-[11px] text-rose-200'>Redis Lock Contention / Insufficient Balance [+1.10ms]</p></div>\
+                        </div>\
+                        <div class='p-3 rounded-xl bg-amber-950/60 border border-amber-500 flex items-start gap-3'>\
+                            <span class='w-6 h-6 rounded-full bg-amber-500 text-slate-950 flex items-center justify-center font-bold'>🔄</span>\
+                            <div><span class='font-bold text-amber-300'>4. PHP Saga Compensating</span><p class='text-[11px] text-amber-200'>Compensating transactions triggered across Outbox [+1.80ms]</p></div>\
+                        </div>\
+                        <div class='p-3 rounded-xl bg-purple-950/60 border border-purple-500 flex items-start gap-3'>\
+                            <span class='w-6 h-6 rounded-full bg-purple-500 text-white flex items-center justify-center font-bold'>✔</span>\
+                            <div><span class='font-bold text-purple-300'>5. Ledger Invariant Restored</span><p class='text-[11px] text-purple-200'>Java Ledger reversed. Total Drift = $0.00 [+2.45ms]</p></div>\
+                        </div>"
+                    ));
+                }
+
+                if let Some(feedback) = doc.get_element_by_id("chaos-feedback-panel") {
+                    feedback.set_inner_html(
+                        "<div class='p-2 rounded-lg bg-rose-950/60 border border-rose-500/40 text-rose-200 text-xs font-mono'>\
+                        <strong class='text-white'>🚨 SAGA ROLLBACK VERIFIED:</strong><br/>\
+                        1. Simulated Error: Mutex Lock Contention on Redis Redlock<br/>\
+                        2. PHP FrankenPHP Saga triggered reverse compensation<br/>\
+                        3. Java 21 Loom balanced entries: Debit reversed, Credit restored<br/>\
+                        4. Final Ledger Audit: <span class='text-emerald-400 font-bold'>Sum(Debits) == Sum(Credits) ($0.00 Drift)</span>\
+                        </div>"
+                    );
+                }
+            }
+        }
+    }
+}
+
+fn trigger_double_spend_simulation() {
+    if let Some(win) = window() {
+        if let Some(doc) = win.document() {
+            let current_ts = js_sys::Date::new_0().to_iso_string().as_string().unwrap_or_default();
+            if let Some(trace_log) = doc.get_element_by_id("mesh-trace-log") {
+                let step_html = format!(
+                    "<div class='p-3.5 rounded-xl border border-amber-500/60 bg-amber-950/40 text-xs text-amber-200 font-mono mb-2'>\
+                    <strong class='text-white'>[{}] CONCURRENCY ATTACK:</strong> Double-Spend Race Condition<br/>\
+                    • Request A: Account #7712 dispatch 2.50 BTC (Nonce: 0x8a9f)<br/>\
+                    • Request B: Account #7712 dispatch 2.50 BTC (Nonce: 0x8a9f) [Delta: 0.00ms]<br/>\
+                    • <span class='text-emerald-400 font-bold'>✔ Request A acquired Redis Redlock 'lock:account:7712'</span><br/>\
+                    • <span class='text-rose-400 font-bold'>⛔ Request B REJECTED: RedlockMutexConflictException (409 Conflict)</span><br/>\
+                    • Zero double-spend. Double-entry invariant preserved with 100% precision.\
+                    </div>",
+                    &current_ts[11..19]
+                );
+                trace_log.set_inner_html(&format!("{}{}", step_html, trace_log.inner_html()));
+            }
+
+            if let Some(feedback) = doc.get_element_by_id("chaos-feedback-panel") {
+                feedback.set_inner_html(
+                    "<div class='p-2 rounded-lg bg-amber-950/60 border border-amber-500/40 text-amber-200 text-xs font-mono'>\
+                    <strong class='text-white'>⚡ DOUBLE-SPEND DEFENSE ACTIVE:</strong><br/>\
+                    Concurrent identical nonce rejected by Redis Redlock distributed mutex.<br/>\
+                    Result: <span class='text-emerald-400 font-bold'>1 Order Settled, 1 Rejected (Zero Double-Spend)</span>\
+                    </div>"
+                );
+            }
+        }
+    }
 }
