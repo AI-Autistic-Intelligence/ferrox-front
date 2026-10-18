@@ -22,10 +22,10 @@ path = "src/main.rs"
 
 
 [dependencies]
-ferrox-front-core = { path = "../ferrox-front-core", version = "0.3.2" }
-ferrox-front-ui = { path = "../ferrox-front-ui", version = "0.3.2" }
-ferrox-front-router = { path = "../ferrox-front-router", version = "0.3.2" }
-ferrox-front-charts = { path = "../ferrox-front-charts", version = "0.3.2" }
+ferrox-front-core = { path = "../ferrox-front-core", version = "0.3.3" }
+ferrox-front-ui = { path = "../ferrox-front-ui", version = "0.3.3" }
+ferrox-front-router = { path = "../ferrox-front-router", version = "0.3.3" }
+ferrox-front-charts = { path = "../ferrox-front-charts", version = "0.3.3" }
 
 pulldown-cmark = { version = "0.13", default-features = false }
 serde = { version = "1.0", features = ["derive"] }
