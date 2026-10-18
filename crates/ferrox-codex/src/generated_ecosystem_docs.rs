@@ -36,6 +36,7 @@ pub fn register_all_ecosystem_docs(registry: &mut DocRegistry) {
     registry.register("ferrox-front/overview", include_str!("../docs/ferrox-front/overview.md"));
     registry.register("ferrox-front/overview/intro", include_str!("../docs/ferrox-front/overview/intro.md"));
     registry.register("ferrox-front/overview/quickstart", include_str!("../docs/ferrox-front/overview/quickstart.md"));
+    registry.register("ferrox-front/playbook-handbook", include_str!("../docs/ferrox-front/playbook-handbook.md"));
     registry.register("ferrox-front/security/security", include_str!("../docs/ferrox-front/security/security.md"));
     registry.register("ferrox-front/trading-desk", include_str!("../docs/ferrox-front/trading-desk.md"));
     registry.register("ferrox-front/transports/ws", include_str!("../docs/ferrox-front/transports/ws.md"));
@@ -588,6 +589,12 @@ pub fn build_complete_ecosystem_sidebar() -> Vec<DocNavItem> {
                             .with_href("/ferrox-front/overview/intro"),
                         DocNavItem::new("nav-ferrox-front-overview-quickstart", "Quickstart Guide")
                             .with_href("/ferrox-front/overview/quickstart"),
+                    ]),
+                DocNavItem::new("sub-ferrox-front-playbook-handbook", "Playbook Handbook")
+                    .with_icon("folder")
+                    .with_children(vec![
+                        DocNavItem::new("nav-ferrox-front-playbook-handbook", "Interactive Component Playbook & Design System Handbook")
+                            .with_href("/ferrox-front/playbook-handbook"),
                     ]),
                 DocNavItem::new("sub-ferrox-front-security", "Security")
                     .with_icon("folder")

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ferrox Front Interactive Nivo-Style Playground</title>
+    <title>Ferrox Front Interactive Vector Playground & Playbook</title>
     <style>
         :root[data-theme="ferrox-cyber"] {
             --bg-primary: #0a0a16;
@@ -72,7 +72,7 @@
             min-height: 100vh;
         }
 
-        .nivo-header {
+        .vector-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -109,17 +109,17 @@
             box-shadow: 0 0 12px var(--accent-glow);
         }
 
-        .nivo-workspace {
+        .vector-workspace {
             display: grid;
             grid-template-columns: 1fr 340px;
             gap: 1.25rem;
         }
 
         @media (max-width: 1024px) {
-            .nivo-workspace { grid-template-columns: 1fr; }
+            .vector-workspace { grid-template-columns: 1fr; }
         }
 
-        .nivo-canvas-card {
+        .vector-canvas-card {
             background: var(--bg-glass);
             backdrop-filter: blur(12px);
             border: var(--border-glass);
@@ -131,7 +131,7 @@
             min-height: 680px;
         }
 
-        .nivo-controls-panel {
+        .vector-controls-panel {
             background: var(--bg-panel);
             backdrop-filter: blur(16px);
             border: var(--border-glass);
@@ -295,11 +295,11 @@
 <body>
 
     <!-- TOP HEADER -->
-    <div class="nivo-header">
+    <div class="vector-header">
         <div style="display: flex; align-items: center; gap: 12px;">
             <span style="font-size: 1.4rem;">⚡</span>
             <div>
-                <h3 style="margin:0; font-size: 1.15rem;">Ferrox Front Interactive Nivo-Style Playground</h3>
+                <h3 style="margin:0; font-size: 1.15rem;">Ferrox Front Interactive Vector Playground & Playbook</h3>
                 <small style="color: var(--accent-cyan);">7 Vector SVG Chart Types • Live Data Editing • 1,000,000 DataGrid • 0-Trust Security</small>
             </div>
         </div>
@@ -320,13 +320,13 @@
     </div>
 
     <!-- MAIN WORKSPACE -->
-    <div class="nivo-workspace">
+    <div class="vector-workspace">
 
         <!-- LEFT: CANVAS CARD -->
-        <div class="nivo-canvas-card">
+        <div class="vector-canvas-card">
             
             <div class="tab-bar">
-                <div class="tab-item active" id="tab-chart" onclick="switchTab('chart')">📈 Nivo Vector SVG Charts</div>
+                <div class="tab-item active" id="tab-chart" onclick="switchTab('chart')">📈 Vector SVG Charts</div>
                 <div class="tab-item" id="tab-datagrid" onclick="switchTab('datagrid')">📊 Virtual DataGrid (1M Rows)</div>
                 <div class="tab-item" id="tab-security" onclick="switchTab('security')">🔒 0-Trust Security Simulator</div>
                 <div class="tab-item" id="tab-design" onclick="switchTab('design')">🎨 Design System Gallery</div>
@@ -488,10 +488,10 @@
         </div>
 
         <!-- RIGHT: CONTROL PANEL -->
-        <div class="nivo-controls-panel">
+        <div class="vector-controls-panel">
 
             <div style="font-weight: 700; font-size: 1rem; border-bottom: var(--border-glass); padding-bottom: 0.5rem;">
-                🎛️ Live Nivo Control Panel
+                🎛️ Live Vector Control Panel
             </div>
 
             <!-- EDITABLE JSON DATA -->
@@ -677,11 +677,11 @@
 
             let html = `
                 <defs>
-                    <linearGradient id="nivoGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <linearGradient id="vectorGrad" x1="0%" y1="0%" x2="100%" y2="0%">
                         <stop offset="0%" stop-color="var(--accent-glow)" stop-opacity="0.8"/>
                         <stop offset="100%" stop-color="var(--accent-cyan)" stop-opacity="0.9"/>
                     </linearGradient>
-                    <linearGradient id="nivoAreaGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <linearGradient id="vectorAreaGrad" x1="0%" y1="0%" x2="0%" y2="100%">
                         <stop offset="0%" stop-color="var(--accent-cyan)" stop-opacity="0.4"/>
                         <stop offset="100%" stop-color="var(--accent-cyan)" stop-opacity="0.0"/>
                     </linearGradient>
@@ -708,10 +708,10 @@
                 if (currentChartType === 'area' || showGradient) {
                     const last = chartData[chartData.length - 1];
                     const areaD = `${pathD} L ${last.x} 300 L ${chartData[0].x} 300 Z`;
-                    html += `<path d="${areaD}" fill="url(#nivoAreaGrad)" />`;
+                    html += `<path d="${areaD}" fill="url(#vectorAreaGrad)" />`;
                 }
 
-                html += `<path d="${pathD}" fill="none" stroke="url(#nivoGrad)" stroke-width="${strokeWidth}" stroke-linecap="round"/>`;
+                html += `<path d="${pathD}" fill="none" stroke="url(#vectorGrad)" stroke-width="${strokeWidth}" stroke-linecap="round"/>`;
 
                 if (showPoints) {
                     chartData.forEach((pt, idx) => {
@@ -841,7 +841,7 @@
 
         function updateRustCodeOutput() {
             const codeEl = document.getElementById('rust-code-output');
-            let rustCode = `// Auto-Generated Ferrox Front Nivo Chart Component Code
+            let rustCode = `// Auto-Generated Ferrox Front Vector Chart Component Code
 `;
             if (activeTab === 'chart') {
                 rustCode += `use ferrox_front_charts::{${currentChartType}_chart, ${currentChartType === 'bar' ? 'BarDatum' : (currentChartType === 'donut' ? 'PieDatum' : (currentChartType === 'radar' ? 'RadarDatum' : 'Point'))}};

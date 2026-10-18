@@ -6,7 +6,7 @@ sidebar_position: 6
 
 # 🎨 Component Library & Interactive Playground
 
-Explore and interact with the **Ferrox Front** component library live in your browser using our **Nivo-Style Interactive Playground**.
+Explore and interact with the **Ferrox Front** component library live in your browser using our **Interactive Vector Playground & Playbook**.
 
 You can edit JSON datasets live in real-time, adjust dynamic sliders (stroke width, curve styles, row counts), toggle glassmorphism themes, simulate **Zero-Trust RBAC security actions**, and inspect auto-generated Rust component code (`rsx!`).
 

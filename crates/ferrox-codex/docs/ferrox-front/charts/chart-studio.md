@@ -1,14 +1,14 @@
 ---
 id: chart-studio
-title: Nivo-Style Chart Studio & Playbook
+title: Vector Chart Studio & Playbook
 sidebar_position: 2
 ---
 
 import FerroxWasmPlayground from '@site/src/components/FerroxWasmPlayground';
 
-# 📈 Nivo-Style Chart Studio & Playbook
+# 📈 Vector Chart Studio & Playbook
 
-Ferrox Front includes a high-performance vector charting engine inspired by **Nivo**, but engineered in **100% pure Rust WebAssembly with zero JavaScript charting dependencies**.
+Ferrox Front includes a high-performance vector charting engine engineered in **100% pure Rust WebAssembly with zero JavaScript charting dependencies**.
 
 The **Chart Studio** is an interactive playbook where developers and data scientists can manipulate datasets, toggle visual rendering parameters, inspect live SVG geometry, and copy production-ready Rust code snippets.
 
@@ -18,13 +18,13 @@ The **Chart Studio** is an interactive playbook where developers and data scient
 
 Use the interactive workbench below to switch chart types, add/remove data points, trigger simulated market trends, and copy synchronized Rust code:
 
-<FerroxWasmPlayground initialTab="chart-studio" height="880px" title="Ferrox Front • Nivo-Style Chart Studio & Playbook" />
+<FerroxWasmPlayground initialTab="chart-studio" height="880px" title="Ferrox Front • Vector Chart Studio & Playbook" />
 
 ---
 
-## 🚀 Key Advantages Over Traditional JS Charting (Nivo / Recharts / Chart.js)
+## 🚀 Key Advantages Over Traditional JS Charting (Recharts / Chart.js)
 
-| Feature | Nivo / React Chart Libraries | Ferrox Front WebAssembly Charts |
+| Feature | React / JS Chart Libraries | Ferrox Front WebAssembly Charts |
 | :--- | :--- | :--- |
 | **Runtime Engine** | JavaScript Virtual DOM (React) | Native WebAssembly Linear Memory |
 | **Bundle Size Overhead** | ~400 KB - 1.2 MB JS | **0 KB JS** (Compiled into Wasm binary) |

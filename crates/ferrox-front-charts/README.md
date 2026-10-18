@@ -31,7 +31,7 @@ It renders financial trading desk charts and monitoring telemetry at 60 FPS whil
    - Ultra-compact vector mini-chart (`SparklineType::Line`, `SparklineType::Area`, `SparklineType::Bar`).
    - Built specifically for embedding directly in DataGrid table cells and KPI cards.
 
-### 📊 Nivo-Style Core Charts
+### 📊 High-Performance Vector SVG Core Charts
 5. `line_chart(id, data, width, height, show_axes)`: Vector line chart with gradient stroke, grid lines, and data point circles.
 6. `area_chart(data, width, height)`: Gradient-filled area chart with baseline tapering.
 7. `bar_chart(id, data, width, height, show_axes)`: Rounded vertical bar chart with value labels.

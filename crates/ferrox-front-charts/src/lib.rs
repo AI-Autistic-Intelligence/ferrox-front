@@ -1,10 +1,10 @@
 //! # Ferrox Front Charts (`ferrox-front-charts`)
 //!
-//! `ferrox-front-charts` provides a pure WebAssembly vector SVG charting engine inspired by Nivo.
-//! It renders high-performance, responsive, theme-aware data visualisations directly as native SVG elements
+//! `ferrox-front-charts` provides a high-performance pure WebAssembly vector SVG charting engine.
+//! It renders responsive, theme-aware data visualisations directly as native SVG elements
 //! without external JavaScript charting libraries.
 //!
-//! ## 📈 Supported Nivo-Style & Enterprise Chart Types
+//! ## 📈 Supported Enterprise Vector SVG Chart Types
 //! 1. `line_chart`: Smooth spline or linear vector line graphs with markers and hover tooltips.
 //! 2. `area_chart`: Gradient-filled area charts with customizable baseline and stop opacities.
 //! 3. `bar_chart`: Grouped/stacked vertical bar charts with rounded corners and value labels.
@@ -196,7 +196,7 @@ pub struct ScatterDatum {
     pub color: String,
 }
 
-/// Renders a Nivo-style Vector SVG Line Chart with gradient strokes.
+/// Renders a high-performance Vector SVG Line Chart with gradient strokes.
 pub fn line_chart(id: &str, data: Vec<Point>, width: u32, height: u32, show_axes: bool) -> DomBuilder {
     let mut path_d = String::new();
     
@@ -334,7 +334,7 @@ pub fn line_chart(id: &str, data: Vec<Point>, width: u32, height: u32, show_axes
     div().child(svg)
 }
 
-/// Renders a Nivo-style Gradient Area Chart with filled baseline opacity.
+/// Renders a high-performance Gradient Area Chart with filled baseline opacity.
 pub fn area_chart(data: Vec<Point>, width: u32, height: u32) -> DomBuilder {
     let mut line_d = String::new();
     if !data.is_empty() {
@@ -456,7 +456,7 @@ pub fn bar_chart(id: &str, data: Vec<BarDatum>, width: u32, height: u32, show_ax
     div().child(svg)
 }
 
-/// Renders a Nivo-style Donut Chart with inner radius cutout and center text.
+/// Renders a high-performance Vector SVG Donut Chart with inner radius cutout and center text.
 pub fn donut_chart(data: Vec<PieDatum>, radius: f64, inner_radius: f64, center_title: &str, center_val: &str) -> DomBuilder {
     let size = (radius * 2.0) + 40.0;
     let cx = size / 2.0;
@@ -525,7 +525,7 @@ pub fn donut_chart(data: Vec<PieDatum>, radius: f64, inner_radius: f64, center_t
     div().child(svg.child(title_text).child(val_text))
 }
 
-/// Renders a Nivo-style Polygonal Radar (Spider) Chart for multi-attribute evaluation.
+/// Renders a high-performance Polygonal Radar (Spider) Chart for multi-attribute evaluation.
 pub fn radar_chart(data: Vec<RadarDatum>, radius: f64) -> DomBuilder {
     let size = (radius * 2.0) + 80.0;
     let cx = size / 2.0;
@@ -589,7 +589,7 @@ pub fn radar_chart(data: Vec<RadarDatum>, radius: f64) -> DomBuilder {
     div().child(svg.child(polygon))
 }
 
-/// Renders a Nivo-style Scatter Plot Chart with variable node radii and color mapping.
+/// Renders a high-performance Vector SVG Scatter Plot Chart with variable node radii and color mapping.
 pub fn scatter_chart(data: Vec<ScatterDatum>, width: u32, height: u32) -> DomBuilder {
     let mut svg = DomBuilder::new_svg("svg")
         .attr("class", "ferrox-svg-scatter-chart")
@@ -1330,13 +1330,104 @@ pub fn candlestick_chart(id: &str, data: Vec<CandleDatum>, width: u32, height: u
     financial_technical_chart(id, &data, &TechnicalChartOptions::default(), width, height)
 }
 
+/// Configuration options for customizable GaugeMeter charts.
+#[derive(Debug, Clone)]
+pub struct GaugeChartOptions {
+    /// Warning threshold ratio [0.0..1.0] where color shifts to warning (default: 0.60).
+    pub warning_threshold: f64,
+    /// Critical threshold ratio [0.0..1.0] where color shifts to danger (default: 0.82).
+    pub critical_threshold: f64,
+    /// Color for normal zone (default: #10b981 - Emerald).
+    pub normal_color: String,
+    /// Color for warning zone (default: #f59e0b - Amber).
+    pub warning_color: String,
+    /// Color for critical zone (default: #ef4444 - Crimson).
+    pub critical_color: String,
+    /// Optional fixed custom color (overrides normal/warning/critical thresholds if set).
+    pub custom_color: Option<String>,
+    /// Stroke width of the gauge track arc (default: 11.0).
+    pub track_width: f64,
+    /// Show or hide the graduated radial ticks (default: true).
+    pub show_ticks: bool,
+    /// Background color of the center hub disc (default: rgba(15, 23, 42, 0.65)).
+    pub hub_background: String,
+    /// Border color of the center hub disc (default: rgba(148, 163, 184, 0.22)).
+    pub hub_border: String,
+}
+
+impl Default for GaugeChartOptions {
+    fn default() -> Self {
+        Self {
+            warning_threshold: 0.60,
+            critical_threshold: 0.82,
+            normal_color: "#10b981".to_string(),
+            warning_color: "#f59e0b".to_string(),
+            critical_color: "#ef4444".to_string(),
+            custom_color: None,
+            track_width: 11.0,
+            show_ticks: true,
+            hub_background: "rgba(15, 23, 42, 0.65)".to_string(),
+            hub_border: "rgba(148, 163, 184, 0.22)".to_string(),
+        }
+    }
+}
+
+/// Resolves the color of the gauge value arc based on ratio and threshold options.
+pub fn gauge_resolve_color<'a>(ratio: f64, options: &'a GaugeChartOptions) -> &'a str {
+    if let Some(ref c) = options.custom_color {
+        c.as_str()
+    } else if ratio < options.warning_threshold {
+        &options.normal_color
+    } else if ratio < options.critical_threshold {
+        &options.warning_color
+    } else {
+        &options.critical_color
+    }
+}
+
+/// Calculates the SVG path definition `d` and end coordinates for a gauge arc on a semicircle.
+///
+/// Guaranteed properties:
+/// 1. Semicircular angle sweeps clockwise from -PI (180 deg) up to 0 (0 deg).
+/// 2. `large-arc` flag is strictly `0` so the path never bulges outside the semicircle track.
+/// 3. Returns `(path_d, end_x, end_y)`.
+pub fn gauge_arc_geometry(cx: f64, cy: f64, radius: f64, ratio: f64) -> (String, f64, f64) {
+    let clamped_ratio = ratio.clamp(0.0, 1.0);
+    let start_angle = -PI;
+    let current_angle = start_angle + clamped_ratio * PI;
+    let bg_x1 = cx - radius;
+    let bg_y1 = cy;
+    let val_x2 = cx + radius * current_angle.cos();
+    let val_y2 = cy + radius * current_angle.sin();
+    let d = format!(
+        "M {:.2} {:.2} A {:.2} {:.2} 0 0 1 {:.2} {:.2}",
+        bg_x1, bg_y1, radius, radius, val_x2, val_y2
+    );
+    (d, val_x2, val_y2)
+}
+
 /// Renders a high-precision semi-circular Speedometer/Gauge Chart with graduated arc, needle, and KPI readout.
 pub fn gauge_chart(id: &str, value: f64, min: f64, max: f64, label: &str, unit: &str, width: u32, height: u32) -> DomBuilder {
+    gauge_chart_styled(id, value, min, max, label, unit, width, height, &GaugeChartOptions::default())
+}
+
+/// Renders a fully customizable semi-circular Speedometer/Gauge Chart with configurable thresholds, track, and colors.
+pub fn gauge_chart_styled(
+    id: &str,
+    value: f64,
+    min: f64,
+    max: f64,
+    label: &str,
+    unit: &str,
+    width: u32,
+    height: u32,
+    options: &GaugeChartOptions,
+) -> DomBuilder {
     let w = width as f64;
     let h = height as f64;
     let cx = w / 2.0;
-    let cy = (h * 0.65).round();
-    let outer_radius = ((w / 2.0) - 28.0).min(cy - 12.0).max(45.0);
+    let cy = (h * 0.68).round();
+    let outer_radius = ((w / 2.0) - 28.0).min(cy - 14.0).max(45.0);
     let hub_radius = (outer_radius * 0.58).round().max(28.0);
 
     let span = (max - min).max(0.001);
@@ -1346,26 +1437,23 @@ pub fn gauge_chart(id: &str, value: f64, min: f64, max: f64, label: &str, unit: 
     let start_angle = -PI;
     let current_angle = start_angle + ratio * PI;
 
-    // Outer Background Track Arc
+    // Outer Background Track Arc (Semicircle from cx - r to cx + r)
     let bg_x1 = cx - outer_radius;
     let bg_y1 = cy;
     let bg_x2 = cx + outer_radius;
     let bg_y2 = cy;
-    let bg_d = format!("M {} {} A {} {} 0 0 1 {} {}", bg_x1, bg_y1, outer_radius, outer_radius, bg_x2, bg_y2);
+    let bg_d = format!(
+        "M {:.2} {:.2} A {:.2} {:.2} 0 0 1 {:.2} {:.2}",
+        bg_x1, bg_y1, outer_radius, outer_radius, bg_x2, bg_y2
+    );
 
-    // Value Arc
-    let val_x2 = cx + outer_radius * current_angle.cos();
-    let val_y2 = cy + outer_radius * current_angle.sin();
-    let large_arc = if ratio > 0.5 { "1" } else { "0" };
-    let val_d = format!("M {} {} A {} {} 0 {} 1 {} {}", bg_x1, bg_y1, outer_radius, outer_radius, large_arc, val_x2, val_y2);
+    // Value Arc: for any semicircle angle (ratio in [0, 1]), the arc is <= 180 degrees.
+    // SVG large-arc flag MUST strictly be 0 so the arc never bulges outside the top semicircular track.
+    let (val_d, val_x2, val_y2) = gauge_arc_geometry(cx, cy, outer_radius, ratio);
 
-    let val_color = if ratio < 0.60 {
-        "#10b981" // Emerald
-    } else if ratio < 0.82 {
-        "#f59e0b" // Amber
-    } else {
-        "#ef4444" // Crimson
-    };
+    let val_color = gauge_resolve_color(ratio, options);
+
+    let track_w_str = format!("{:.1}", options.track_width);
 
     let mut svg = DomBuilder::new_svg("svg")
         .attr("id", id)
@@ -1381,8 +1469,8 @@ pub fn gauge_chart(id: &str, value: f64, min: f64, max: f64, label: &str, unit: 
             .attr("d", &bg_d)
             .attr("fill", "none")
             .attr("stroke", "rgba(148, 163, 184, 0.16)")
-            .attr("stroke-width", "11")
-            .attr("stroke-linecap", "round")
+            .attr("stroke-width", &track_w_str)
+            .attr("stroke-linecap", "round"),
     );
 
     // 2. Active Value Fill Arc
@@ -1392,116 +1480,117 @@ pub fn gauge_chart(id: &str, value: f64, min: f64, max: f64, label: &str, unit: 
                 .attr("d", &val_d)
                 .attr("fill", "none")
                 .attr("stroke", val_color)
-                .attr("stroke-width", "11")
-                .attr("stroke-linecap", "round")
+                .attr("stroke-width", &track_w_str)
+                .attr("stroke-linecap", "round"),
         );
     }
 
     // 3. Graduated Ticks at 0%, 25%, 50%, 75%, 100%
-    for step in [0.0, 0.25, 0.50, 0.75, 1.0] {
-        let tick_angle = start_angle + step * PI;
-        let r_inner = outer_radius + 9.0;
-        let r_outer = outer_radius + 15.0;
+    if options.show_ticks {
+        for step in [0.0, 0.25, 0.50, 0.75, 1.0] {
+            let tick_angle = start_angle + step * PI;
+            let r_inner = outer_radius + 8.0;
+            let r_outer = outer_radius + 15.0;
 
-        let x_in = cx + r_inner * tick_angle.cos();
-        let y_in = cy + r_inner * tick_angle.sin();
-        let x_out = cx + r_outer * tick_angle.cos();
-        let y_out = cy + r_outer * tick_angle.sin();
+            let x_in = cx + r_inner * tick_angle.cos();
+            let y_in = cy + r_inner * tick_angle.sin();
+            let x_out = cx + r_outer * tick_angle.cos();
+            let y_out = cy + r_outer * tick_angle.sin();
 
-        svg = svg.child(
-            DomBuilder::new_svg("line")
-                .attr("x1", &x_in.to_string())
-                .attr("y1", &y_in.to_string())
-                .attr("x2", &x_out.to_string())
-                .attr("y2", &y_out.to_string())
-                .attr("stroke", "rgba(148, 163, 184, 0.35)")
-                .attr("stroke-width", "1.5")
-                .attr("stroke-linecap", "round")
-        );
+            svg = svg.child(
+                DomBuilder::new_svg("line")
+                    .attr("x1", &format!("{:.2}", x_in))
+                    .attr("y1", &format!("{:.2}", y_in))
+                    .attr("x2", &format!("{:.2}", x_out))
+                    .attr("y2", &format!("{:.2}", y_out))
+                    .attr("stroke", "rgba(148, 163, 184, 0.35)")
+                    .attr("stroke-width", "1.5")
+                    .attr("stroke-linecap", "round"),
+            );
+        }
     }
 
-    // 4. Center Cockpit Hub / Digital Pod (Sleek Disc protecting text from needle)
+    // 4. Center Cockpit Hub / Digital Pod (Concentric Disc protecting text from needle)
     svg = svg.child(
         DomBuilder::new_svg("circle")
-            .attr("cx", &cx.to_string())
-            .attr("cy", &(cy - 2.0).to_string())
-            .attr("r", &hub_radius.to_string())
-            .attr("fill", "rgba(15, 23, 42, 0.65)")
-            .attr("stroke", "rgba(148, 163, 184, 0.22)")
-            .attr("stroke-width", "1.5")
+            .attr("cx", &format!("{:.2}", cx))
+            .attr("cy", &format!("{:.2}", cy))
+            .attr("r", &format!("{:.2}", hub_radius))
+            .attr("fill", &options.hub_background)
+            .attr("stroke", &options.hub_border)
+            .attr("stroke-width", "1.5"),
     );
 
     // 5. Radial Pointer Hand: Extends from outer edge of hub (hub_radius + 2.0) to arc track (outer_radius)
-    // Never enters the hub disc, so it can NEVER overlap or slice through the numbers or labels!
+    // Co-aligned with cx, cy so it is 100% concentric with track and value arc.
     let r_needle_start = hub_radius + 2.0;
-    let r_needle_end = outer_radius + 1.0;
     let n_x1 = cx + r_needle_start * current_angle.cos();
-    let n_y1 = (cy - 2.0) + r_needle_start * current_angle.sin();
-    let n_x2 = cx + r_needle_end * current_angle.cos();
-    let n_y2 = (cy - 2.0) + r_needle_end * current_angle.sin();
+    let n_y1 = cy + r_needle_start * current_angle.sin();
+    let n_x2 = val_x2;
+    let n_y2 = val_y2;
 
     svg = svg.child(
         DomBuilder::new_svg("line")
-            .attr("x1", &n_x1.to_string())
-            .attr("y1", &n_y1.to_string())
-            .attr("x2", &n_x2.to_string())
-            .attr("y2", &n_y2.to_string())
+            .attr("x1", &format!("{:.2}", n_x1))
+            .attr("y1", &format!("{:.2}", n_y1))
+            .attr("x2", &format!("{:.2}", n_x2))
+            .attr("y2", &format!("{:.2}", n_y2))
             .attr("stroke", "#ffffff")
             .attr("stroke-width", "3.0")
-            .attr("stroke-linecap", "round")
+            .attr("stroke-linecap", "round"),
     ).child(
-        // Indicator Bead on the track
+        // Indicator Bead on the track - perfectly concentric at needle end (val_x2, val_y2)
         DomBuilder::new_svg("circle")
-            .attr("cx", &n_x2.to_string())
-            .attr("cy", &n_y2.to_string())
+            .attr("cx", &format!("{:.2}", n_x2))
+            .attr("cy", &format!("{:.2}", n_y2))
             .attr("r", "4.0")
             .attr("fill", val_color)
             .attr("stroke", "#ffffff")
-            .attr("stroke-width", "1.5")
+            .attr("stroke-width", "1.5"),
     );
 
     // 6. Primary Numeric Readout safely centered inside the Hub Disc
     let readout_str = format!("{:.1} {}", value, unit);
     svg = svg.child(
         DomBuilder::new_svg("text")
-            .attr("x", &cx.to_string())
-            .attr("y", &(cy - 5.0).to_string())
+            .attr("x", &format!("{:.2}", cx))
+            .attr("y", &format!("{:.2}", cy - 4.0))
             .attr("text-anchor", "middle")
             .attr("fill", "var(--text-primary, #ffffff)")
             .attr("font-size", "15")
             .attr("font-weight", "800")
-            .text(&readout_str)
+            .text(&readout_str),
     ).child(
         // Secondary Metric Label inside the Hub Disc
         DomBuilder::new_svg("text")
-            .attr("x", &cx.to_string())
-            .attr("y", &(cy + 9.0).to_string())
+            .attr("x", &format!("{:.2}", cx))
+            .attr("y", &format!("{:.2}", cy + 13.0))
             .attr("text-anchor", "middle")
             .attr("fill", "var(--text-secondary, #94a3b8)")
             .attr("font-size", "9")
             .attr("font-weight", "700")
             .attr("letter-spacing", "0.04em")
-            .text(&label.to_uppercase())
+            .text(&label.to_uppercase()),
     ).child(
         // Min Label at bottom left of arc
         DomBuilder::new_svg("text")
-            .attr("x", &(cx - outer_radius).to_string())
-            .attr("y", &(cy + 17.0).to_string())
+            .attr("x", &format!("{:.2}", cx - outer_radius))
+            .attr("y", &format!("{:.2}", cy + 18.0))
             .attr("text-anchor", "middle")
             .attr("fill", "var(--text-secondary, #94a3b8)")
             .attr("font-size", "10")
             .attr("font-weight", "600")
-            .text(&format!("{:.0}", min))
+            .text(&format!("{:.0}", min)),
     ).child(
         // Max Label at bottom right of arc
         DomBuilder::new_svg("text")
-            .attr("x", &(cx + outer_radius).to_string())
-            .attr("y", &(cy + 17.0).to_string())
+            .attr("x", &format!("{:.2}", cx + outer_radius))
+            .attr("y", &format!("{:.2}", cy + 18.0))
             .attr("text-anchor", "middle")
             .attr("fill", "var(--text-secondary, #94a3b8)")
             .attr("font-size", "10")
             .attr("font-weight", "600")
-            .text(&format!("{:.0}", max))
+            .text(&format!("{:.0}", max)),
     );
 
     div()

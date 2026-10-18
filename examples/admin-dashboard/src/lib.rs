@@ -200,7 +200,7 @@ fn render_top_bar(active_tab: &str, cmd_palette: &CommandPaletteState) -> DomBui
             button_advanced("📈 Charting Suite", "glass", "sm", false, None)
                 .attr("style", if active_tab == "charts" { "background: var(--accent-primary); color: #fff; font-weight: 700; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);" } else { "opacity: 0.8;" })
                 .on_click(|| render_app("charts")),
-            button_advanced("📊 Nivo Chart Studio", "glass", "sm", false, None)
+            button_advanced("📊 Chart Studio & Playbook", "glass", "sm", false, None)
                 .attr("style", if active_tab == "chart-studio" { "background: var(--accent-primary); color: #fff; font-weight: 700; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);" } else { "opacity: 0.8;" })
                 .on_click(|| render_app("chart-studio")),
             button_advanced("🎨 Theme Studio", "glass", "sm", false, None)
@@ -1321,7 +1321,7 @@ fn create_command_palette() -> CommandPaletteState {
         CommandAction::new("act-datagrid", "Go to Enterprise DataGrid", "1,000 orders grid, filters, and CSV export", "Navigation", "grid", Some("G D"), || render_app("datagrid")),
         CommandAction::new("act-components", "Go to UI Elements & Design System", "Interactive buttons, inputs, toggles, and icons", "Navigation", "zap", Some("G C"), || render_app("components")),
         CommandAction::new("act-charts", "Go to SVG Financial Charting Suite", "Candlesticks, depth curve, gauges, and sparklines", "Navigation", "activity", Some("G H"), || render_app("charts")),
-        CommandAction::new("act-chart-studio", "Go to Nivo Chart Studio", "Interactive SVG vector chart playbook & code generator", "Navigation", "trend-up", Some("G S"), || render_app("chart-studio")),
+        CommandAction::new("act-chart-studio", "Go to Vector Chart Studio", "Interactive SVG vector chart playbook & code generator", "Navigation", "trend-up", Some("G S"), || render_app("chart-studio")),
         CommandAction::new("act-theme-studio", "Go to Theme Studio & Exporter", "Live color tokens, border radius & CSS export", "Navigation", "palette", Some("G P"), || render_app("theme-studio")),
         CommandAction::new("act-form", "Go to Form Validation Wizard", "Multi-step onboarding with strict validation", "Navigation", "file-text", Some("G F"), || render_app("form")),
         CommandAction::new("act-explorer", "Go to Explorer & Overlays", "TreeView, Vector DatePicker, and controls", "Navigation", "folder", Some("G E"), || render_app("explorer")),
