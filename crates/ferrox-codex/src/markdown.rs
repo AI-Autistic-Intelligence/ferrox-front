@@ -287,19 +287,19 @@ pub fn render_markdown(
         match event {
             Event::Start(tag) => match tag {
                 Tag::Paragraph => {
-                    element_stack.push(p().class("text-base lg:text-[17px] leading-[1.8] text-slate-200 mb-6 font-normal"));
+                    element_stack.push(p().class("text-sm sm:text-base lg:text-[17px] leading-[1.75] text-slate-200 mb-5 font-normal break-words"));
                 }
                 Tag::Heading { level, .. } => {
                     in_heading = true;
                     current_heading_level = level;
                     current_heading_text.clear();
                     let h_el = match level {
-                        HeadingLevel::H1 => h1().class("font-extrabold text-3xl sm:text-4xl lg:text-[42px] text-white tracking-tight leading-[1.2] pb-5 mb-8 border-b border-slate-800/80"),
-                        HeadingLevel::H2 => h2().class("font-bold text-2xl sm:text-3xl lg:text-[28px] text-slate-100 tracking-tight leading-snug mt-12 mb-5 pt-6 border-t border-slate-800/60 group flex items-center gap-2"),
-                        HeadingLevel::H3 => h3().class("font-semibold text-xl sm:text-2xl text-indigo-300 tracking-tight leading-snug mt-10 mb-4 flex items-center gap-2"),
-                        HeadingLevel::H4 => h4().class("font-semibold text-lg sm:text-xl text-slate-200 mt-8 mb-3"),
-                        HeadingLevel::H5 => h5().class("font-semibold text-base sm:text-lg text-slate-300 mt-6 mb-2"),
-                        HeadingLevel::H6 => h6().class("font-medium text-sm sm:text-base text-slate-400 mt-4 mb-2 uppercase tracking-wider"),
+                        HeadingLevel::H1 => h1().class("font-extrabold text-2xl sm:text-4xl lg:text-[40px] text-white tracking-tight leading-[1.2] pb-4 mb-6 border-b border-slate-800/80 break-words"),
+                        HeadingLevel::H2 => h2().class("font-bold text-xl sm:text-2xl lg:text-[28px] text-slate-100 tracking-tight leading-snug mt-10 mb-4 pt-5 border-t border-slate-800/60 group flex items-center gap-2 break-words"),
+                        HeadingLevel::H3 => h3().class("font-semibold text-lg sm:text-xl lg:text-2xl text-indigo-300 tracking-tight leading-snug mt-8 mb-3 flex items-center gap-2 break-words"),
+                        HeadingLevel::H4 => h4().class("font-semibold text-base sm:text-lg lg:text-xl text-slate-200 mt-6 mb-2.5 break-words"),
+                        HeadingLevel::H5 => h5().class("font-semibold text-sm sm:text-base text-slate-300 mt-5 mb-2 break-words"),
+                        HeadingLevel::H6 => h6().class("font-medium text-xs sm:text-sm text-slate-400 mt-4 mb-2 uppercase tracking-wider break-words"),
                     };
                     element_stack.push(h_el);
                 }
@@ -313,31 +313,31 @@ pub fn render_markdown(
                 }
                 Tag::List(first_num) => {
                     if first_num.is_some() {
-                        element_stack.push(ol().class("list-decimal list-outside space-y-3.5 my-6 pl-6 text-slate-200 text-base lg:text-[17px] leading-[1.8]"));
+                        element_stack.push(ol().class("list-decimal list-outside space-y-2.5 sm:space-y-3.5 my-5 pl-5 sm:pl-6 text-slate-200 text-sm sm:text-base lg:text-[17px] leading-[1.75]"));
                     } else {
-                        element_stack.push(ul().class("list-disc list-outside space-y-3.5 my-6 pl-6 text-slate-200 text-base lg:text-[17px] leading-[1.8]"));
+                        element_stack.push(ul().class("list-disc list-outside space-y-2.5 sm:space-y-3.5 my-5 pl-5 sm:pl-6 text-slate-200 text-sm sm:text-base lg:text-[17px] leading-[1.75]"));
                     }
                 }
                 Tag::Item => {
-                    element_stack.push(li().class("leading-[1.8]"));
+                    element_stack.push(li().class("leading-[1.75]"));
                 }
                 Tag::BlockQuote(_) => {
-                    element_stack.push(div().class("my-6 pl-5 border-l-4 border-indigo-500 italic text-slate-200 text-base lg:text-[17px] leading-[1.8] bg-indigo-950/20 py-4 pr-5 rounded-r-2xl"));
+                    element_stack.push(div().class("my-5 sm:my-6 pl-4 sm:pl-5 border-l-4 border-indigo-500 italic text-slate-200 text-sm sm:text-base lg:text-[17px] leading-[1.75] bg-indigo-950/20 py-3 sm:py-4 pr-4 sm:pr-5 rounded-r-2xl"));
                 }
                 Tag::Table(_alignments) => {
-                    let wrapper = div().class("overflow-x-auto my-8 rounded-2xl border border-slate-800 bg-slate-950/60 backdrop-blur-md shadow-2xl");
-                    let tbl = table().class("w-full text-left text-sm sm:text-base text-slate-200 border-collapse");
+                    let wrapper = div().class("overflow-x-auto my-6 sm:my-8 rounded-xl sm:rounded-2xl border border-slate-800 bg-slate-950/60 backdrop-blur-md shadow-2xl");
+                    let tbl = table().class("w-full text-left text-xs sm:text-sm text-slate-200 border-collapse");
                     element_stack.push(wrapper);
                     element_stack.push(tbl);
                 }
                 Tag::TableHead => {
-                    element_stack.push(thead().class("bg-slate-900/90 text-xs sm:text-sm uppercase font-bold tracking-wider text-slate-300 border-b border-slate-800"));
+                    element_stack.push(thead().class("bg-slate-900/90 text-[11px] sm:text-xs uppercase font-bold tracking-wider text-slate-300 border-b border-slate-800"));
                 }
                 Tag::TableRow => {
                     element_stack.push(tr().class("hover:bg-slate-900/50 transition-colors border-b border-slate-800/40"));
                 }
                 Tag::TableCell => {
-                    element_stack.push(td().class("py-4 px-5 font-normal"));
+                    element_stack.push(td().class("py-2.5 sm:py-4 px-3 sm:px-5 font-normal"));
                 }
                 Tag::Emphasis => {
                     element_stack.push(span().class("italic text-slate-200"));

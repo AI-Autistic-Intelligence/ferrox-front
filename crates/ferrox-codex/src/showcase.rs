@@ -96,18 +96,18 @@ fn generate_mock_candles() -> Vec<CandleDatum> {
 pub fn render_showcase_page(_router: &Router) -> DomBuilder {
     // Header Hero Banner
     let header_hero = div()
-        .class("flex flex-col mb-10 pb-8 border-b border-slate-800/80")
+        .class("flex flex-col mb-8 sm:mb-10 pb-6 sm:pb-8 border-b border-slate-800/80")
         .children(vec![
-            div().class("flex items-center gap-2 mb-3").children(vec![
-                span().class("px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30").text("Native Dogfooding"),
-                span().class("px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30").text("Zero JavaScript"),
-                span().class("px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-purple-500/20 text-purple-300 border border-purple-500/30").text("60 FPS Wasm"),
+            div().class("flex flex-wrap items-center gap-1.5 sm:gap-2 mb-3").children(vec![
+                span().class("px-2.5 py-0.5 rounded-full text-[11px] sm:text-xs font-mono font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30").text("Native Dogfooding"),
+                span().class("px-2.5 py-0.5 rounded-full text-[11px] sm:text-xs font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30").text("Zero JavaScript"),
+                span().class("px-2.5 py-0.5 rounded-full text-[11px] sm:text-xs font-mono font-bold bg-purple-500/20 text-purple-300 border border-purple-500/30").text("60 FPS Wasm"),
             ]),
             h1()
-                .class("text-3xl sm:text-5xl font-black text-white tracking-tight mb-4")
+                .class("text-2xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight mb-3 sm:mb-4 break-words")
                 .text("⚡ Ferrox Front Interactive Showcase"),
             p()
-                .class("text-base sm:text-lg text-slate-300 leading-relaxed max-w-3xl")
+                .class("text-sm sm:text-base lg:text-lg text-slate-300 leading-relaxed max-w-3xl")
                 .text("All components below execute natively inside WebAssembly linear memory using ferrox-front-ui and ferrox-front-charts. No iframes, no React reconciliation overhead, and zero external JavaScript libraries."),
         ]);
 
@@ -126,7 +126,7 @@ pub fn render_showcase_page(_router: &Router) -> DomBuilder {
     let showcase_tabs = tab_group(panels, 0);
 
     div()
-        .class("ferrox-showcase w-full max-w-6xl mx-auto py-8 px-4 sm:px-8")
+        .class("ferrox-showcase w-full max-w-6xl mx-auto py-6 sm:py-8 px-3.5 sm:px-8")
         .children(vec![header_hero, showcase_tabs])
 }
 

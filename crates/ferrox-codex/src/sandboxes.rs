@@ -90,7 +90,7 @@ pub fn render_datagrid_sandbox() -> DomBuilder {
 
     // Telemetry Cards
     let telemetry = div()
-        .class("grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6")
+        .class("grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 mb-4 sm:mb-6")
         .children(vec![
             telemetry_metric_card("Virtual Dataset", "1,000,000", Some("Synthetic Rows"), "database", "#6366f1"),
             telemetry_metric_card("Render Pipeline", "60 FPS", Some("Zero VDOM Lag"), "zap", "#10b981"),
@@ -127,7 +127,7 @@ pub fn render_datagrid_sandbox() -> DomBuilder {
 
     // Fast Page Jump Controls
     let nav_buttons = div()
-        .class("flex items-center gap-1.5")
+        .class("flex flex-wrap items-center gap-1.5")
         .children(vec![
             button()
                 .class("px-2.5 py-1.5 rounded-lg text-xs font-mono font-bold bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700/60 transition-colors cursor-pointer")
@@ -170,7 +170,7 @@ pub fn render_datagrid_sandbox() -> DomBuilder {
         ]);
 
     let controls_bar = div()
-        .class("flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 p-3 rounded-xl bg-slate-900/60 border border-slate-800/80")
+        .class("flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3 mb-4 p-2.5 sm:p-3 rounded-xl bg-slate-900/60 border border-slate-800/80")
         .children(vec![search_input, nav_buttons]);
 
     // Table Header with Sort Indicators
@@ -399,7 +399,7 @@ pub fn render_form_sandbox() -> DomBuilder {
 
     // Telemetry Cards
     let telemetry = div()
-        .class("grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6")
+        .class("grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 mb-4 sm:mb-6")
         .children(vec![
             telemetry_metric_card("Validation Cycle", "< 4.2 μs", Some("Real-Time Signals"), "zap", "#10b981"),
             telemetry_metric_card("GC Pressure", "0 Bytes", Some("No Heap Allocations"), "cpu", "#6366f1"),

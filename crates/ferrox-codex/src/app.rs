@@ -12,11 +12,10 @@ use ferrox_front_core::reactivity::Signal;
 use ferrox_front_router::Router;
 use ferrox_front_ui::command_palette;
 
-use crate::layout::render_doc_layout;
+use crate::layout::{render_doc_layout, render_navbar, render_mobile_drawer};
 use crate::registry::DocRegistry;
 use crate::search::build_doc_search_palette;
 use crate::showcase::render_showcase_page;
-use crate::layout::render_navbar;
 
 /// High-level function that renders the entire application for the active route.
 pub fn render_codex_app(
@@ -37,20 +36,22 @@ pub fn render_codex_app(
 
     let app_root = if path == "/showcase" {
         let navbar = render_navbar(router, &search_state, mobile_sidebar_open);
+        let mobile_drawer = render_mobile_drawer(registry, path, router, &search_state);
         let showcase_content = render_showcase_page(router);
         let cp_overlay = command_palette(search_state);
 
         div()
             .class("min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-indigo-500/30 selection:text-indigo-200")
-            .children(vec![navbar, showcase_content, cp_overlay])
+            .children(vec![navbar, mobile_drawer, showcase_content, cp_overlay])
     } else if let Some(view_fn) = registry.get_interactive_view(path) {
         let navbar = render_navbar(router, &search_state, mobile_sidebar_open);
+        let mobile_drawer = render_mobile_drawer(registry, path, router, &search_state);
         let live_view = view_fn();
         let cp_overlay = command_palette(search_state);
 
         div()
             .class("min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-indigo-500/30 selection:text-indigo-200")
-            .children(vec![navbar, live_view, cp_overlay])
+            .children(vec![navbar, mobile_drawer, live_view, cp_overlay])
     } else {
         let mut layout = render_doc_layout(
             registry,

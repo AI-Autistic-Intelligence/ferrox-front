@@ -118,7 +118,7 @@ pub fn admonition(
         .child(content);
 
     div()
-        .class("ferrox-admonition my-4 p-4 rounded-xl backdrop-blur-md transition-all duration-200")
+        .class("ferrox-admonition my-4 p-3.5 sm:p-4 rounded-xl backdrop-blur-md transition-all duration-200 text-xs sm:text-sm")
         .style_attr(&format!(
             "background: {}; border: 1px solid rgba(255,255,255,0.06); border-left: 4px solid {}; box-shadow: 0 4px 20px -2px rgba(0,0,0,0.25);",
             bg_tint, border_col
@@ -253,20 +253,20 @@ pub fn code_block_highlighted(
         .text(&lang_display);
 
     let header = div()
-        .class("ferrox-code-header flex items-center justify-between px-4 py-2 border-b border-slate-800/80 bg-slate-900/70")
+        .class("ferrox-code-header flex flex-wrap sm:flex-nowrap items-center justify-between px-3 sm:px-4 py-2 border-b border-slate-800/80 bg-slate-900/70 gap-2")
         .children(vec![
             header_left,
-            div().class("flex items-center gap-2.5").child(lang_badge).child(copy_btn),
+            div().class("flex items-center gap-2 shrink-0").child(lang_badge).child(copy_btn),
         ]);
 
     // Code Content
     let code_el = if let Some(html) = highlighted_html {
         div()
-            .class("p-5 overflow-x-auto text-sm sm:text-base font-mono leading-relaxed text-slate-200 whitespace-pre")
+            .class("p-3.5 sm:p-5 overflow-x-auto text-xs sm:text-sm md:text-base font-mono leading-relaxed text-slate-200 whitespace-pre")
             .inner_html(html)
     } else {
         div()
-            .class("p-5 overflow-x-auto text-sm sm:text-base font-mono leading-relaxed text-slate-200 whitespace-pre")
+            .class("p-3.5 sm:p-5 overflow-x-auto text-xs sm:text-sm md:text-base font-mono leading-relaxed text-slate-200 whitespace-pre")
             .text(&raw_code_owned)
     };
 
@@ -312,7 +312,7 @@ pub fn tab_group(panels: Vec<TabPanelDef>, default_index: usize) -> DomBuilder {
     let active_index = Signal::new(default_index.min(panels.len().saturating_sub(1)));
 
     let mut header_bar = div()
-        .class("ferrox-tabgroup-header flex items-center gap-1.5 p-1.5 rounded-xl bg-slate-900/60 border border-slate-800/80 mb-3 backdrop-blur-md");
+        .class("ferrox-tabgroup-header flex items-center gap-1.5 p-1 sm:p-1.5 rounded-xl bg-slate-900/60 border border-slate-800/80 mb-3 backdrop-blur-md overflow-x-auto max-w-full scrollbar-none");
 
     let mut panels_container = div().class("ferrox-tabgroup-panels w-full");
 
@@ -326,7 +326,7 @@ pub fn tab_group(panels: Vec<TabPanelDef>, default_index: usize) -> DomBuilder {
         let mut tab_btn = button()
             .id(&format!("{}-tab-{}", group_id, idx))
             .class(&format!(
-                "flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all duration-150 cursor-pointer {}",
+                "shrink-0 flex items-center gap-1.5 sm:gap-2 px-3 sm:px-3.5 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all duration-150 cursor-pointer {}",
                 if is_active {
                     "bg-indigo-600 text-white shadow-md font-bold"
                 } else {
@@ -469,6 +469,94 @@ pub fn table_of_contents(
         ])
 }
 
+/// Renders an in-page, collapsible mobile Table of Contents accordion card.
+/// Automatically hidden on desktop (xl:hidden) and expanded/collapsed on tap.
+pub fn mobile_table_of_contents(
+    items: Vec<TocItem>,
+    _active_id: Signal<Option<String>>,
+) -> DomBuilder {
+    if items.is_empty() {
+        return div().class("hidden");
+    }
+
+    let items_len = items.len();
+    let toc_list_id = "ferrox-mobile-toc-list";
+    let toc_chev_id = "ferrox-mobile-toc-chev";
+
+    let mut nav_list = div()
+        .id(toc_list_id)
+        .class("hidden flex-col space-y-1 pt-2 pb-1 border-t border-slate-800/80 text-xs sm:text-sm");
+
+    for item in items {
+        let id_owned = item.id.clone();
+        let indent = match item.level {
+            1 | 2 => "pl-2",
+            3 => "pl-4",
+            4 => "pl-6",
+            _ => "pl-8",
+        };
+
+        let link = div()
+            .class(&format!(
+                "py-1.5 {} text-slate-300 hover:text-white hover:bg-slate-800/50 rounded-lg transition-colors cursor-pointer flex items-center gap-1.5",
+                indent
+            ))
+            .child(Icon::render("chevron-right", 12, "#818cf8"))
+            .child(span().class("truncate font-medium").text(&item.title))
+            .on_click(move || {
+                scroll_to_anchor(&id_owned);
+                // Collapse the mobile TOC dropdown after tapping a section
+                if let Some(doc) = window().and_then(|w| w.document()) {
+                    if let Some(list_el) = doc.get_element_by_id(toc_list_id) {
+                        let _ = list_el.set_attribute("class", "hidden flex-col space-y-1 pt-2 pb-1 border-t border-slate-800/80 text-xs sm:text-sm");
+                    }
+                    if let Some(chev_el) = doc.get_element_by_id(toc_chev_id) {
+                        let _ = chev_el.set_attribute("style", "transform: rotate(0deg);");
+                    }
+                }
+            });
+
+        nav_list = nav_list.child(link);
+    }
+
+    let header = div()
+        .class("flex items-center justify-between py-2 px-3.5 cursor-pointer hover:bg-slate-800/40 select-none transition-colors")
+        .children(vec![
+            div().class("flex items-center gap-2").children(vec![
+                Icon::render("layers", 14, "#818cf8"),
+                span().class("text-xs font-bold uppercase tracking-wider text-slate-200").text("On this page"),
+                span().class("text-[10px] font-mono text-indigo-400 font-semibold").text(&format!("({} sections)", items_len)),
+            ]),
+            span()
+                .id(toc_chev_id)
+                .class("w-4 h-4 flex items-center justify-center transition-transform duration-200")
+                .child(Icon::render("chevron-down", 14, "#94a3b8")),
+        ])
+        .on_click(move || {
+            if let Some(doc) = window().and_then(|w| w.document()) {
+                if let Some(list_el) = doc.get_element_by_id(toc_list_id) {
+                    let cur_class = list_el.get_attribute("class").unwrap_or_default();
+                    if cur_class.contains("hidden") {
+                        let _ = list_el.set_attribute("class", "flex flex-col space-y-1 pt-2 pb-1 border-t border-slate-800/80 text-xs sm:text-sm");
+                        if let Some(chev_el) = doc.get_element_by_id(toc_chev_id) {
+                            let _ = chev_el.set_attribute("style", "transform: rotate(180deg);");
+                        }
+                    } else {
+                        let _ = list_el.set_attribute("class", "hidden flex-col space-y-1 pt-2 pb-1 border-t border-slate-800/80 text-xs sm:text-sm");
+                        if let Some(chev_el) = doc.get_element_by_id(toc_chev_id) {
+                            let _ = chev_el.set_attribute("style", "transform: rotate(0deg);");
+                        }
+                    }
+                }
+            }
+        });
+
+    div()
+        .class("ferrox-mobile-toc xl:hidden mb-6 rounded-xl bg-slate-900/60 border border-slate-800/90 backdrop-blur-md overflow-hidden shadow-lg transition-all")
+        .child(header)
+        .child(nav_list)
+}
+
 // =============================================================================
 // 5. DOCUMENTATION SIDEBAR (NAV TREE VIEW)
 // =============================================================================
@@ -573,7 +661,7 @@ fn render_doc_nav_item(
     let (row_class, icon_size) = if depth == 0 {
         (
             format!(
-                "flex items-center justify-between py-2.5 px-3.5 rounded-xl cursor-pointer transition-all duration-150 text-[15px] font-semibold tracking-tight {}",
+                "flex items-center justify-between min-h-[40px] py-2 px-3 rounded-xl cursor-pointer transition-all duration-150 text-[14px] sm:text-[15px] font-semibold tracking-tight {}",
                 if is_active {
                     "bg-indigo-600/25 text-indigo-300 border border-indigo-500/40 shadow-sm"
                 } else {
@@ -585,7 +673,7 @@ fn render_doc_nav_item(
     } else if has_children {
         (
             format!(
-                "flex items-center justify-between py-2 px-3 rounded-lg cursor-pointer transition-all duration-150 text-sm font-medium {}",
+                "flex items-center justify-between min-h-[36px] py-1.5 px-2.5 rounded-lg cursor-pointer transition-all duration-150 text-xs sm:text-sm font-medium {}",
                 if is_active {
                     "bg-indigo-600/20 text-indigo-300 font-semibold border border-indigo-500/30 shadow-sm"
                 } else {
@@ -597,7 +685,7 @@ fn render_doc_nav_item(
     } else {
         (
             format!(
-                "flex items-center justify-between py-2 px-3 rounded-lg cursor-pointer transition-all duration-150 text-sm {}",
+                "flex items-center justify-between min-h-[34px] py-1.5 px-2.5 rounded-lg cursor-pointer transition-all duration-150 text-xs sm:text-sm {}",
                 if is_active {
                     "bg-indigo-600/25 text-indigo-300 font-semibold border border-indigo-500/30 shadow-sm"
                 } else {
@@ -610,7 +698,7 @@ fn render_doc_nav_item(
 
     let mut row = div()
         .class(&row_class)
-        .style_attr(&format!("padding-left: {}px;", depth * 16 + 12))
+        .style_attr(&format!("padding-left: {}px;", depth * 10 + 10))
         .on_click(move || {
             if has_children {
                 if let Some(doc) = window().and_then(|w| w.document()) {
@@ -660,7 +748,7 @@ fn render_doc_nav_item(
     if let Some(ref b) = item.badge {
         row = row.child(
             span()
-                .class("shrink-0 ml-2 px-2 py-0.5 rounded text-[11px] font-mono font-bold bg-slate-800 text-indigo-300 border border-indigo-500/25 shadow-sm")
+                .class("shrink-0 ml-1.5 px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-slate-800 text-indigo-300 border border-indigo-500/25 shadow-sm")
                 .text(b)
         );
     }
@@ -709,7 +797,7 @@ pub fn mermaid_container(raw_code: &str, title: Option<&str>) -> DomBuilder {
     let title_str = title.unwrap_or("Mermaid SVG Vector Diagram");
 
     div()
-        .class("ferrox-mermaid group relative my-6 flex flex-col items-center justify-center p-4 md:p-5 rounded-2xl bg-slate-900/70 border border-slate-800/90 shadow-2xl backdrop-blur-xl transition-all duration-200")
+        .class("ferrox-mermaid group relative my-6 flex flex-col items-center justify-center p-3 sm:p-4 md:p-5 rounded-2xl bg-slate-900/70 border border-slate-800/90 shadow-2xl backdrop-blur-xl transition-all duration-200 max-w-full")
         .children(vec![
             // Header with title and interactive toolbar controls
             div()
@@ -857,7 +945,7 @@ pub fn language_selector(
     let on_sel_rc: Rc<dyn Fn(String)> = Rc::new(on_select);
 
     let mut select_el = select()
-        .class("bg-slate-900/80 border border-slate-700/60 rounded-xl px-2.5 py-1 text-xs font-medium text-slate-200 focus:outline-none focus:border-indigo-500 shadow-sm cursor-pointer");
+        .class("bg-slate-900/80 border border-slate-700/60 rounded-xl px-2 py-1 text-xs font-medium text-slate-200 focus:outline-none focus:border-indigo-500 shadow-sm cursor-pointer max-w-[85px] sm:max-w-none");
 
     for (code, label) in languages {
         let is_selected = code.eq_ignore_ascii_case(current_lang);

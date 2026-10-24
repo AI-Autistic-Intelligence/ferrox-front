@@ -69,15 +69,61 @@
     box-sizing: border-box;
 }
 
+html {
+    -webkit-text-size-adjust: 100%;
+    touch-action: manipulation;
+}
+
 body {
     margin: 0;
     padding: 0;
+    overflow-x: hidden;
     background-color: var(--bg-base);
     color: var(--text-primary);
     font-family: var(--font-sans);
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    padding-left: env(safe-area-inset-left, 0px);
+    padding-right: env(safe-area-inset-right, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+#root {
+    overflow-x: hidden;
+    min-width: 0;
+}
+
+/* Mobile Drawer & Backdrop */
+.ferrox-mobile-drawer {
+    will-change: transform;
+    -webkit-overflow-scrolling: touch;
+}
+
+.ferrox-mobile-backdrop {
+    will-change: opacity;
+}
+
+/* Hide scrollbar for clean horizontal tabs */
+.scrollbar-none {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+    display: none;
+}
+
+/* Responsive documentation typography and container protection */
+.ferrox-doc-content {
+    min-width: 0;
+    overflow-wrap: break-word;
+    word-break: break-word;
+}
+
+.ferrox-code-block,
+.ferrox-admonition,
+.ferrox-mermaid {
+    max-width: 100%;
 }
 
 /* Custom Sleek Scrollbar */

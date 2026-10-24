@@ -1,6 +1,6 @@
 [package]
 name = "ferrox-front-core"
-version = "0.3.3"
+version = "0.3.4"
 edition = "2021"
 description = "Reactive Signals engine, Wasm Virtual DOM builder, and runtime Glassmorphism theming for Ferrox Front."
 license = "MIT"
